@@ -3,7 +3,8 @@ description: >-
   High-performance tensor preprocessing library for Flutter/Dart.
   NumPy-like transforms pipeline for ONNX Runtime inference.
 version: 0.1.0
-repository: https://github.com/user/dart-tensor-preprocessing
+repository: https://github.com/brody-0125/dart_tensor_preprocessing
+homepage: https://github.com/brody-0125/dart_tensor_preprocessing
 
 environment:
   sdk: ^3.0.0
