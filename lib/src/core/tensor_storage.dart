@@ -2,10 +2,21 @@ import 'dart:typed_data';
 
 import 'dtype.dart';
 
+/// An immutable wrapper around typed data that provides the physical storage
+/// for [TensorBuffer].
+///
+/// [TensorStorage] encapsulates the actual data bytes and their data type,
+/// while [TensorBuffer] provides the view semantics (shape, strides, offset).
+/// This separation enables zero-copy operations like transpose and slice.
 class TensorStorage {
   final TypedData _data;
+
+  /// The data type of elements in this storage.
   final DType dtype;
 
+  /// Creates a new storage from [_data] with the specified [dtype].
+  ///
+  /// Throws [ArgumentError] if the TypedData type doesn't match the dtype.
   TensorStorage(this._data, this.dtype) {
     final inferredDtype = DType.fromTypedData(_data);
     if (inferredDtype != dtype) {
@@ -15,14 +26,17 @@ class TensorStorage {
     }
   }
 
+  /// Creates storage from a [Float32List].
   factory TensorStorage.fromFloat32List(Float32List data) {
     return TensorStorage(data, DType.float32);
   }
 
+  /// Creates storage from a [Uint8List].
   factory TensorStorage.fromUint8List(Uint8List data) {
     return TensorStorage(data, DType.uint8);
   }
 
+  /// The number of elements in this storage.
   int get length {
     return switch (_data) {
       final Float32List list => list.length,
@@ -39,10 +53,13 @@ class TensorStorage {
     };
   }
 
+  /// The total size of this storage in bytes.
   int get sizeInBytes => length * dtype.byteSize;
 
+  /// The underlying typed data.
   TypedData get data => _data;
 
+  /// Returns the element at [index] as a double.
   double getAsDouble(int index) {
     _checkBounds(index);
     return switch (_data) {
@@ -60,6 +77,7 @@ class TensorStorage {
     };
   }
 
+  /// Sets the element at [index] from a double [value].
   void setFromDouble(int index, double value) {
     _checkBounds(index);
     switch (_data) {
@@ -94,6 +112,7 @@ class TensorStorage {
     }
   }
 
+  /// Creates a deep copy of this storage.
   TensorStorage clone() {
     final newData = dtype.createBuffer(length);
     _copyData(newData);
