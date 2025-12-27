@@ -6,15 +6,38 @@ import '../core/tensor_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
 
+/// Converts tensor data to a different data type.
+///
+/// Values are converted with appropriate rounding and clamping for the
+/// target type.
+///
+/// ## Example
+///
+/// ```dart
+/// // Convert to float32 for model inference
+/// final cast = TypeCastOp.toFloat32();
+/// final floatTensor = cast.apply(uint8Tensor);
+/// ```
 class TypeCastOp extends TransformOp with RequiresContiguous {
+  /// The target data type.
   final DType targetDtype;
 
+  /// Creates a [TypeCastOp] to convert to [targetDtype].
   TypeCastOp(this.targetDtype);
 
+  /// Creates an operation to convert to [DType.float32].
   factory TypeCastOp.toFloat32() => TypeCastOp(DType.float32);
+
+  /// Creates an operation to convert to [DType.float64].
   factory TypeCastOp.toFloat64() => TypeCastOp(DType.float64);
+
+  /// Creates an operation to convert to [DType.uint8].
   factory TypeCastOp.toUint8() => TypeCastOp(DType.uint8);
+
+  /// Creates an operation to convert to [DType.int32].
   factory TypeCastOp.toInt32() => TypeCastOp(DType.int32);
+
+  /// Creates an operation to convert to [DType.int64].
   factory TypeCastOp.toInt64() => TypeCastOp(DType.int64);
 
   @override
@@ -71,9 +94,25 @@ class TypeCastOp extends TransformOp with RequiresContiguous {
   List<int> computeOutputShape(List<int> inputShape) => inputShape;
 }
 
+/// Converts an image tensor from HWC/NHWC format to CHW/NCHW format.
+///
+/// This is a combined operation that:
+/// 1. Converts layout from HWC to CHW (or NHWC to NCHW)
+/// 2. Optionally normalizes values from `[0, 255]` to `[0, 1]`
+/// 3. Converts dtype to [DType.float32]
+///
+/// ## Example
+///
+/// ```dart
+/// // Convert image to tensor format
+/// final toTensor = ToTensorOp(normalize: true);
+/// final tensor = toTensor.apply(imageTensor);
+/// ```
 class ToTensorOp extends TransformOp with RequiresContiguous {
+  /// Whether to normalize values from `[0, 255]` to `[0, 1]`.
   final bool normalize;
 
+  /// Creates a [ToTensorOp].
   ToTensorOp({this.normalize = true});
 
   @override
@@ -173,9 +212,25 @@ class ToTensorOp extends TransformOp with RequiresContiguous {
   }
 }
 
+/// Converts a tensor from CHW/NCHW format back to HWC/NHWC image format.
+///
+/// This is the inverse of [ToTensorOp]:
+/// 1. Converts layout from CHW to HWC (or NCHW to NHWC)
+/// 2. Optionally denormalizes values from `[0, 1]` to `[0, 255]`
+/// 3. Converts dtype to [DType.uint8]
+///
+/// ## Example
+///
+/// ```dart
+/// // Convert tensor back to image format
+/// final toImage = ToImageOp(denormalize: true);
+/// final image = toImage.apply(tensor);
+/// ```
 class ToImageOp extends TransformOp with RequiresContiguous {
+  /// Whether to denormalize values from `[0, 1]` to `[0, 255]`.
   final bool denormalize;
 
+  /// Creates a [ToImageOp].
   ToImageOp({this.denormalize = true});
 
   @override

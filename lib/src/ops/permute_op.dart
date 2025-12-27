@@ -3,9 +3,24 @@ import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
 
+/// Permutes (reorders) tensor dimensions according to a specified order.
+///
+/// This is a zero-copy operation that reorders dimensions by permuting strides.
+///
+/// ## Example
+///
+/// ```dart
+/// // Convert NCHW to NHWC
+/// final permute = PermuteOp.nchwToNhwc();
+/// final nhwc = permute.apply(nchw);
+/// ```
 class PermuteOp extends TransformOp {
+  /// The new order of dimensions.
   final List<int> dims;
 
+  /// Creates a [PermuteOp] with the specified dimension order.
+  ///
+  /// The [dims] list must be a permutation of `[0, 1, ..., rank-1]`.
   PermuteOp(this.dims) {
     if (dims.isEmpty) {
       throw InvalidParameterException(
@@ -13,9 +28,16 @@ class PermuteOp extends TransformOp {
     }
   }
 
+  /// Creates a permutation from NCHW to NHWC format.
   factory PermuteOp.nchwToNhwc() => PermuteOp([0, 2, 3, 1]);
+
+  /// Creates a permutation from NHWC to NCHW format.
   factory PermuteOp.nhwcToNchw() => PermuteOp([0, 3, 1, 2]);
+
+  /// Creates a permutation from CHW to HWC format.
   factory PermuteOp.chwToHwc() => PermuteOp([1, 2, 0]);
+
+  /// Creates a permutation from HWC to CHW format.
   factory PermuteOp.hwcToChw() => PermuteOp([2, 0, 1]);
 
   @override
@@ -48,16 +70,34 @@ class PermuteOp extends TransformOp {
   }
 }
 
+/// Converts a tensor between memory layout formats (NCHW/NHWC).
+///
+/// This operation handles the permutation needed to convert between
+/// [MemoryFormat.contiguous] (NCHW) and [MemoryFormat.channelsLast] (NHWC).
+///
+/// ## Example
+///
+/// ```dart
+/// // Convert to NHWC format
+/// final convert = LayoutConvertOp.toNhwc();
+/// final nhwc = convert.apply(nchw);
+/// ```
 class LayoutConvertOp extends TransformOp {
+  /// The target memory format.
   final MemoryFormat targetFormat;
+
+  /// Whether to force the output to be contiguous.
   final bool forceContiguous;
 
+  /// Creates a [LayoutConvertOp] to convert to [targetFormat].
   LayoutConvertOp(this.targetFormat, {this.forceContiguous = true});
 
+  /// Creates an operation to convert to NCHW format.
   factory LayoutConvertOp.toNchw({bool forceContiguous = true}) =>
       LayoutConvertOp(MemoryFormat.contiguous,
           forceContiguous: forceContiguous);
 
+  /// Creates an operation to convert to NHWC format.
   factory LayoutConvertOp.toNhwc({bool forceContiguous = true}) =>
       LayoutConvertOp(MemoryFormat.channelsLast,
           forceContiguous: forceContiguous);
@@ -105,11 +145,24 @@ class LayoutConvertOp extends TransformOp {
   }
 }
 
+/// Adds a dimension of size 1 at the specified position.
+///
+/// This is a zero-copy operation commonly used to add a batch dimension.
+///
+/// ## Example
+///
+/// ```dart
+/// // Add batch dimension: [3, 224, 224] -> [1, 3, 224, 224]
+/// final unsqueeze = UnsqueezeOp.batch();
+/// ```
 class UnsqueezeOp extends TransformOp {
+  /// The dimension index where to insert the new dimension.
   final int dim;
 
+  /// Creates an [UnsqueezeOp] that inserts a dimension at [dim].
   UnsqueezeOp(this.dim);
 
+  /// Creates an operation that adds a batch dimension at position 0.
   factory UnsqueezeOp.batch() => UnsqueezeOp(0);
 
   @override
@@ -135,12 +188,32 @@ class UnsqueezeOp extends TransformOp {
   }
 }
 
+/// Removes dimensions of size 1 from the tensor shape.
+///
+/// This is a zero-copy operation.
+///
+/// ## Example
+///
+/// ```dart
+/// // Remove all size-1 dimensions
+/// final squeeze = SqueezeOp.all();
+///
+/// // Remove only the batch dimension
+/// final squeezeBatch = SqueezeOp.batch();
+/// ```
 class SqueezeOp extends TransformOp {
+  /// The dimension to squeeze, or null to squeeze all size-1 dimensions.
   final int? dim;
 
+  /// Creates a [SqueezeOp] that removes the dimension at [dim].
+  ///
+  /// If [dim] is null, all dimensions of size 1 are removed.
   SqueezeOp([this.dim]);
 
+  /// Creates an operation that removes the batch dimension at position 0.
   factory SqueezeOp.batch() => SqueezeOp(0);
+
+  /// Creates an operation that removes all dimensions of size 1.
   factory SqueezeOp.all() => SqueezeOp();
 
   @override
@@ -168,9 +241,25 @@ class SqueezeOp extends TransformOp {
   }
 }
 
+/// Reshapes a tensor to a new shape with the same total number of elements.
+///
+/// Requires the tensor to be contiguous. Use `-1` for one dimension to have
+/// it inferred automatically.
+///
+/// ## Example
+///
+/// ```dart
+/// // Reshape to [batch, -1] where -1 is inferred
+/// final reshape = ReshapeOp([1, -1]);
+/// ```
 class ReshapeOp extends TransformOp {
+  /// The target shape, with optional `-1` for one inferred dimension.
   final List<int> targetShape;
 
+  /// Creates a [ReshapeOp] with the specified [targetShape].
+  ///
+  /// At most one dimension can be `-1`, which will be inferred from
+  /// the total element count.
   ReshapeOp(this.targetShape) {
     int negativeCount = 0;
     for (final dim in targetShape) {
@@ -238,10 +327,22 @@ class ReshapeOp extends TransformOp {
   }
 }
 
+/// Flattens a range of dimensions into a single dimension.
+///
+/// ## Example
+///
+/// ```dart
+/// // Flatten all dimensions except batch: [2, 3, 4, 5] -> [2, 60]
+/// final flatten = FlattenOp(startDim: 1);
+/// ```
 class FlattenOp extends TransformOp {
+  /// The first dimension to flatten (inclusive).
   final int startDim;
+
+  /// The last dimension to flatten (inclusive). Use -1 for the last dimension.
   final int endDim;
 
+  /// Creates a [FlattenOp] that flattens dimensions from [startDim] to [endDim].
   FlattenOp({this.startDim = 0, this.endDim = -1});
 
   @override
@@ -283,7 +384,12 @@ class FlattenOp extends TransformOp {
   }
 }
 
+/// Ensures a tensor is stored contiguously in memory.
+///
+/// If the tensor is already contiguous, returns it unchanged. Otherwise,
+/// creates a contiguous copy.
 class ContiguousOp extends TransformOp {
+  /// Creates a [ContiguousOp].
   ContiguousOp();
 
   @override

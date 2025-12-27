@@ -4,7 +4,29 @@ import '../ops/resize_op.dart';
 import '../ops/type_cast_op.dart';
 import 'tensor_pipeline.dart';
 
+/// Pre-configured pipelines for common model preprocessing tasks.
+///
+/// These presets provide ready-to-use pipelines for popular model
+/// architectures and use cases. All presets expect HWC (height, width,
+/// channels) uint8 input and produce NCHW float32 output with a batch
+/// dimension.
+///
+/// ## Example
+///
+/// ```dart
+/// // Get a pipeline for ImageNet classification models
+/// final pipeline = PipelinePresets.imagenetClassification();
+///
+/// // Process an image
+/// final result = pipeline.run(imageAsTensor);
+/// ```
 abstract class PipelinePresets {
+  /// Creates a pipeline for ImageNet classification models.
+  ///
+  /// Steps: resize shortest edge -> center crop -> to tensor -> normalize -> add batch
+  ///
+  /// Uses standard ImageNet normalization with mean `[0.485, 0.456, 0.406]`
+  /// and std `[0.229, 0.224, 0.225]`.
   static TensorPipeline imagenetClassification({
     int shortestEdge = 256,
     int cropSize = 224,
@@ -22,6 +44,9 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for ResNet and similar models.
+  ///
+  /// Steps: resize -> to tensor -> normalize -> add batch
   static TensorPipeline resnetClassification({
     int height = 224,
     int width = 224,
@@ -38,6 +63,11 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for object detection models (YOLO, SSD, etc.).
+  ///
+  /// Steps: resize -> to tensor -> add batch
+  ///
+  /// No normalization is applied (values remain in `[0, 1]`).
   static TensorPipeline objectDetection({
     int height = 640,
     int width = 640,
@@ -53,6 +83,9 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for semantic segmentation models.
+  ///
+  /// Steps: resize -> to tensor -> normalize -> add batch
   static TensorPipeline segmentation({
     int height = 512,
     int width = 512,
@@ -69,6 +102,11 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for face recognition models (ArcFace, etc.).
+  ///
+  /// Steps: resize -> to tensor -> symmetric normalize -> add batch
+  ///
+  /// Uses symmetric normalization mapping `[0, 1]` to `[-1, 1]`.
   static TensorPipeline faceRecognition({
     int height = 112,
     int width = 112,
@@ -85,6 +123,9 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for MobileNet models.
+  ///
+  /// Steps: resize -> to tensor -> symmetric normalize -> add batch
   static TensorPipeline mobileNet({
     int height = 224,
     int width = 224,
@@ -101,6 +142,11 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for CLIP vision encoder.
+  ///
+  /// Steps: resize shortest -> center crop -> to tensor -> normalize -> add batch
+  ///
+  /// Uses CLIP-specific normalization values and bicubic interpolation.
   static TensorPipeline clip({
     int size = 224,
     InterpolationMode interpolation = InterpolationMode.bicubic,
@@ -120,6 +166,9 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for Vision Transformer (ViT) models.
+  ///
+  /// Steps: resize -> to tensor -> symmetric normalize -> add batch
   static TensorPipeline vit({
     int size = 224,
     InterpolationMode interpolation = InterpolationMode.bilinear,
@@ -138,6 +187,11 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for TensorFlow Lite models.
+  ///
+  /// Steps: resize -> to float32 -> scale to [0,1] -> add batch
+  ///
+  /// Keeps NHWC layout as expected by TFLite.
   static TensorPipeline tflite({
     int height = 224,
     int width = 224,
@@ -154,6 +208,9 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a minimal pipeline with just resize and format conversion.
+  ///
+  /// Steps: resize -> to tensor -> add batch
   static TensorPipeline minimal({
     int height = 224,
     int width = 224,
@@ -168,6 +225,9 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a custom pipeline with configurable options.
+  ///
+  /// This is useful when you need a non-standard preprocessing flow.
   static TensorPipeline custom({
     required int height,
     required int width,

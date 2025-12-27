@@ -4,18 +4,48 @@ import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
 
+/// Interpolation algorithms for image resizing.
 enum InterpolationMode {
+  /// Nearest-neighbor interpolation (fastest, lowest quality).
   nearest,
+
+  /// Bilinear interpolation (good balance of speed and quality).
   bilinear,
+
+  /// Bicubic interpolation (best quality, slowest).
   bicubic,
 }
 
+/// Resizes a tensor to a fixed height and width.
+///
+/// Supports 3D tensors `[C, H, W]` and 4D tensors `[N, C, H, W]`.
+/// The batch and channel dimensions are preserved.
+///
+/// ## Example
+///
+/// ```dart
+/// final resize = ResizeOp(height: 224, width: 224);
+/// final resized = resize.apply(input);
+/// ```
 class ResizeOp extends TransformOp with RequiresContiguous {
+  /// The target height in pixels.
   final int height;
+
+  /// The target width in pixels.
   final int width;
+
+  /// The interpolation algorithm to use.
   final InterpolationMode mode;
+
+  /// Whether to align corners when interpolating.
+  ///
+  /// When true, the corner pixels of input and output are aligned,
+  /// preserving values at the corners.
   final bool alignCorners;
 
+  /// Creates a [ResizeOp] with the specified dimensions.
+  ///
+  /// Throws [InvalidParameterException] if [height] or [width] is not positive.
   ResizeOp({
     required this.height,
     required this.width,
@@ -274,11 +304,28 @@ class ResizeOp extends TransformOp with RequiresContiguous {
   }
 }
 
+/// Resizes a tensor so that the shortest edge matches a target size.
+///
+/// Maintains aspect ratio while ensuring the shorter dimension equals
+/// [shortestEdge]. Optionally limits the longer dimension with [maxSize].
+///
+/// ## Example
+///
+/// ```dart
+/// // Resize so shortest edge is 256, then center crop to 224x224
+/// final resize = ResizeShortestOp(shortestEdge: 256);
+/// ```
 class ResizeShortestOp extends TransformOp {
+  /// The target size for the shortest edge.
   final int shortestEdge;
+
+  /// The interpolation algorithm to use.
   final InterpolationMode mode;
+
+  /// Optional maximum size for the longest edge.
   final int? maxSize;
 
+  /// Creates a [ResizeShortestOp].
   ResizeShortestOp({
     required this.shortestEdge,
     this.mode = InterpolationMode.bilinear,
@@ -346,10 +393,27 @@ class ResizeShortestOp extends TransformOp {
   }
 }
 
+/// Extracts a center crop from a tensor.
+///
+/// Crops the center region of size [height] x [width] from the input tensor.
+/// The crop must be smaller than or equal to the input dimensions.
+///
+/// ## Example
+///
+/// ```dart
+/// final crop = CenterCropOp(height: 224, width: 224);
+/// final cropped = crop.apply(input);
+/// ```
 class CenterCropOp extends TransformOp with RequiresContiguous {
+  /// The height of the crop region.
   final int height;
+
+  /// The width of the crop region.
   final int width;
 
+  /// Creates a [CenterCropOp].
+  ///
+  /// Throws [InvalidParameterException] if dimensions are not positive.
   CenterCropOp({required this.height, required this.width}) {
     if (height <= 0 || width <= 0) {
       throw InvalidParameterException(

@@ -8,10 +8,42 @@ import '../core/tensor_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import '../ops/transform_op.dart';
 
+/// A chain of tensor transformation operations that can be executed
+/// synchronously or asynchronously.
+///
+/// [TensorPipeline] provides a declarative way to compose preprocessing
+/// operations. Pipelines are immutable; methods like [append] return
+/// new pipeline instances.
+///
+/// ## Example
+///
+/// ```dart
+/// // Create a preprocessing pipeline
+/// final pipeline = TensorPipeline([
+///   ResizeOp(height: 224, width: 224),
+///   ToTensorOp(normalize: true),
+///   NormalizeOp.imagenet(),
+///   UnsqueezeOp.batch(),
+/// ], name: 'ImageNet Preprocessing');
+///
+/// // Run synchronously
+/// final result = pipeline.run(input);
+///
+/// // Run asynchronously in an isolate
+/// final result = await pipeline.runAsync(input);
+///
+/// // Use as a function
+/// final result = pipeline(input);
+/// ```
 class TensorPipeline {
   final List<TransformOp> _operations;
+
+  /// Optional name for this pipeline (for debugging).
   final String? name;
 
+  /// Creates a [TensorPipeline] with the given [operations].
+  ///
+  /// Throws [EmptyPipelineException] if [operations] is empty.
   TensorPipeline(List<TransformOp> operations, {this.name})
       : _operations = List.unmodifiable(operations) {
     if (operations.isEmpty) {
@@ -19,9 +51,16 @@ class TensorPipeline {
     }
   }
 
+  /// The number of operations in this pipeline.
   int get length => _operations.length;
+
+  /// The list of operations in this pipeline.
   List<TransformOp> get operations => _operations;
 
+  /// Executes the pipeline synchronously on [input].
+  ///
+  /// Each operation is applied in sequence, with the output of one
+  /// becoming the input of the next.
   TensorBuffer run(TensorBuffer input) {
     var result = input;
     for (final op in _operations) {
@@ -30,6 +69,11 @@ class TensorPipeline {
     return result;
   }
 
+  /// Executes the pipeline asynchronously in a separate isolate.
+  ///
+  /// This is useful for avoiding UI jank when processing large tensors.
+  /// The tensor is serialized, sent to the isolate, processed, and
+  /// the result is deserialized back.
   Future<TensorBuffer> runAsync(TensorBuffer input) async {
     final inputData = _serializeTensor(input);
 
@@ -45,6 +89,10 @@ class TensorPipeline {
     return _deserializeTensor(resultData);
   }
 
+  /// Computes the output shape for a given [inputShape].
+  ///
+  /// This can be used to validate pipeline compatibility or pre-allocate
+  /// output buffers without actually running the pipeline.
   List<int> computeOutputShape(List<int> inputShape) {
     var shape = inputShape;
     for (final op in _operations) {
@@ -53,6 +101,10 @@ class TensorPipeline {
     return shape;
   }
 
+  /// Returns true if this pipeline is valid for the given [inputShape].
+  ///
+  /// Validation checks that all operations are compatible with their
+  /// respective input shapes.
   bool validate(List<int> inputShape) {
     try {
       computeOutputShape(inputShape);
@@ -62,20 +114,28 @@ class TensorPipeline {
     }
   }
 
+  /// Returns a new pipeline with [op] appended to the end.
   TensorPipeline append(TransformOp op) {
     return TensorPipeline([..._operations, op], name: name);
   }
 
+  /// Returns a new pipeline with [op] prepended to the beginning.
   TensorPipeline prepend(TransformOp op) {
     return TensorPipeline([op, ..._operations], name: name);
   }
 
+  /// Returns a new pipeline combining this pipeline with [other].
   TensorPipeline concat(TensorPipeline other) {
     return TensorPipeline([..._operations, ...other._operations]);
   }
 
+  /// Calls [run] on [input]. Enables using the pipeline as a function.
   TensorBuffer call(TensorBuffer input) => run(input);
+
+  /// Concatenates two pipelines.
   TensorPipeline operator +(TensorPipeline other) => concat(other);
+
+  /// Appends an operation to the pipeline.
   TensorPipeline operator >>(TransformOp op) => append(op);
 
   @override

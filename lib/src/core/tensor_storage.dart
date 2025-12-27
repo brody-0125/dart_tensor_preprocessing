@@ -2,10 +2,33 @@ import 'dart:typed_data';
 
 import 'dtype.dart';
 
+/// Immutable wrapper around typed data that provides the physical storage
+/// for tensor elements.
+///
+/// [TensorStorage] holds the raw data buffer and its [DType], ensuring
+/// type safety when accessing elements. Multiple [TensorBuffer] instances
+/// can share the same storage for zero-copy operations like transpose.
+///
+/// ## Example
+///
+/// ```dart
+/// final data = Float32List.fromList([1.0, 2.0, 3.0, 4.0]);
+/// final storage = TensorStorage.fromFloat32List(data);
+///
+/// print(storage.dtype);   // DType.float32
+/// print(storage.length);  // 4
+/// print(storage.getAsDouble(0));  // 1.0
+/// ```
 class TensorStorage {
   final TypedData _data;
+
+  /// The data type of elements in this storage.
   final DType dtype;
 
+  /// Creates a [TensorStorage] from raw [TypedData] and its [dtype].
+  ///
+  /// Throws [ArgumentError] if [dtype] does not match the actual type
+  /// of the data.
   TensorStorage(this._data, this.dtype) {
     final inferredDtype = DType.fromTypedData(_data);
     if (inferredDtype != dtype) {
@@ -15,14 +38,17 @@ class TensorStorage {
     }
   }
 
+  /// Creates a [TensorStorage] from a [Float32List].
   factory TensorStorage.fromFloat32List(Float32List data) {
     return TensorStorage(data, DType.float32);
   }
 
+  /// Creates a [TensorStorage] from a [Uint8List].
   factory TensorStorage.fromUint8List(Uint8List data) {
     return TensorStorage(data, DType.uint8);
   }
 
+  /// The number of elements in this storage.
   int get length {
     return switch (_data) {
       final Float32List list => list.length,
@@ -39,10 +65,16 @@ class TensorStorage {
     };
   }
 
+  /// The total size in bytes of the data in this storage.
   int get sizeInBytes => length * dtype.byteSize;
 
+  /// The underlying typed data buffer.
   TypedData get data => _data;
 
+  /// Returns the element at [index] as a double.
+  ///
+  /// Integer values are converted to double. Throws [RangeError] if [index]
+  /// is out of bounds.
   double getAsDouble(int index) {
     _checkBounds(index);
     return switch (_data) {
@@ -60,6 +92,11 @@ class TensorStorage {
     };
   }
 
+  /// Sets the element at [index] from a double [value].
+  ///
+  /// The value is converted to the storage's dtype. For unsigned types,
+  /// values are clamped to valid ranges. Throws [RangeError] if [index]
+  /// is out of bounds.
   void setFromDouble(int index, double value) {
     _checkBounds(index);
     switch (_data) {
@@ -94,6 +131,7 @@ class TensorStorage {
     }
   }
 
+  /// Creates a deep copy of this storage with its own data buffer.
   TensorStorage clone() {
     final newData = dtype.createBuffer(length);
     _copyData(newData);
