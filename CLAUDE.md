@@ -89,3 +89,41 @@ Uses `package:lints/recommended.yaml` with additional rules:
 - `prefer_final_locals`
 - `avoid_print`
 - `prefer_single_quotes`
+
+## Version Update Rules
+
+When updating the package version, **ALL** of the following files MUST be updated:
+
+1. **pubspec.yaml**: Update the `version` field
+2. **README.md**: Update version references if any (e.g., installation instructions)
+3. **CHANGELOG.md**: Add a new section for the version with:
+   - Version number and release date
+   - List of changes (Added, Changed, Fixed, Removed, etc.)
+
+### Checklist
+
+```markdown
+- [ ] pubspec.yaml version updated
+- [ ] CHANGELOG.md new version section added
+- [ ] README.md version references updated (if applicable)
+```
+
+### CHANGELOG Format
+
+Follow [Keep a Changelog](https://keepachangelog.com/) format:
+
+```markdown
+## [X.Y.Z] - YYYY-MM-DD
+
+### Added
+- New features
+
+### Changed
+- Changes in existing functionality
+
+### Fixed
+- Bug fixes
+
+### Removed
+- Removed features
+```

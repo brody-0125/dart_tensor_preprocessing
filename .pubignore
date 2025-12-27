@@ -1,0 +1,32 @@
+# Development files
+.dart_tool/
+.packages
+build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# macOS
+.DS_Store
+
+# Coverage
+coverage/
+
+# CI/CD
+.github/
+
+# Claude Code
+.claude/
+CLAUDE.md
+
+# Git
+.git/
+.gitignore
+
+# Tests (optional - uncomment if you don't want to publish tests)
+# test/
+
+# Examples (optional - uncomment if examples are large)
+# example/
