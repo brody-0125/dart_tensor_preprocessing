@@ -4,7 +4,28 @@ import '../ops/resize_op.dart';
 import '../ops/type_cast_op.dart';
 import 'tensor_pipeline.dart';
 
+/// Pre-configured preprocessing pipelines for common ML models.
+///
+/// Use these factory methods to quickly create pipelines that match the
+/// preprocessing requirements of popular model architectures.
+///
+/// ```dart
+/// // Get an ImageNet classification pipeline
+/// final pipeline = PipelinePresets.imagenetClassification();
+///
+/// // Or create a custom pipeline
+/// final custom = PipelinePresets.custom(
+///   height: 256,
+///   width: 256,
+///   mean: [0.5, 0.5, 0.5],
+///   std: [0.5, 0.5, 0.5],
+/// );
+/// ```
 abstract class PipelinePresets {
+  /// Creates a pipeline for ImageNet classification models.
+  ///
+  /// Resizes the shortest edge, center crops, normalizes with ImageNet stats,
+  /// and adds a batch dimension.
   static TensorPipeline imagenetClassification({
     int shortestEdge = 256,
     int cropSize = 224,
@@ -22,6 +43,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for ResNet classification models.
   static TensorPipeline resnetClassification({
     int height = 224,
     int width = 224,
@@ -38,6 +60,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for object detection models (e.g., YOLO).
   static TensorPipeline objectDetection({
     int height = 640,
     int width = 640,
@@ -53,6 +76,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for semantic segmentation models.
   static TensorPipeline segmentation({
     int height = 512,
     int width = 512,
@@ -69,6 +93,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for face recognition models (e.g., ArcFace).
   static TensorPipeline faceRecognition({
     int height = 112,
     int width = 112,
@@ -85,6 +110,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for MobileNet models.
   static TensorPipeline mobileNet({
     int height = 224,
     int width = 224,
@@ -101,6 +127,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for CLIP vision encoder.
   static TensorPipeline clip({
     int size = 224,
     InterpolationMode interpolation = InterpolationMode.bicubic,
@@ -120,6 +147,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for Vision Transformer (ViT) models.
   static TensorPipeline vit({
     int size = 224,
     InterpolationMode interpolation = InterpolationMode.bilinear,
@@ -138,6 +166,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a pipeline for TensorFlow Lite models.
   static TensorPipeline tflite({
     int height = 224,
     int width = 224,
@@ -154,6 +183,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a minimal preprocessing pipeline with just resize and normalize.
   static TensorPipeline minimal({
     int height = 224,
     int width = 224,
@@ -168,6 +198,7 @@ abstract class PipelinePresets {
     );
   }
 
+  /// Creates a fully customizable preprocessing pipeline.
   static TensorPipeline custom({
     required int height,
     required int width,

@@ -4,14 +4,49 @@ import 'dtype.dart';
 import 'memory_format.dart';
 import 'tensor_storage.dart';
 
+/// A multi-dimensional array view over typed data with shape and stride metadata.
+///
+/// [TensorBuffer] provides a NumPy-like interface for tensor operations. It
+/// uses a view/storage separation pattern where [TensorStorage] holds the
+/// physical data and [TensorBuffer] defines how to interpret it through
+/// shape and stride information.
+///
+/// This design enables O(1) operations like [transpose] by manipulating
+/// strides rather than copying data.
+///
+/// ```dart
+/// // Create a 3x4 tensor filled with zeros
+/// final tensor = TensorBuffer.zeros([3, 4], dtype: DType.float32);
+///
+/// // Transpose without copying data
+/// final transposed = tensor.transpose([1, 0]); // Now 4x3
+///
+/// // Reshape (requires contiguous memory)
+/// final reshaped = tensor.reshape([2, 6]);
+/// ```
 class TensorBuffer {
+  /// The underlying storage containing the physical data.
   final TensorStorage storage;
+
+  /// The dimensions of this tensor.
   final List<int> shape;
+
+  /// The number of elements to skip in storage for each dimension.
   final List<int> strides;
+
+  /// The offset into [storage] where this tensor's data begins.
   final int storageOffset;
+
+  /// The memory layout format of this tensor.
   final MemoryFormat memoryFormat;
+
   bool? _isContiguousCache;
 
+  /// Creates a new tensor buffer with the given [storage], [shape], and optional
+  /// [strides].
+  ///
+  /// If [strides] is not provided, they are computed based on [shape] and
+  /// [memoryFormat].
   TensorBuffer({
     required this.storage,
     required this.shape,
@@ -30,11 +65,22 @@ class TensorBuffer {
     required this.memoryFormat,
   });
 
+  /// The data type of elements in this tensor.
   DType get dtype => storage.dtype;
+
+  /// The number of dimensions in this tensor.
   int get rank => shape.length;
+
+  /// The total number of elements in this tensor.
   int get numel => shape.fold(1, (a, b) => a * b);
+
+  /// The total size of this tensor's data in bytes.
   int get sizeInBytes => numel * dtype.byteSize;
 
+  /// Whether this tensor's data is stored contiguously in memory.
+  ///
+  /// Contiguous tensors have elements stored in row-major order without gaps.
+  /// Some operations like [reshape] require contiguous tensors.
   bool get isContiguous {
     _isContiguousCache ??= _checkContiguity();
     return _isContiguousCache!;
@@ -50,6 +96,12 @@ class TensorBuffer {
     return true;
   }
 
+  /// Returns a view of this tensor with dimensions permuted according to [axes].
+  ///
+  /// This is a zero-copy operation that only changes the strides.
+  ///
+  /// Throws [ArgumentError] if [axes] length does not match [rank] or contains
+  /// invalid or duplicate axis indices.
   TensorBuffer transpose(List<int> axes) {
     if (axes.length != rank) {
       throw ArgumentError(
@@ -76,6 +128,12 @@ class TensorBuffer {
     );
   }
 
+  /// Returns a view of this tensor with a new [newShape].
+  ///
+  /// The total number of elements must remain the same. This tensor must be
+  /// contiguous; call [contiguous] first if needed.
+  ///
+  /// Throws [StateError] if this tensor is not contiguous.
   TensorBuffer reshape(List<int> newShape) {
     final newNumel = newShape.fold(1, (a, b) => a * b);
     if (newNumel != numel) {
@@ -99,6 +157,9 @@ class TensorBuffer {
     );
   }
 
+  /// Returns a view with all size-1 dimensions removed.
+  ///
+  /// If [dim] is specified, only that dimension is squeezed (if it has size 1).
   TensorBuffer squeeze([int? dim]) {
     final newShape = <int>[];
     final newStrides = <int>[];
@@ -122,6 +183,7 @@ class TensorBuffer {
     );
   }
 
+  /// Returns a view with a size-1 dimension inserted at position [dim].
   TensorBuffer unsqueeze(int dim) {
     if (dim < 0 || dim > rank) {
       throw RangeError.range(dim, 0, rank, 'dim');
@@ -143,6 +205,9 @@ class TensorBuffer {
     );
   }
 
+  /// Returns a contiguous copy of this tensor if not already contiguous.
+  ///
+  /// If [isContiguous] is true, returns this tensor unchanged.
   TensorBuffer contiguous() {
     if (isContiguous) return this;
 
@@ -156,6 +221,7 @@ class TensorBuffer {
     );
   }
 
+  /// Creates a deep copy of this tensor with its own storage.
   TensorBuffer clone() {
     final newData = dtype.createBuffer(numel);
     _copyToContiguous(newData);
@@ -211,6 +277,10 @@ class TensorBuffer {
     }
   }
 
+  /// The underlying typed data for direct access.
+  ///
+  /// Throws [StateError] if this tensor is not contiguous or has a non-zero
+  /// storage offset.
   TypedData get data {
     if (!isContiguous) {
       throw StateError(
@@ -225,6 +295,9 @@ class TensorBuffer {
     return storage.data;
   }
 
+  /// The underlying data as a [Float32List].
+  ///
+  /// Throws [StateError] if [dtype] is not [DType.float32].
   Float32List get dataAsFloat32List {
     if (dtype != DType.float32) {
       throw StateError('Tensor dtype is $dtype, not float32');
@@ -232,6 +305,7 @@ class TensorBuffer {
     return data as Float32List;
   }
 
+  /// Returns the element at the given multi-dimensional [indices].
   double operator [](List<int> indices) {
     if (indices.length != rank) {
       throw ArgumentError(
@@ -250,6 +324,7 @@ class TensorBuffer {
     return storage.getAsDouble(offset);
   }
 
+  /// Creates a tensor filled with zeros.
   static TensorBuffer zeros(
     List<int> shape, {
     DType dtype = DType.float32,
@@ -264,6 +339,7 @@ class TensorBuffer {
     );
   }
 
+  /// Creates a tensor filled with ones.
   static TensorBuffer ones(
     List<int> shape, {
     DType dtype = DType.float32,
@@ -302,6 +378,7 @@ class TensorBuffer {
     );
   }
 
+  /// Creates a tensor from an existing [Float32List] with the given [shape].
   static TensorBuffer fromFloat32List(Float32List data, List<int> shape) {
     final expectedNumel = shape.fold(1, (a, b) => a * b);
     if (data.length != expectedNumel) {
@@ -315,6 +392,7 @@ class TensorBuffer {
     );
   }
 
+  /// Creates a tensor from an existing [Uint8List] with the given [shape].
   static TensorBuffer fromUint8List(Uint8List data, List<int> shape) {
     final expectedNumel = shape.fold(1, (a, b) => a * b);
     if (data.length != expectedNumel) {
@@ -328,6 +406,7 @@ class TensorBuffer {
     );
   }
 
+  /// Computes strides for a tensor with the given [shape] and [format].
   static List<int> computeStrides(List<int> shape, MemoryFormat format) {
     final rank = shape.length;
     final strides = List<int>.filled(rank, 0);

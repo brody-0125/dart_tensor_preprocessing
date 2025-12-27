@@ -2,11 +2,18 @@ import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
 
+/// Normalizes tensor values per channel using mean and standard deviation.
+///
+/// Applies the formula: `(value - mean) / std` for each channel.
 class NormalizeOp extends TransformOp
     with InPlaceTransform, RequiresContiguous {
+  /// Per-channel mean values to subtract.
   final List<double> mean;
+
+  /// Per-channel standard deviation values to divide by.
   final List<double> std;
 
+  /// Creates a normalize operation with the given [mean] and [std].
   NormalizeOp({required this.mean, required this.std}) {
     if (mean.length != std.length) {
       throw InvalidParameterException(
@@ -33,6 +40,7 @@ class NormalizeOp extends TransformOp
     }
   }
 
+  /// Creates normalization using ImageNet statistics.
   factory NormalizeOp.imagenet() {
     return NormalizeOp(
       mean: [0.485, 0.456, 0.406],
@@ -40,6 +48,7 @@ class NormalizeOp extends TransformOp
     );
   }
 
+  /// Creates normalization using CIFAR-10 statistics.
   factory NormalizeOp.cifar10() {
     return NormalizeOp(
       mean: [0.4914, 0.4822, 0.4465],
@@ -47,6 +56,7 @@ class NormalizeOp extends TransformOp
     );
   }
 
+  /// Creates symmetric normalization mapping `[0, 1]` to `[-1, 1]`.
   factory NormalizeOp.symmetric() {
     return NormalizeOp(
       mean: [0.5, 0.5, 0.5],
@@ -153,18 +163,30 @@ class NormalizeOp extends TransformOp
   List<int> computeOutputShape(List<int> inputShape) => inputShape;
 }
 
+/// Scales tensor values by a constant factor.
+///
+/// Applies the formula: `(value - offset) / scale`.
 class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
+  /// The scale divisor.
   final double scale;
+
+  /// The offset to subtract before scaling.
   final double offset;
 
+  /// Creates a scale operation with the given [scale] and [offset].
   ScaleOp({this.scale = 255.0, this.offset = 0.0}) {
     if (scale == 0) {
       throw InvalidParameterException('scale', '0', 'Cannot be zero');
     }
   }
 
+  /// Scales `[0, 255]` to `[0, 1]`.
   factory ScaleOp.toUnit() => ScaleOp(scale: 255.0);
+
+  /// Scales `[0, 1]` to `[0, 255]`.
   factory ScaleOp.fromUnit() => ScaleOp(scale: 1 / 255.0);
+
+  /// Scales `[0, 255]` to `[-1, 1]`.
   factory ScaleOp.toSymmetric() => ScaleOp(scale: 127.5, offset: 127.5);
 
   @override

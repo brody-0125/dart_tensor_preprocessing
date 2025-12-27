@@ -4,18 +4,35 @@ import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
 
+/// Interpolation algorithm used for image resizing.
 enum InterpolationMode {
+  /// Nearest-neighbor interpolation (fastest, lowest quality).
   nearest,
+
+  /// Bilinear interpolation (balanced speed and quality).
   bilinear,
+
+  /// Bicubic interpolation (slowest, highest quality).
   bicubic,
 }
 
+/// Resizes a tensor to a fixed [height] and [width].
+///
+/// Supports 3D tensors `[C, H, W]` and 4D tensors `[N, C, H, W]`.
 class ResizeOp extends TransformOp with RequiresContiguous {
+  /// The target height.
   final int height;
+
+  /// The target width.
   final int width;
+
+  /// The interpolation mode.
   final InterpolationMode mode;
+
+  /// Whether to align corners during interpolation.
   final bool alignCorners;
 
+  /// Creates a resize operation with the specified dimensions.
   ResizeOp({
     required this.height,
     required this.width,
@@ -274,11 +291,20 @@ class ResizeOp extends TransformOp with RequiresContiguous {
   }
 }
 
+/// Resizes a tensor so that the shortest edge matches [shortestEdge].
+///
+/// Maintains aspect ratio. Optionally limits the longest edge to [maxSize].
 class ResizeShortestOp extends TransformOp {
+  /// The target length for the shortest edge.
   final int shortestEdge;
+
+  /// The interpolation mode.
   final InterpolationMode mode;
+
+  /// Optional maximum size for the longest edge.
   final int? maxSize;
 
+  /// Creates a resize operation targeting the shortest edge.
   ResizeShortestOp({
     required this.shortestEdge,
     this.mode = InterpolationMode.bilinear,
@@ -346,10 +372,15 @@ class ResizeShortestOp extends TransformOp {
   }
 }
 
+/// Crops a tensor from the center to the specified dimensions.
 class CenterCropOp extends TransformOp with RequiresContiguous {
+  /// The target crop height.
   final int height;
+
+  /// The target crop width.
   final int width;
 
+  /// Creates a center crop operation with the specified dimensions.
   CenterCropOp({required this.height, required this.width}) {
     if (height <= 0 || width <= 0) {
       throw InvalidParameterException(
