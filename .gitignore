@@ -18,3 +18,7 @@ coverage/
 # Generated files
 *.g.dart
 *.freezed.dart
+
+# Claude Code
+.claude/
+CLAUDE.md
