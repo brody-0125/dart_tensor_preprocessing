@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:math' as math;
 
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';

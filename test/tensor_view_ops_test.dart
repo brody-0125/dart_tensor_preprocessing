@@ -1,11 +1,11 @@
-/// View operations tests based on PyTorch test_view_ops.py patterns
-///
-/// Tests cover:
-/// - View semantics (zero-copy operations)
-/// - Reshape and layout preservation
-/// - Dimension manipulation (transpose, permute, squeeze, unsqueeze)
-/// - Contiguity checks
-/// - Storage sharing verification
+// View operations tests based on PyTorch test_view_ops.py patterns
+//
+// Tests cover:
+// - View semantics (zero-copy operations)
+// - Reshape and layout preservation
+// - Dimension manipulation (transpose, permute, squeeze, unsqueeze)
+// - Contiguity checks
+// - Storage sharing verification
 import 'dart:typed_data';
 
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';

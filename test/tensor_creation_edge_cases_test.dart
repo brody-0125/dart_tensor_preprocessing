@@ -1,10 +1,10 @@
-/// Tensor creation and edge case tests based on PyTorch test_tensor_creation_ops.py patterns
-///
-/// Tests cover:
-/// - Tensor creation (zeros, ones, from data)
-/// - Edge cases (empty tensors, single element, large shapes)
-/// - Shape validation
-/// - Boundary conditions
+// Tensor creation and edge case tests based on PyTorch test_tensor_creation_ops.py patterns
+//
+// Tests cover:
+// - Tensor creation (zeros, ones, from data)
+// - Edge cases (empty tensors, single element, large shapes)
+// - Shape validation
+// - Boundary conditions
 import 'dart:typed_data';
 
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
