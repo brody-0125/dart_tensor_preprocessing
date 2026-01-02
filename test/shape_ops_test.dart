@@ -1,11 +1,11 @@
-/// Shape operations tests based on PyTorch test_shape_ops.py patterns
-///
-/// Tests cover:
-/// - PermuteOp, UnsqueezeOp, SqueezeOp
-/// - ReshapeOp with -1 dimension
-/// - FlattenOp
-/// - LayoutConvertOp
-/// - Memory format conversions (NCHW <-> NHWC)
+// Shape operations tests based on PyTorch test_shape_ops.py patterns
+//
+// Tests cover:
+// - PermuteOp, UnsqueezeOp, SqueezeOp
+// - ReshapeOp with -1 dimension
+// - FlattenOp
+// - LayoutConvertOp
+// - Memory format conversions (NCHW <-> NHWC)
 import 'dart:typed_data';
 
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
@@ -175,8 +175,6 @@ void main() {
     });
 
     test('reshapes with -1 infers dimension', () {
-      final tensor = TensorBuffer.zeros([2, 3, 4]);
-
       expect(ReshapeOp([-1]).computeOutputShape([2, 3, 4]), equals([24]));
       expect(ReshapeOp([2, -1]).computeOutputShape([2, 3, 4]), equals([2, 12]));
       expect(ReshapeOp([-1, 4]).computeOutputShape([2, 3, 4]), equals([6, 4]));

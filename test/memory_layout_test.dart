@@ -1,14 +1,14 @@
-/// Memory Layout Tests
-///
-/// Tests based on PyTorch test_view_ops.py patterns for memory layout operations.
-///
-/// Test coverage:
-/// - MemoryFormat enum and extension methods
-/// - Stride calculations for various ranks and formats
-/// - NCHW ↔ NHWC format conversions
-/// - Storage sharing and view semantics
-/// - Contiguity checks and edge cases
-/// - Stride-based data access patterns
+// Memory Layout Tests
+//
+// Tests based on PyTorch test_view_ops.py patterns for memory layout operations.
+//
+// Test coverage:
+// - MemoryFormat enum and extension methods
+// - Stride calculations for various ranks and formats
+// - NCHW ↔ NHWC format conversions
+// - Storage sharing and view semantics
+// - Contiguity checks and edge cases
+// - Stride-based data access patterns
 import 'dart:typed_data';
 
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';

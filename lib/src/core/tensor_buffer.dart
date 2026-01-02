@@ -451,6 +451,40 @@ class TensorBuffer {
     }
   }
 
+  /// Returns all elements as a [List<double>].
+  ///
+  /// This method iterates over all elements in logical order and returns them
+  /// as a new list. For large tensors, consider using [data] for direct access
+  /// to the underlying typed data instead.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([1, 2, 3, 4]),
+  ///   [2, 2],
+  /// );
+  /// print(tensor.toList()); // [1.0, 2.0, 3.0, 4.0]
+  /// ```
+  List<double> toList() {
+    final result = <double>[];
+    final indices = List<int>.filled(rank, 0);
+
+    for (int i = 0; i < numel; i++) {
+      int offset = storageOffset;
+      for (int d = 0; d < rank; d++) {
+        offset += indices[d] * strides[d];
+      }
+      result.add(storage.getAsDouble(offset));
+
+      for (int d = rank - 1; d >= 0; d--) {
+        indices[d]++;
+        if (indices[d] < shape[d]) break;
+        indices[d] = 0;
+      }
+    }
+
+    return result;
+  }
+
   @override
   String toString() {
     return 'TensorBuffer(shape: $shape, dtype: $dtype, '

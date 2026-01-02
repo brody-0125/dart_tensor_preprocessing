@@ -1,10 +1,10 @@
-/// DType and type conversion tests based on PyTorch test_type_promotion.py patterns
-///
-/// Tests cover:
-/// - DType properties and buffer creation
-/// - Type casting operations
-/// - Overflow/underflow handling
-/// - Type inference from TypedData
+// DType and type conversion tests based on PyTorch test_type_promotion.py patterns
+//
+// Tests cover:
+// - DType properties and buffer creation
+// - Type casting operations
+// - Overflow/underflow handling
+// - Type inference from TypedData
 import 'dart:typed_data';
 
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
@@ -392,57 +392,57 @@ void main() {
 // Helper functions
 int _getTypedDataLength(TypedData data) {
   return switch (data) {
-    Float32List list => list.length,
-    Float64List list => list.length,
-    Int8List list => list.length,
-    Int16List list => list.length,
-    Int32List list => list.length,
-    Int64List list => list.length,
-    Uint8List list => list.length,
-    Uint16List list => list.length,
-    Uint32List list => list.length,
-    Uint64List list => list.length,
+    final Float32List list => list.length,
+    final Float64List list => list.length,
+    final Int8List list => list.length,
+    final Int16List list => list.length,
+    final Int32List list => list.length,
+    final Int64List list => list.length,
+    final Uint8List list => list.length,
+    final Uint16List list => list.length,
+    final Uint32List list => list.length,
+    final Uint64List list => list.length,
     _ => throw StateError('Unknown TypedData type'),
   };
 }
 
 num _getTypedDataValue(TypedData data, int index) {
   return switch (data) {
-    Float32List list => list[index],
-    Float64List list => list[index],
-    Int8List list => list[index],
-    Int16List list => list[index],
-    Int32List list => list[index],
-    Int64List list => list[index],
-    Uint8List list => list[index],
-    Uint16List list => list[index],
-    Uint32List list => list[index],
-    Uint64List list => list[index],
+    final Float32List list => list[index],
+    final Float64List list => list[index],
+    final Int8List list => list[index],
+    final Int16List list => list[index],
+    final Int32List list => list[index],
+    final Int64List list => list[index],
+    final Uint8List list => list[index],
+    final Uint16List list => list[index],
+    final Uint32List list => list[index],
+    final Uint64List list => list[index],
     _ => throw StateError('Unknown TypedData type'),
   };
 }
 
 void _setTypedDataValue(TypedData data, int index, num value) {
   switch (data) {
-    case Float32List list:
+    case final Float32List list:
       list[index] = value.toDouble();
-    case Float64List list:
+    case final Float64List list:
       list[index] = value.toDouble();
-    case Int8List list:
+    case final Int8List list:
       list[index] = value.toInt();
-    case Int16List list:
+    case final Int16List list:
       list[index] = value.toInt();
-    case Int32List list:
+    case final Int32List list:
       list[index] = value.toInt();
-    case Int64List list:
+    case final Int64List list:
       list[index] = value.toInt();
-    case Uint8List list:
+    case final Uint8List list:
       list[index] = value.toInt();
-    case Uint16List list:
+    case final Uint16List list:
       list[index] = value.toInt();
-    case Uint32List list:
+    case final Uint32List list:
       list[index] = value.toInt();
-    case Uint64List list:
+    case final Uint64List list:
       list[index] = value.toInt();
   }
 }
