@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-01-04
+
+### Added
+
+- Reduction operations for `TensorBuffer`:
+  - `sum()` - Returns the sum of all elements
+  - `mean()` - Returns the arithmetic mean of all elements
+  - `min()` - Returns the minimum value
+  - `max()` - Returns the maximum value
+- Axis-wise reduction operations:
+  - `sumAxis(int axis, {bool keepDims})` - Sum along a specific axis
+  - `meanAxis(int axis, {bool keepDims})` - Mean along a specific axis
+  - `minAxis(int axis, {bool keepDims})` - Min along a specific axis
+  - `maxAxis(int axis, {bool keepDims})` - Max along a specific axis
+- Support for negative axis indexing in axis-wise operations
+- Comprehensive test coverage for all reduction operations (49 tests)
+
 ## [0.1.3] - 2026-01-03
 
 ### Added

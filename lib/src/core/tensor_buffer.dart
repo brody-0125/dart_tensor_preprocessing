@@ -451,6 +451,306 @@ class TensorBuffer {
     }
   }
 
+  // ============================================================
+  // Reduction Operations
+  // ============================================================
+
+  /// Returns the sum of all elements in this tensor.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([1, 2, 3, 4]),
+  ///   [2, 2],
+  /// );
+  /// print(tensor.sum()); // 10.0
+  /// ```
+  double sum() {
+    double result = 0;
+    final indices = List<int>.filled(rank, 0);
+
+    for (int i = 0; i < numel; i++) {
+      int offset = storageOffset;
+      for (int d = 0; d < rank; d++) {
+        offset += indices[d] * strides[d];
+      }
+      result += storage.getAsDouble(offset);
+      _incrementIndices(indices);
+    }
+
+    return result;
+  }
+
+  /// Returns the arithmetic mean of all elements in this tensor.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([1, 2, 3, 4]),
+  ///   [2, 2],
+  /// );
+  /// print(tensor.mean()); // 2.5
+  /// ```
+  double mean() => sum() / numel;
+
+  /// Returns the minimum value among all elements in this tensor.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([3, 1, 4, 1, 5]),
+  ///   [5],
+  /// );
+  /// print(tensor.min()); // 1.0
+  /// ```
+  double min() {
+    double result = double.infinity;
+    final indices = List<int>.filled(rank, 0);
+
+    for (int i = 0; i < numel; i++) {
+      int offset = storageOffset;
+      for (int d = 0; d < rank; d++) {
+        offset += indices[d] * strides[d];
+      }
+      final value = storage.getAsDouble(offset);
+      if (value < result) result = value;
+      _incrementIndices(indices);
+    }
+
+    return result;
+  }
+
+  /// Returns the maximum value among all elements in this tensor.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([3, 1, 4, 1, 5]),
+  ///   [5],
+  /// );
+  /// print(tensor.max()); // 5.0
+  /// ```
+  double max() {
+    double result = double.negativeInfinity;
+    final indices = List<int>.filled(rank, 0);
+
+    for (int i = 0; i < numel; i++) {
+      int offset = storageOffset;
+      for (int d = 0; d < rank; d++) {
+        offset += indices[d] * strides[d];
+      }
+      final value = storage.getAsDouble(offset);
+      if (value > result) result = value;
+      _incrementIndices(indices);
+    }
+
+    return result;
+  }
+
+  /// Increments multi-dimensional indices in row-major order.
+  void _incrementIndices(List<int> indices) {
+    for (int d = rank - 1; d >= 0; d--) {
+      indices[d]++;
+      if (indices[d] < shape[d]) break;
+      indices[d] = 0;
+    }
+  }
+
+  // ============================================================
+  // Axis-wise Reduction Operations
+  // ============================================================
+
+  /// Returns a tensor with the sum of elements along the specified [axis].
+  ///
+  /// If [keepDims] is true, the reduced dimension is retained with size 1.
+  /// Otherwise, the reduced dimension is removed from the output shape.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([1, 2, 3, 4, 5, 6]),
+  ///   [2, 3],
+  /// );
+  /// // Sum along axis 0: [1+4, 2+5, 3+6] = [5, 7, 9]
+  /// final result = tensor.sumAxis(0);
+  /// print(result.shape); // [3]
+  /// print(result.toList()); // [5.0, 7.0, 9.0]
+  /// ```
+  TensorBuffer sumAxis(int axis, {bool keepDims = false}) {
+    return _reduceAxis(axis, keepDims: keepDims, reduce: _sumReduce);
+  }
+
+  /// Returns a tensor with the mean of elements along the specified [axis].
+  ///
+  /// If [keepDims] is true, the reduced dimension is retained with size 1.
+  /// Otherwise, the reduced dimension is removed from the output shape.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([1, 2, 3, 4, 5, 6]),
+  ///   [2, 3],
+  /// );
+  /// // Mean along axis 0: [(1+4)/2, (2+5)/2, (3+6)/2] = [2.5, 3.5, 4.5]
+  /// final result = tensor.meanAxis(0);
+  /// print(result.toList()); // [2.5, 3.5, 4.5]
+  /// ```
+  TensorBuffer meanAxis(int axis, {bool keepDims = false}) {
+    return _reduceAxis(axis, keepDims: keepDims, reduce: _meanReduce);
+  }
+
+  /// Returns a tensor with the minimum value along the specified [axis].
+  ///
+  /// If [keepDims] is true, the reduced dimension is retained with size 1.
+  /// Otherwise, the reduced dimension is removed from the output shape.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([3, 1, 4, 1, 5, 9]),
+  ///   [2, 3],
+  /// );
+  /// // Min along axis 1: [min(3,1,4), min(1,5,9)] = [1, 1]
+  /// final result = tensor.minAxis(1);
+  /// print(result.toList()); // [1.0, 1.0]
+  /// ```
+  TensorBuffer minAxis(int axis, {bool keepDims = false}) {
+    return _reduceAxis(axis, keepDims: keepDims, reduce: _minReduce);
+  }
+
+  /// Returns a tensor with the maximum value along the specified [axis].
+  ///
+  /// If [keepDims] is true, the reduced dimension is retained with size 1.
+  /// Otherwise, the reduced dimension is removed from the output shape.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([3, 1, 4, 1, 5, 9]),
+  ///   [2, 3],
+  /// );
+  /// // Max along axis 1: [max(3,1,4), max(1,5,9)] = [4, 9]
+  /// final result = tensor.maxAxis(1);
+  /// print(result.toList()); // [4.0, 9.0]
+  /// ```
+  TensorBuffer maxAxis(int axis, {bool keepDims = false}) {
+    return _reduceAxis(axis, keepDims: keepDims, reduce: _maxReduce);
+  }
+
+  /// Generic axis reduction implementation.
+  TensorBuffer _reduceAxis(
+    int axis, {
+    required bool keepDims,
+    required double Function(List<double>) reduce,
+  }) {
+    // Normalize negative axis
+    final normalizedAxis = axis < 0 ? rank + axis : axis;
+
+    if (normalizedAxis < 0 || normalizedAxis >= rank) {
+      throw RangeError.range(axis, -rank, rank - 1, 'axis');
+    }
+
+    // Compute output shape
+    final outputShape = <int>[];
+    for (int d = 0; d < rank; d++) {
+      if (d == normalizedAxis) {
+        if (keepDims) outputShape.add(1);
+      } else {
+        outputShape.add(shape[d]);
+      }
+    }
+
+    // Handle scalar result (1D tensor reduced without keepDims)
+    if (outputShape.isEmpty) {
+      final values = <double>[];
+      final indices = List<int>.filled(rank, 0);
+      for (int i = 0; i < numel; i++) {
+        int offset = storageOffset;
+        for (int d = 0; d < rank; d++) {
+          offset += indices[d] * strides[d];
+        }
+        values.add(storage.getAsDouble(offset));
+        _incrementIndices(indices);
+      }
+      final resultValue = reduce(values);
+      return TensorBuffer.fromFloat32List(
+        Float32List.fromList([resultValue]),
+        [1],
+      );
+    }
+
+    // Create output buffer
+    final outputNumel = outputShape.fold(1, (a, b) => a * b);
+    final outputData = Float32List(outputNumel);
+
+    // Compute reductions
+    final axisSize = shape[normalizedAxis];
+    final outputIndices = List<int>.filled(outputShape.length, 0);
+
+    for (int outIdx = 0; outIdx < outputNumel; outIdx++) {
+      // Collect values along the reduction axis
+      final values = <double>[];
+
+      for (int axisIdx = 0; axisIdx < axisSize; axisIdx++) {
+        // Build input indices from output indices
+        final inputIndices = <int>[];
+        int outDim = 0;
+        for (int d = 0; d < rank; d++) {
+          if (d == normalizedAxis) {
+            inputIndices.add(axisIdx);
+            if (keepDims) outDim++; // Skip the size-1 dimension in output
+          } else {
+            inputIndices.add(outputIndices[outDim]);
+            outDim++;
+          }
+        }
+
+        // Compute offset and get value
+        int offset = storageOffset;
+        for (int d = 0; d < rank; d++) {
+          offset += inputIndices[d] * strides[d];
+        }
+        values.add(storage.getAsDouble(offset));
+      }
+
+      // Apply reduction and store result
+      outputData[outIdx] = reduce(values);
+
+      // Increment output indices
+      for (int d = outputShape.length - 1; d >= 0; d--) {
+        outputIndices[d]++;
+        if (outputIndices[d] < outputShape[d]) break;
+        outputIndices[d] = 0;
+      }
+    }
+
+    return TensorBuffer.fromFloat32List(outputData, outputShape);
+  }
+
+  static double _sumReduce(List<double> values) {
+    double result = 0;
+    for (final v in values) {
+      result += v;
+    }
+    return result;
+  }
+
+  static double _meanReduce(List<double> values) {
+    return _sumReduce(values) / values.length;
+  }
+
+  static double _minReduce(List<double> values) {
+    double result = double.infinity;
+    for (final v in values) {
+      if (v < result) result = v;
+    }
+    return result;
+  }
+
+  static double _maxReduce(List<double> values) {
+    double result = double.negativeInfinity;
+    for (final v in values) {
+      if (v > result) result = v;
+    }
+    return result;
+  }
+
+  // ============================================================
+  // Data Extraction
+  // ============================================================
+
   /// Returns all elements as a [List<double>].
   ///
   /// This method iterates over all elements in logical order and returns them
@@ -474,12 +774,7 @@ class TensorBuffer {
         offset += indices[d] * strides[d];
       }
       result.add(storage.getAsDouble(offset));
-
-      for (int d = rank - 1; d >= 0; d--) {
-        indices[d]++;
-        if (indices[d] < shape[d]) break;
-        indices[d] = 0;
-      }
+      _incrementIndices(indices);
     }
 
     return result;
