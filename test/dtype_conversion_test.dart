@@ -121,7 +121,7 @@ void main() {
     test('fromTypedData throws on ByteData', () {
       expect(
         () => DType.fromTypedData(ByteData(10)),
-        throwsArgumentError,
+        throwsA(isA<InvalidParameterException>()),
       );
     });
   });
@@ -259,7 +259,7 @@ void main() {
 
       expect(
         () => TensorStorage(float32Data, DType.float64),
-        throwsArgumentError,
+        throwsA(isA<DTypeMismatchException>()),
       );
     });
 
