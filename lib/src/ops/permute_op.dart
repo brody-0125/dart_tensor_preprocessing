@@ -147,8 +147,12 @@ class UnsqueezeOp extends TransformOp {
   List<int> computeOutputShape(List<int> inputShape) {
     final normalizedDim = dim < 0 ? inputShape.length + dim + 1 : dim;
     if (normalizedDim < 0 || normalizedDim > inputShape.length) {
-      throw RangeError.range(
-          dim, -inputShape.length - 1, inputShape.length, 'dim');
+      throw IndexOutOfBoundsException(
+        index: dim,
+        min: -inputShape.length - 1,
+        max: inputShape.length,
+        dimension: 'dim',
+      );
     }
     return [
       ...inputShape.sublist(0, normalizedDim),
@@ -185,7 +189,12 @@ class SqueezeOp extends TransformOp {
     final d = dim;
     if (d != null) {
       if (d < 0 || d >= inputShape.length) {
-        throw RangeError.range(d, 0, inputShape.length - 1, 'dim');
+        throw IndexOutOfBoundsException(
+          index: d,
+          min: 0,
+          max: inputShape.length - 1,
+          dimension: 'dim',
+        );
       }
       if (inputShape[d] != 1) {
         return inputShape;
@@ -298,10 +307,20 @@ class FlattenOp extends TransformOp {
     final normalizedEnd = endDim < 0 ? rank + endDim : endDim;
 
     if (startDim < 0 || startDim >= rank) {
-      throw RangeError.range(startDim, 0, rank - 1, 'startDim');
+      throw IndexOutOfBoundsException(
+        index: startDim,
+        min: 0,
+        max: rank - 1,
+        dimension: 'startDim',
+      );
     }
     if (normalizedEnd < startDim || normalizedEnd >= rank) {
-      throw RangeError.range(endDim, startDim, rank - 1, 'endDim');
+      throw IndexOutOfBoundsException(
+        index: endDim,
+        min: startDim,
+        max: rank - 1,
+        dimension: 'endDim',
+      );
     }
 
     int flattenedSize = 1;
