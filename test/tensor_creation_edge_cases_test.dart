@@ -90,7 +90,7 @@ void main() {
 
         expect(
           () => TensorBuffer.fromFloat32List(data, [2, 4]),
-          throwsArgumentError,
+          throwsA(isA<ShapeMismatchException>()),
         );
       });
     });
@@ -239,21 +239,21 @@ void main() {
     test('empty shape throws', () {
       expect(
         () => TensorBuffer.zeros([]),
-        throwsArgumentError,
+        throwsA(isA<InvalidParameterException>()),
       );
     });
 
     test('zero dimension throws', () {
       expect(
         () => TensorBuffer.zeros([2, 0, 3]),
-        throwsArgumentError,
+        throwsA(isA<InvalidParameterException>()),
       );
     });
 
     test('negative dimension throws', () {
       expect(
         () => TensorBuffer.zeros([2, -1, 3]),
-        throwsArgumentError,
+        throwsA(isA<InvalidParameterException>()),
       );
     });
 
@@ -262,7 +262,7 @@ void main() {
 
       expect(
         () => TensorBuffer.fromFloat32List(data, [2, 6]),
-        throwsArgumentError,
+        throwsA(isA<ShapeMismatchException>()),
       );
     });
   });
@@ -278,23 +278,44 @@ void main() {
       expect(() => tensor[[2, 3, 4]], returnsNormally);
 
       // Out of bounds
-      expect(() => tensor[[3, 0, 0]], throwsRangeError);
-      expect(() => tensor[[0, 4, 0]], throwsRangeError);
-      expect(() => tensor[[0, 0, 5]], throwsRangeError);
+      expect(
+        () => tensor[[3, 0, 0]],
+        throwsA(isA<IndexOutOfBoundsException>()),
+      );
+      expect(
+        () => tensor[[0, 4, 0]],
+        throwsA(isA<IndexOutOfBoundsException>()),
+      );
+      expect(
+        () => tensor[[0, 0, 5]],
+        throwsA(isA<IndexOutOfBoundsException>()),
+      );
     });
 
     test('negative indices throw', () {
       final tensor = TensorBuffer.zeros([3, 4]);
 
-      expect(() => tensor[[-1, 0]], throwsRangeError);
-      expect(() => tensor[[0, -1]], throwsRangeError);
+      expect(
+        () => tensor[[-1, 0]],
+        throwsA(isA<IndexOutOfBoundsException>()),
+      );
+      expect(
+        () => tensor[[0, -1]],
+        throwsA(isA<IndexOutOfBoundsException>()),
+      );
     });
 
     test('wrong number of indices throws', () {
       final tensor = TensorBuffer.zeros([3, 4, 5]);
 
-      expect(() => tensor[[0, 0]], throwsArgumentError);
-      expect(() => tensor[[0, 0, 0, 0]], throwsArgumentError);
+      expect(
+        () => tensor[[0, 0]],
+        throwsA(isA<ShapeMismatchException>()),
+      );
+      expect(
+        () => tensor[[0, 0, 0, 0]],
+        throwsA(isA<ShapeMismatchException>()),
+      );
     });
   });
 
@@ -336,7 +357,10 @@ void main() {
       expect(() => tensor.data, returnsNormally);
 
       final transposed = tensor.transpose([2, 0, 1]);
-      expect(() => transposed.data, throwsStateError);
+      expect(
+        () => transposed.data,
+        throwsA(isA<NonContiguousException>()),
+      );
     });
 
     test('dataAsFloat32List requires float32 dtype', () {
@@ -344,7 +368,10 @@ void main() {
       expect(() => f32.dataAsFloat32List, returnsNormally);
 
       final f64 = TensorBuffer.zeros([2, 3], dtype: DType.float64);
-      expect(() => f64.dataAsFloat32List, throwsStateError);
+      expect(
+        () => f64.dataAsFloat32List,
+        throwsA(isA<DTypeMismatchException>()),
+      );
     });
   });
 

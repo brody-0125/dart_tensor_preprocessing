@@ -431,13 +431,19 @@ void main() {
     });
 
     group('axis reduction edge cases', () {
-      test('invalid axis throws RangeError', () {
+      test('invalid axis throws IndexOutOfBoundsException', () {
         final tensor = TensorBuffer.fromFloat32List(
           Float32List.fromList([1, 2, 3, 4]),
           [2, 2],
         );
-        expect(() => tensor.sumAxis(2), throwsRangeError);
-        expect(() => tensor.sumAxis(-3), throwsRangeError);
+        expect(
+          () => tensor.sumAxis(2),
+          throwsA(isA<IndexOutOfBoundsException>()),
+        );
+        expect(
+          () => tensor.sumAxis(-3),
+          throwsA(isA<IndexOutOfBoundsException>()),
+        );
       });
 
       test('4D tensor reduction', () {

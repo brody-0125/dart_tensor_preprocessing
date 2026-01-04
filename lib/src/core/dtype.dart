@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import '../exceptions/tensor_exceptions.dart';
+
 /// Represents the data type of tensor elements.
 ///
 /// Each [DType] maps directly to an ONNX TensorProto.DataType, making it
@@ -81,8 +83,11 @@ enum DType {
       Uint16List() => DType.uint16,
       Uint32List() => DType.uint32,
       Uint64List() => DType.uint64,
-      _ =>
-        throw ArgumentError('Unsupported TypedData type: ${data.runtimeType}'),
+      _ => throw InvalidParameterException(
+          'data',
+          data.runtimeType,
+          'Unsupported TypedData type',
+        ),
     };
   }
 
