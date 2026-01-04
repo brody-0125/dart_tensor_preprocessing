@@ -68,10 +68,10 @@ void main() {
       test('throws on invalid indices', () {
         final tensor = TensorBuffer.zeros([2, 3]);
 
-        expect(() => tensor[[0]], throwsArgumentError);
-        expect(() => tensor[[0, 0, 0]], throwsArgumentError);
-        expect(() => tensor[[2, 0]], throwsRangeError);
-        expect(() => tensor[[0, 3]], throwsRangeError);
+        expect(() => tensor[[0]], throwsA(isA<ShapeMismatchException>()));
+        expect(() => tensor[[0, 0, 0]], throwsA(isA<ShapeMismatchException>()));
+        expect(() => tensor[[2, 0]], throwsA(isA<IndexOutOfBoundsException>()));
+        expect(() => tensor[[0, 3]], throwsA(isA<IndexOutOfBoundsException>()));
       });
     });
 
@@ -117,13 +117,19 @@ void main() {
         final tensor = TensorBuffer.zeros([2, 3, 4]);
         final transposed = tensor.transpose([2, 0, 1]);
 
-        expect(() => transposed.reshape([24]), throwsStateError);
+        expect(
+          () => transposed.reshape([24]),
+          throwsA(isA<NonContiguousException>()),
+        );
       });
 
       test('throws on size mismatch', () {
         final tensor = TensorBuffer.zeros([2, 3, 4]);
 
-        expect(() => tensor.reshape([2, 3, 5]), throwsArgumentError);
+        expect(
+          () => tensor.reshape([2, 3, 5]),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
     });
 

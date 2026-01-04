@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import '../exceptions/tensor_exceptions.dart';
 import 'dtype.dart';
 
 /// An immutable wrapper around typed data that provides the physical storage
@@ -16,13 +17,11 @@ class TensorStorage {
 
   /// Creates a new storage from [_data] with the specified [dtype].
   ///
-  /// Throws [ArgumentError] if the TypedData type doesn't match the dtype.
+  /// Throws [DTypeMismatchException] if the TypedData type doesn't match the dtype.
   TensorStorage(this._data, this.dtype) {
     final inferredDtype = DType.fromTypedData(_data);
     if (inferredDtype != dtype) {
-      throw ArgumentError(
-        'DType mismatch: expected $dtype, but data is $inferredDtype',
-      );
+      throw DTypeMismatchException(expected: dtype, actual: inferredDtype);
     }
   }
 
