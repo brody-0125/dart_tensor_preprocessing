@@ -1,3 +1,5 @@
+import '../core/dtype.dart';
+
 /// Base class for all tensor-related exceptions.
 sealed class TensorException implements Exception {
   /// The error message.
@@ -65,4 +67,46 @@ class InvalidParameterException extends TensorException {
               ? 'Invalid parameter "$parameterName": $value. $reason'
               : 'Invalid parameter "$parameterName": $value',
         );
+}
+
+/// Thrown when an index or axis is out of valid range.
+class IndexOutOfBoundsException extends TensorException {
+  /// The invalid index value.
+  final int index;
+
+  /// The minimum valid value (inclusive).
+  final int min;
+
+  /// The maximum valid value (inclusive).
+  final int max;
+
+  /// The dimension name (e.g., 'axis', 'dim').
+  final String? dimension;
+
+  /// Creates an index out of bounds exception.
+  IndexOutOfBoundsException({
+    required this.index,
+    required this.min,
+    required this.max,
+    this.dimension,
+  }) : super(
+          dimension != null
+              ? '$dimension $index is out of range [$min, $max]'
+              : 'Index $index is out of range [$min, $max]',
+        );
+}
+
+/// Thrown when tensor data types do not match.
+class DTypeMismatchException extends TensorException {
+  /// The expected data type.
+  final DType expected;
+
+  /// The actual data type.
+  final DType actual;
+
+  /// Creates a dtype mismatch exception.
+  DTypeMismatchException({
+    required this.expected,
+    required this.actual,
+  }) : super('Expected dtype ${expected.name}, got ${actual.name}');
 }

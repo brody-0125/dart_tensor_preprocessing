@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import '../exceptions/tensor_exceptions.dart';
 import 'dtype.dart';
 import 'memory_format.dart';
 import 'tensor_storage.dart';
@@ -100,22 +101,26 @@ class TensorBuffer {
   ///
   /// This is a zero-copy operation that only changes the strides.
   ///
-  /// Throws [ArgumentError] if [axes] length does not match [rank] or contains
-  /// invalid or duplicate axis indices.
+  /// Throws [ShapeMismatchException] if [axes] length does not match [rank].
+  /// Throws [IndexOutOfBoundsException] if axis is out of range.
+  /// Throws [InvalidParameterException] if axes contain duplicates.
   TensorBuffer transpose(List<int> axes) {
     if (axes.length != rank) {
-      throw ArgumentError(
-        'axes length (${axes.length}) must match rank ($rank)',
-      );
+      throw ShapeMismatchException.rank(rank, axes.length);
     }
 
     final seen = <int>{};
     for (final axis in axes) {
       if (axis < 0 || axis >= rank) {
-        throw RangeError.range(axis, 0, rank - 1, 'axis');
+        throw IndexOutOfBoundsException(
+          index: axis,
+          min: 0,
+          max: rank - 1,
+          dimension: 'axis',
+        );
       }
       if (!seen.add(axis)) {
-        throw ArgumentError('Duplicate axis: $axis');
+        throw InvalidParameterException('axes', axes, 'Duplicate axis: $axis');
       }
     }
 
@@ -133,19 +138,19 @@ class TensorBuffer {
   /// The total number of elements must remain the same. This tensor must be
   /// contiguous; call [contiguous] first if needed.
   ///
-  /// Throws [StateError] if this tensor is not contiguous.
+  /// Throws [ShapeMismatchException] if numel doesn't match.
+  /// Throws [NonContiguousException] if this tensor is not contiguous.
   TensorBuffer reshape(List<int> newShape) {
     final newNumel = newShape.fold(1, (a, b) => a * b);
     if (newNumel != numel) {
-      throw ArgumentError(
-        'Cannot reshape tensor of size $numel to $newShape (size $newNumel)',
+      throw ShapeMismatchException(
+        actual: newShape,
+        message: 'Cannot reshape tensor of size $numel to $newShape (size $newNumel)',
       );
     }
 
     if (!isContiguous) {
-      throw StateError(
-        'Cannot reshape non-contiguous tensor. Call contiguous() first.',
-      );
+      throw const NonContiguousException('reshape');
     }
 
     return TensorBuffer._view(
@@ -184,9 +189,16 @@ class TensorBuffer {
   }
 
   /// Returns a view with a size-1 dimension inserted at position [dim].
+  ///
+  /// Throws [IndexOutOfBoundsException] if [dim] is out of range.
   TensorBuffer unsqueeze(int dim) {
     if (dim < 0 || dim > rank) {
-      throw RangeError.range(dim, 0, rank, 'dim');
+      throw IndexOutOfBoundsException(
+        index: dim,
+        min: 0,
+        max: rank,
+        dimension: 'dim',
+      );
     }
 
     final newShape = List<int>.from(shape);
@@ -279,17 +291,17 @@ class TensorBuffer {
 
   /// The underlying typed data for direct access.
   ///
-  /// Throws [StateError] if this tensor is not contiguous or has a non-zero
-  /// storage offset.
+  /// Throws [NonContiguousException] if this tensor is not contiguous.
+  /// Throws [InvalidParameterException] if tensor has non-zero storage offset.
   TypedData get data {
     if (!isContiguous) {
-      throw StateError(
-        'Tensor must be contiguous for direct data access. Call contiguous() first.',
-      );
+      throw const NonContiguousException('data access');
     }
     if (storageOffset != 0) {
-      throw StateError(
-        'Tensor with non-zero offset cannot provide direct data access.',
+      throw InvalidParameterException(
+        'storageOffset',
+        storageOffset,
+        'Tensor with non-zero offset cannot provide direct data access',
       );
     }
     return storage.data;
@@ -297,26 +309,32 @@ class TensorBuffer {
 
   /// The underlying data as a [Float32List].
   ///
-  /// Throws [StateError] if [dtype] is not [DType.float32].
+  /// Throws [DTypeMismatchException] if [dtype] is not [DType.float32].
   Float32List get dataAsFloat32List {
     if (dtype != DType.float32) {
-      throw StateError('Tensor dtype is $dtype, not float32');
+      throw DTypeMismatchException(expected: DType.float32, actual: dtype);
     }
     return data as Float32List;
   }
 
   /// Returns the element at the given multi-dimensional [indices].
+  ///
+  /// Throws [ShapeMismatchException] if indices length doesn't match rank.
+  /// Throws [IndexOutOfBoundsException] if any index is out of bounds.
   double operator [](List<int> indices) {
     if (indices.length != rank) {
-      throw ArgumentError(
-        'indices length (${indices.length}) must match rank ($rank)',
-      );
+      throw ShapeMismatchException.rank(rank, indices.length);
     }
 
     int offset = storageOffset;
     for (int d = 0; d < rank; d++) {
       if (indices[d] < 0 || indices[d] >= shape[d]) {
-        throw RangeError.range(indices[d], 0, shape[d] - 1, 'indices[$d]');
+        throw IndexOutOfBoundsException(
+          index: indices[d],
+          min: 0,
+          max: shape[d] - 1,
+          dimension: 'indices[$d]',
+        );
       }
       offset += indices[d] * strides[d];
     }
@@ -330,6 +348,7 @@ class TensorBuffer {
     DType dtype = DType.float32,
     MemoryFormat memoryFormat = MemoryFormat.contiguous,
   }) {
+    _validateShapeStatic(shape);
     final numel = shape.fold(1, (a, b) => a * b);
     final data = dtype.createBuffer(numel);
     return TensorBuffer(
@@ -344,6 +363,7 @@ class TensorBuffer {
     List<int> shape, {
     DType dtype = DType.float32,
   }) {
+    _validateShapeStatic(shape);
     final numel = shape.fold(1, (a, b) => a * b);
     final data = dtype.createBuffer(numel);
 
@@ -379,11 +399,14 @@ class TensorBuffer {
   }
 
   /// Creates a tensor from an existing [Float32List] with the given [shape].
+  ///
+  /// Throws [ShapeMismatchException] if data length doesn't match shape.
   static TensorBuffer fromFloat32List(Float32List data, List<int> shape) {
     final expectedNumel = shape.fold(1, (a, b) => a * b);
     if (data.length != expectedNumel) {
-      throw ArgumentError(
-        'Data length (${data.length}) does not match shape $shape (numel: $expectedNumel)',
+      throw ShapeMismatchException(
+        actual: shape,
+        message: 'Data length (${data.length}) does not match shape $shape (numel: $expectedNumel)',
       );
     }
     return TensorBuffer(
@@ -393,11 +416,14 @@ class TensorBuffer {
   }
 
   /// Creates a tensor from an existing [Uint8List] with the given [shape].
+  ///
+  /// Throws [ShapeMismatchException] if data length doesn't match shape.
   static TensorBuffer fromUint8List(Uint8List data, List<int> shape) {
     final expectedNumel = shape.fold(1, (a, b) => a * b);
     if (data.length != expectedNumel) {
-      throw ArgumentError(
-        'Data length (${data.length}) does not match shape $shape (numel: $expectedNumel)',
+      throw ShapeMismatchException(
+        actual: shape,
+        message: 'Data length (${data.length}) does not match shape $shape (numel: $expectedNumel)',
       );
     }
     return TensorBuffer(
@@ -440,13 +466,21 @@ class TensorBuffer {
   }
 
   void _validateShape() {
+    _validateShapeStatic(shape);
+  }
+
+  /// Static helper to validate shape before tensor creation.
+  static void _validateShapeStatic(List<int> shape) {
     if (shape.isEmpty) {
-      throw ArgumentError('Shape cannot be empty');
+      throw InvalidParameterException('shape', shape, 'Shape cannot be empty');
     }
     for (int i = 0; i < shape.length; i++) {
       if (shape[i] <= 0) {
-        throw ArgumentError(
-            'Shape dimension must be positive, got ${shape[i]} at index $i');
+        throw InvalidParameterException(
+          'shape[$i]',
+          shape[i],
+          'Shape dimension must be positive',
+        );
       }
     }
   }
@@ -639,7 +673,12 @@ class TensorBuffer {
     final normalizedAxis = axis < 0 ? rank + axis : axis;
 
     if (normalizedAxis < 0 || normalizedAxis >= rank) {
-      throw RangeError.range(axis, -rank, rank - 1, 'axis');
+      throw IndexOutOfBoundsException(
+        index: axis,
+        min: -rank,
+        max: rank - 1,
+        dimension: 'axis',
+      );
     }
 
     // Compute output shape

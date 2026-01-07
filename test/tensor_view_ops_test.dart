@@ -69,21 +69,36 @@ void main() {
       test('transpose throws on invalid axes length', () {
         final tensor = TensorBuffer.zeros([2, 3, 4]);
 
-        expect(() => tensor.transpose([0, 1]), throwsArgumentError);
-        expect(() => tensor.transpose([0, 1, 2, 3]), throwsArgumentError);
+        expect(
+          () => tensor.transpose([0, 1]),
+          throwsA(isA<ShapeMismatchException>()),
+        );
+        expect(
+          () => tensor.transpose([0, 1, 2, 3]),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
 
       test('transpose throws on out of range axis', () {
         final tensor = TensorBuffer.zeros([2, 3, 4]);
 
-        expect(() => tensor.transpose([0, 1, 5]), throwsRangeError);
-        expect(() => tensor.transpose([-1, 0, 1]), throwsRangeError);
+        expect(
+          () => tensor.transpose([0, 1, 5]),
+          throwsA(isA<IndexOutOfBoundsException>()),
+        );
+        expect(
+          () => tensor.transpose([-1, 0, 1]),
+          throwsA(isA<IndexOutOfBoundsException>()),
+        );
       });
 
       test('transpose throws on duplicate axis', () {
         final tensor = TensorBuffer.zeros([2, 3, 4]);
 
-        expect(() => tensor.transpose([0, 1, 1]), throwsArgumentError);
+        expect(
+          () => tensor.transpose([0, 1, 1]),
+          throwsA(isA<InvalidParameterException>()),
+        );
       });
     });
 
@@ -116,19 +131,28 @@ void main() {
         expect(reshaped.rank, equals(3));
       });
 
-      test('reshape non-contiguous throws StateError', () {
+      test('reshape non-contiguous throws NonContiguousException', () {
         final tensor = TensorBuffer.zeros([2, 3, 4]);
         final transposed = tensor.transpose([2, 0, 1]);
 
         expect(transposed.isContiguous, isFalse);
-        expect(() => transposed.reshape([24]), throwsStateError);
+        expect(
+          () => transposed.reshape([24]),
+          throwsA(isA<NonContiguousException>()),
+        );
       });
 
-      test('reshape with size mismatch throws', () {
+      test('reshape with size mismatch throws ShapeMismatchException', () {
         final tensor = TensorBuffer.zeros([2, 3, 4]);
 
-        expect(() => tensor.reshape([2, 3, 5]), throwsArgumentError);
-        expect(() => tensor.reshape([25]), throwsArgumentError);
+        expect(
+          () => tensor.reshape([2, 3, 5]),
+          throwsA(isA<ShapeMismatchException>()),
+        );
+        expect(
+          () => tensor.reshape([25]),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
 
       test('reshape single element tensor', () {
@@ -215,8 +239,14 @@ void main() {
       test('unsqueeze throws on out of range', () {
         final tensor = TensorBuffer.zeros([2, 3]);
 
-        expect(() => tensor.unsqueeze(-1), throwsRangeError);
-        expect(() => tensor.unsqueeze(4), throwsRangeError);
+        expect(
+          () => tensor.unsqueeze(-1),
+          throwsA(isA<IndexOutOfBoundsException>()),
+        );
+        expect(
+          () => tensor.unsqueeze(4),
+          throwsA(isA<IndexOutOfBoundsException>()),
+        );
       });
     });
 
