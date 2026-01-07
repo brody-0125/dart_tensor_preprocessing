@@ -18,7 +18,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.3.0
+  dart_tensor_preprocessing: ^0.3.1
 ```
 
 ## Quick Start
@@ -152,9 +152,49 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `tensor.reshape()` | `tensor.reshape()` |
 | `tensor.squeeze()` | `tensor.squeeze()` |
 | `tensor.unsqueeze()` | `tensor.unsqueeze()` |
+| `tensor.sum()` / `sumAxis()` | `tensor.sum()` |
+| `tensor.mean()` / `meanAxis()` | `tensor.mean()` |
+| `tensor.min()` / `max()` | `tensor.min()` / `max()` |
 | `NormalizeOp.imagenet()` | `transforms.Normalize(mean, std)` |
 | `ResizeOp(mode: bilinear)` | `F.interpolate(mode='bilinear')` |
 | `ToTensorOp()` | `transforms.ToTensor()` |
+| `ClipOp(min, max)` | `torch.clamp(min, max)` |
+| `PadOp(mode: reflect)` | `F.pad(mode='reflect')` |
+| `SliceOp([(start, end, step)])` | `tensor[start:end:step]` |
+| `concat(tensors, axis)` | `torch.cat(tensors, dim)` |
+| `RandomCropOp` | `transforms.RandomCrop()` |
+| `GaussianBlurOp` | `transforms.GaussianBlur()` |
+
+## Performance Benchmarks
+
+Run benchmarks with `dart run benchmark/run_all.dart`.
+
+### Zero-Copy Operations (O(1))
+
+| Operation | Time | Ops/sec |
+|-----------|------|---------|
+| `transpose()` | ~1µs | 700K+ |
+| `reshape()` | ~1µs | 1.6M+ |
+| `squeeze()` | <1µs | 3.2M+ |
+| `unsqueeze()` | ~1µs | 780K+ |
+
+### Pipeline Performance
+
+| Pipeline | Input Shape | Time |
+|----------|-------------|------|
+| Simple (Normalize + Unsqueeze) | [3, 224, 224] | ~3.4ms |
+| ImageNet Classification | [3, 224, 224] | ~3.0ms |
+| Object Detection | [3, 640, 640] | ~25ms |
+
+### Sync vs Async
+
+| Execution | 224x224 | 640x640 |
+|-----------|---------|---------|
+| `run()` (sync) | ~3.5ms | ~29ms |
+| `runAsync()` (isolate) | ~11ms | ~93ms |
+| Isolate overhead | ~7ms | ~64ms |
+
+> **Note**: Use `runAsync()` for large tensors or when UI responsiveness is critical.
 
 ## Requirements
 
