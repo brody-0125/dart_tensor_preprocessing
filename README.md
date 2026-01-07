@@ -70,6 +70,9 @@ final result = await pipeline.runAsync(input);
 - `ResizeOp` - Resize to fixed dimensions (nearest, bilinear, bicubic)
 - `ResizeShortestOp` - Resize preserving aspect ratio
 - `CenterCropOp` - Center crop to fixed dimensions
+- `ClipOp` - Element-wise value clamping (presets: unit, symmetric, uint8)
+- `PadOp` - Padding with multiple modes (constant, reflect, replicate, circular)
+- `SliceOp` - Python-like tensor slicing with negative index support
 
 ### Normalization
 - `NormalizeOp` - Channel-wise normalization (presets: ImageNet, CIFAR-10, symmetric)
@@ -79,6 +82,13 @@ final result = await pipeline.runAsync(input);
 - `PermuteOp` - Axis reordering (e.g., HWC to CHW)
 - `ToTensorOp` - HWC uint8 to CHW float32 with optional scaling
 - `ToImageOp` - CHW float32 to HWC uint8
+
+### Data Augmentation
+- `RandomCropOp` - Random cropping with deterministic seed support
+- `GaussianBlurOp` - Gaussian blur using separable convolution
+
+### Utility
+- `concat()` - Concatenates tensors along specified axis
 
 ### Shape
 - `UnsqueezeOp` - Add dimension
