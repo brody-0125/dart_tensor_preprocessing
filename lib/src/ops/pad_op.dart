@@ -1,5 +1,6 @@
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
+import '../utils/index_utils.dart';
 import 'transform_op.dart';
 
 /// Padding modes for [PadOp].
@@ -234,8 +235,8 @@ class PadOp extends TransformOp with RequiresContiguous {
     for (int ch = 0; ch < c; ch++) {
       for (int outRow = 0; outRow < outH; outRow++) {
         for (int outCol = 0; outCol < outW; outCol++) {
-          final inRow = _reflectIndex(outRow - top, h);
-          final inCol = _reflectIndex(outCol - left, w);
+          final inRow = reflectIndex(outRow - top, h);
+          final inCol = reflectIndex(outCol - left, w);
 
           if (inRow >= 0 && inRow < h && inCol >= 0 && inCol < w) {
             final inputIdx = ch * h * w + inRow * w + inCol;
@@ -257,8 +258,8 @@ class PadOp extends TransformOp with RequiresContiguous {
       for (int ch = 0; ch < c; ch++) {
         for (int outRow = 0; outRow < outH; outRow++) {
           for (int outCol = 0; outCol < outW; outCol++) {
-            final inRow = _reflectIndex(outRow - top, h);
-            final inCol = _reflectIndex(outCol - left, w);
+            final inRow = reflectIndex(outRow - top, h);
+            final inCol = reflectIndex(outCol - left, w);
 
             if (inRow >= 0 && inRow < h && inCol >= 0 && inCol < w) {
               final inputIdx =
@@ -283,8 +284,8 @@ class PadOp extends TransformOp with RequiresContiguous {
     for (int ch = 0; ch < c; ch++) {
       for (int outRow = 0; outRow < outH; outRow++) {
         for (int outCol = 0; outCol < outW; outCol++) {
-          final inRow = _replicateIndex(outRow - top, h);
-          final inCol = _replicateIndex(outCol - left, w);
+          final inRow = replicateIndex(outRow - top, h);
+          final inCol = replicateIndex(outCol - left, w);
 
           final inputIdx = ch * h * w + inRow * w + inCol;
           final outputIdx = ch * outH * outW + outRow * outW + outCol;
@@ -304,8 +305,8 @@ class PadOp extends TransformOp with RequiresContiguous {
       for (int ch = 0; ch < c; ch++) {
         for (int outRow = 0; outRow < outH; outRow++) {
           for (int outCol = 0; outCol < outW; outCol++) {
-            final inRow = _replicateIndex(outRow - top, h);
-            final inCol = _replicateIndex(outCol - left, w);
+            final inRow = replicateIndex(outRow - top, h);
+            final inCol = replicateIndex(outCol - left, w);
 
             final inputIdx = batch * c * h * w + ch * h * w + inRow * w + inCol;
             final outputIdx = batch * c * outH * outW +
@@ -327,8 +328,8 @@ class PadOp extends TransformOp with RequiresContiguous {
     for (int ch = 0; ch < c; ch++) {
       for (int outRow = 0; outRow < outH; outRow++) {
         for (int outCol = 0; outCol < outW; outCol++) {
-          final inRow = _circularIndex(outRow - top, h);
-          final inCol = _circularIndex(outCol - left, w);
+          final inRow = circularIndex(outRow - top, h);
+          final inCol = circularIndex(outCol - left, w);
 
           final inputIdx = ch * h * w + inRow * w + inCol;
           final outputIdx = ch * outH * outW + outRow * outW + outCol;
@@ -348,8 +349,8 @@ class PadOp extends TransformOp with RequiresContiguous {
       for (int ch = 0; ch < c; ch++) {
         for (int outRow = 0; outRow < outH; outRow++) {
           for (int outCol = 0; outCol < outW; outCol++) {
-            final inRow = _circularIndex(outRow - top, h);
-            final inCol = _circularIndex(outCol - left, w);
+            final inRow = circularIndex(outRow - top, h);
+            final inCol = circularIndex(outCol - left, w);
 
             final inputIdx = batch * c * h * w + ch * h * w + inRow * w + inCol;
             final outputIdx = batch * c * outH * outW +
@@ -364,22 +365,6 @@ class PadOp extends TransformOp with RequiresContiguous {
     }
   }
 
-  int _reflectIndex(int idx, int size) {
-    if (idx < 0) {
-      return -idx - 1;
-    } else if (idx >= size) {
-      return 2 * size - idx - 1;
-    }
-    return idx;
-  }
-
-  int _replicateIndex(int idx, int size) {
-    return idx.clamp(0, size - 1);
-  }
-
-  int _circularIndex(int idx, int size) {
-    return ((idx % size) + size) % size;
-  }
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {

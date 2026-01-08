@@ -107,7 +107,12 @@ class TensorStorage {
 
   void _checkBounds(int index) {
     if (index < 0 || index >= length) {
-      throw RangeError.index(index, this, 'index', null, length);
+      throw IndexOutOfBoundsException(
+        index: index,
+        min: 0,
+        max: length - 1,
+        dimension: 'index',
+      );
     }
   }
 

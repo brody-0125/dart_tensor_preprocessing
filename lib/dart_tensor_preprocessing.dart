@@ -46,5 +46,8 @@ export 'src/ops/permute_op.dart';
 export 'src/ops/type_cast_op.dart';
 export 'src/ops/augmentation_op.dart';
 export 'src/ops/concat_op.dart';
+export 'src/ops/arithmetic_op.dart';
+export 'src/ops/math_op.dart';
+export 'src/ops/activation_op.dart';
 export 'src/pipeline/tensor_pipeline.dart';
 export 'src/pipeline/presets.dart';

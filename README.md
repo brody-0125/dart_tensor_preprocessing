@@ -18,7 +18,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.3.1
+  dart_tensor_preprocessing: ^0.4.0
 ```
 
 ## Quick Start
@@ -164,6 +164,20 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `concat(tensors, axis)` | `torch.cat(tensors, dim)` |
 | `RandomCropOp` | `transforms.RandomCrop()` |
 | `GaussianBlurOp` | `transforms.GaussianBlur()` |
+| `AddOp` / `SubOp` | `torch.add()` / `torch.sub()` |
+| `MulOp` / `DivOp` | `torch.mul()` / `torch.div()` |
+| `PowOp` | `torch.pow()` |
+| `AbsOp` / `NegOp` | `torch.abs()` / `torch.neg()` |
+| `SqrtOp` / `ExpOp` / `LogOp` | `torch.sqrt()` / `exp()` / `log()` |
+| `ReLUOp` / `LeakyReLUOp` | `F.relu()` / `F.leaky_relu()` |
+| `SigmoidOp` / `TanhOp` | `torch.sigmoid()` / `torch.tanh()` |
+| `SoftmaxOp` | `F.softmax()` |
+| `TensorBuffer.full()` | `torch.full()` |
+| `TensorBuffer.random()` | `torch.rand()` |
+| `TensorBuffer.randn()` | `torch.randn()` |
+| `TensorBuffer.eye()` | `torch.eye()` |
+| `TensorBuffer.linspace()` | `torch.linspace()` |
+| `TensorBuffer.arange()` | `torch.arange()` |
 
 ## Performance Benchmarks
 

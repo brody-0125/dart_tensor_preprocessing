@@ -1,0 +1,217 @@
+import 'dart:typed_data';
+import 'dart:math' as math;
+
+import 'package:test/test.dart';
+import 'package:dart_tensor_preprocessing/src/core/tensor_buffer.dart';
+import 'package:dart_tensor_preprocessing/src/ops/math_op.dart';
+
+void main() {
+  group('AbsOp', () {
+    test('computes absolute value of all elements', () {
+      final data = Float32List.fromList([-3.0, -1.0, 0.0, 1.0, 3.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [5]);
+
+      final abs = AbsOp();
+      final result = abs(tensor);
+
+      expect(result[[0]], closeTo(3.0, 1e-6));
+      expect(result[[1]], closeTo(1.0, 1e-6));
+      expect(result[[2]], closeTo(0.0, 1e-6));
+      expect(result[[3]], closeTo(1.0, 1e-6));
+      expect(result[[4]], closeTo(3.0, 1e-6));
+    });
+
+    test('handles already positive values', () {
+      final data = Float32List.fromList([1.0, 2.0, 3.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final abs = AbsOp();
+      final result = abs(tensor);
+
+      expect(result[[0]], closeTo(1.0, 1e-6));
+      expect(result[[1]], closeTo(2.0, 1e-6));
+      expect(result[[2]], closeTo(3.0, 1e-6));
+    });
+
+    test('preserves shape', () {
+      final abs = AbsOp();
+      expect(abs.computeOutputShape([2, 3, 4]), equals([2, 3, 4]));
+    });
+  });
+
+  group('NegOp', () {
+    test('negates all elements', () {
+      final data = Float32List.fromList([-2.0, -1.0, 0.0, 1.0, 2.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [5]);
+
+      final neg = NegOp();
+      final result = neg(tensor);
+
+      expect(result[[0]], closeTo(2.0, 1e-6));
+      expect(result[[1]], closeTo(1.0, 1e-6));
+      expect(result[[2]], closeTo(0.0, 1e-6));
+      expect(result[[3]], closeTo(-1.0, 1e-6));
+      expect(result[[4]], closeTo(-2.0, 1e-6));
+    });
+
+    test('double negation returns original', () {
+      final data = Float32List.fromList([1.0, -2.0, 3.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final neg = NegOp();
+      final result = neg(neg(tensor));
+
+      expect(result[[0]], closeTo(1.0, 1e-6));
+      expect(result[[1]], closeTo(-2.0, 1e-6));
+      expect(result[[2]], closeTo(3.0, 1e-6));
+    });
+  });
+
+  group('SqrtOp', () {
+    test('computes square root of all elements', () {
+      final data = Float32List.fromList([0.0, 1.0, 4.0, 9.0, 16.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [5]);
+
+      final sqrt = SqrtOp();
+      final result = sqrt(tensor);
+
+      expect(result[[0]], closeTo(0.0, 1e-6));
+      expect(result[[1]], closeTo(1.0, 1e-6));
+      expect(result[[2]], closeTo(2.0, 1e-6));
+      expect(result[[3]], closeTo(3.0, 1e-6));
+      expect(result[[4]], closeTo(4.0, 1e-6));
+    });
+
+    test('handles negative values (returns NaN)', () {
+      final data = Float32List.fromList([-1.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final sqrt = SqrtOp();
+      final result = sqrt(tensor);
+
+      expect(result[[0]].isNaN, isTrue);
+    });
+  });
+
+  group('ExpOp', () {
+    test('computes exponential of all elements', () {
+      final data = Float32List.fromList([0.0, 1.0, 2.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final exp = ExpOp();
+      final result = exp(tensor);
+
+      expect(result[[0]], closeTo(1.0, 1e-5));
+      expect(result[[1]], closeTo(math.e, 1e-5));
+      expect(result[[2]], closeTo(math.e * math.e, 1e-4));
+    });
+
+    test('handles negative exponents', () {
+      final data = Float32List.fromList([-1.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final exp = ExpOp();
+      final result = exp(tensor);
+
+      expect(result[[0]], closeTo(1.0 / math.e, 1e-6));
+    });
+  });
+
+  group('LogOp', () {
+    test('computes natural logarithm of all elements', () {
+      final data = Float32List.fromList([1.0, math.e, math.e * math.e]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final log = LogOp();
+      final result = log(tensor);
+
+      expect(result[[0]], closeTo(0.0, 1e-5));
+      expect(result[[1]], closeTo(1.0, 1e-5));
+      expect(result[[2]], closeTo(2.0, 1e-5));
+    });
+
+    test('handles zero (returns -infinity)', () {
+      final data = Float32List.fromList([0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final log = LogOp();
+      final result = log(tensor);
+
+      expect(result[[0]], equals(double.negativeInfinity));
+    });
+
+    test('handles negative values (returns NaN)', () {
+      final data = Float32List.fromList([-1.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final log = LogOp();
+      final result = log(tensor);
+
+      expect(result[[0]].isNaN, isTrue);
+    });
+  });
+
+  group('exp and log are inverses', () {
+    test('log(exp(x)) = x', () {
+      final data = Float32List.fromList([0.0, 1.0, 2.0, -1.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [4]);
+
+      final exp = ExpOp();
+      final log = LogOp();
+      final result = log(exp(tensor));
+
+      expect(result[[0]], closeTo(0.0, 1e-5));
+      expect(result[[1]], closeTo(1.0, 1e-5));
+      expect(result[[2]], closeTo(2.0, 1e-5));
+      expect(result[[3]], closeTo(-1.0, 1e-5));
+    });
+  });
+
+  group('in-place operations', () {
+    test('AbsOp applyInPlace modifies tensor', () {
+      final data = Float32List.fromList([-3.0, -1.0, 2.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final abs = AbsOp();
+      abs.applyInPlace(tensor);
+
+      expect(tensor[[0]], closeTo(3.0, 1e-6));
+      expect(tensor[[1]], closeTo(1.0, 1e-6));
+      expect(tensor[[2]], closeTo(2.0, 1e-6));
+    });
+
+    test('SqrtOp applyInPlace modifies tensor', () {
+      final data = Float32List.fromList([4.0, 9.0, 16.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final sqrt = SqrtOp();
+      sqrt.applyInPlace(tensor);
+
+      expect(tensor[[0]], closeTo(2.0, 1e-6));
+      expect(tensor[[1]], closeTo(3.0, 1e-6));
+      expect(tensor[[2]], closeTo(4.0, 1e-6));
+    });
+  });
+
+  group('name property', () {
+    test('AbsOp name', () {
+      expect(AbsOp().name, equals('Abs'));
+    });
+
+    test('NegOp name', () {
+      expect(NegOp().name, equals('Neg'));
+    });
+
+    test('SqrtOp name', () {
+      expect(SqrtOp().name, equals('Sqrt'));
+    });
+
+    test('ExpOp name', () {
+      expect(ExpOp().name, equals('Exp'));
+    });
+
+    test('LogOp name', () {
+      expect(LogOp().name, equals('Log'));
+    });
+  });
+}
