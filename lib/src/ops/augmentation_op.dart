@@ -2,6 +2,7 @@ import 'dart:math';
 
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
+import '../utils/index_utils.dart';
 import 'transform_op.dart';
 
 /// Randomly crops tensor to specified dimensions for data augmentation.
@@ -242,7 +243,7 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
             double sum = 0.0;
             for (int k = 0; k < kernelSize; k++) {
               final x = col + k - radius;
-              final xi = _reflectIndex(x, w);
+              final xi = reflectIndex(x, w);
               final inputIdx = ch * h * w + row * w + xi;
               sum += input.storage.getAsDouble(inputIdx) * kernel[k];
             }
@@ -256,7 +257,7 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
             double sum = 0.0;
             for (int k = 0; k < kernelSize; k++) {
               final y = row + k - radius;
-              final yi = _reflectIndex(y, h);
+              final yi = reflectIndex(y, h);
               sum += temp[yi * w + col] * kernel[k];
             }
             final outputIdx = ch * h * w + row * w + col;
@@ -281,7 +282,7 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
               double sum = 0.0;
               for (int k = 0; k < kernelSize; k++) {
                 final x = col + k - radius;
-                final xi = _reflectIndex(x, w);
+                final xi = reflectIndex(x, w);
                 final inputIdx = batch * c * h * w + ch * h * w + row * w + xi;
                 sum += input.storage.getAsDouble(inputIdx) * kernel[k];
               }
@@ -295,7 +296,7 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
               double sum = 0.0;
               for (int k = 0; k < kernelSize; k++) {
                 final y = row + k - radius;
-                final yi = _reflectIndex(y, h);
+                final yi = reflectIndex(y, h);
                 sum += temp[yi * w + col] * kernel[k];
               }
               final outputIdx = batch * c * h * w + ch * h * w + row * w + col;
@@ -309,14 +310,6 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
     }
   }
 
-  int _reflectIndex(int idx, int size) {
-    if (idx < 0) {
-      return -idx - 1;
-    } else if (idx >= size) {
-      return 2 * size - idx - 1;
-    }
-    return idx;
-  }
 
   @override
   List<int> computeOutputShape(List<int> inputShape) => inputShape;
