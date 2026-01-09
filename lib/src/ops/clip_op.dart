@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
@@ -38,8 +41,14 @@ class ClipOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   TensorBuffer apply(TensorBuffer input) {
-    final contiguous = ensureContiguous(input);
-    final output = contiguous.clone();
+    // Optimization: if input is already contiguous, clone() once.
+    // If not contiguous, contiguous() creates a copy, so no need to clone again.
+    final TensorBuffer output;
+    if (input.isContiguous) {
+      output = input.clone();
+    } else {
+      output = input.contiguous();
+    }
     _clip(output);
     return output;
   }
@@ -54,10 +63,26 @@ class ClipOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   void _clip(TensorBuffer tensor) {
     final numel = tensor.numel;
-    for (int i = 0; i < numel; i++) {
-      final value = tensor.storage.getAsDouble(i);
-      final clampedValue = value.clamp(min, max);
-      tensor.storage.setFromDouble(i, clampedValue);
+    final data = tensor.storage.data;
+
+    // Dtype-specialized loop to avoid per-element switch overhead
+    switch (tensor.dtype) {
+      case DType.float32:
+        final list = data as Float32List;
+        for (int i = 0; i < numel; i++) {
+          list[i] = list[i].clamp(min, max);
+        }
+      case DType.float64:
+        final list = data as Float64List;
+        for (int i = 0; i < numel; i++) {
+          list[i] = list[i].clamp(min, max);
+        }
+      default:
+        // Fallback for integer types
+        for (int i = 0; i < numel; i++) {
+          final value = tensor.storage.getAsDouble(i);
+          tensor.storage.setFromDouble(i, value.clamp(min, max));
+        }
     }
   }
 

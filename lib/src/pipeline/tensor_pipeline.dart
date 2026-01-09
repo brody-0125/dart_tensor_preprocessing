@@ -56,10 +56,30 @@ class TensorPipeline {
     return result;
   }
 
+  /// Default threshold for using isolate execution.
+  ///
+  /// Tensors with fewer elements than this will run synchronously
+  /// to avoid isolate serialization overhead.
+  static const int defaultIsolateThreshold = 100000;
+
   /// Applies all operations to [input] asynchronously in a separate isolate.
   ///
   /// This is useful for non-blocking execution on large tensors.
-  Future<TensorBuffer> runAsync(TensorBuffer input) async {
+  ///
+  /// The [isolateThreshold] parameter controls the minimum number of elements
+  /// required to use isolate execution. For tensors smaller than this threshold,
+  /// the pipeline runs synchronously to avoid serialization overhead.
+  /// Set to 0 to always use isolate, or to a very large value to always run sync.
+  /// Default is [defaultIsolateThreshold] (100,000 elements).
+  Future<TensorBuffer> runAsync(
+    TensorBuffer input, {
+    int isolateThreshold = defaultIsolateThreshold,
+  }) async {
+    // For small tensors, skip isolate overhead and run synchronously
+    if (input.numel < isolateThreshold) {
+      return run(input);
+    }
+
     final inputData = _serializeTensor(input);
 
     final resultData = await Isolate.run(() {

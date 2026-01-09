@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
@@ -121,17 +124,44 @@ class NormalizeOp extends TransformOp
     final h = tensor.shape[1];
     final w = tensor.shape[2];
     final channelSize = h * w;
+    final data = tensor.storage.data;
 
-    for (int ch = 0; ch < c; ch++) {
-      final offset = ch * channelSize;
-      final m = mean[ch];
-      final s = std[ch];
-
-      for (int i = 0; i < channelSize; i++) {
-        final idx = offset + i;
-        final value = tensor.storage.getAsDouble(idx);
-        tensor.storage.setFromDouble(idx, (value - m) / s);
-      }
+    // Dtype-specialized loop to avoid per-element switch overhead
+    switch (tensor.dtype) {
+      case DType.float32:
+        final list = data as Float32List;
+        for (int ch = 0; ch < c; ch++) {
+          final offset = ch * channelSize;
+          final m = mean[ch];
+          final s = std[ch];
+          for (int i = 0; i < channelSize; i++) {
+            final idx = offset + i;
+            list[idx] = (list[idx] - m) / s;
+          }
+        }
+      case DType.float64:
+        final list = data as Float64List;
+        for (int ch = 0; ch < c; ch++) {
+          final offset = ch * channelSize;
+          final m = mean[ch];
+          final s = std[ch];
+          for (int i = 0; i < channelSize; i++) {
+            final idx = offset + i;
+            list[idx] = (list[idx] - m) / s;
+          }
+        }
+      default:
+        // Fallback for integer types (less common for normalization)
+        for (int ch = 0; ch < c; ch++) {
+          final offset = ch * channelSize;
+          final m = mean[ch];
+          final s = std[ch];
+          for (int i = 0; i < channelSize; i++) {
+            final idx = offset + i;
+            final value = tensor.storage.getAsDouble(idx);
+            tensor.storage.setFromDouble(idx, (value - m) / s);
+          }
+        }
     }
   }
 
@@ -142,20 +172,53 @@ class NormalizeOp extends TransformOp
     final w = tensor.shape[3];
     final channelSize = h * w;
     final batchSize = c * channelSize;
+    final data = tensor.storage.data;
 
-    for (int batch = 0; batch < n; batch++) {
-      final batchOffset = batch * batchSize;
-      for (int ch = 0; ch < c; ch++) {
-        final offset = batchOffset + ch * channelSize;
-        final m = mean[ch];
-        final s = std[ch];
-
-        for (int i = 0; i < channelSize; i++) {
-          final idx = offset + i;
-          final value = tensor.storage.getAsDouble(idx);
-          tensor.storage.setFromDouble(idx, (value - m) / s);
+    // Dtype-specialized loop to avoid per-element switch overhead
+    switch (tensor.dtype) {
+      case DType.float32:
+        final list = data as Float32List;
+        for (int batch = 0; batch < n; batch++) {
+          final batchOffset = batch * batchSize;
+          for (int ch = 0; ch < c; ch++) {
+            final offset = batchOffset + ch * channelSize;
+            final m = mean[ch];
+            final s = std[ch];
+            for (int i = 0; i < channelSize; i++) {
+              final idx = offset + i;
+              list[idx] = (list[idx] - m) / s;
+            }
+          }
         }
-      }
+      case DType.float64:
+        final list = data as Float64List;
+        for (int batch = 0; batch < n; batch++) {
+          final batchOffset = batch * batchSize;
+          for (int ch = 0; ch < c; ch++) {
+            final offset = batchOffset + ch * channelSize;
+            final m = mean[ch];
+            final s = std[ch];
+            for (int i = 0; i < channelSize; i++) {
+              final idx = offset + i;
+              list[idx] = (list[idx] - m) / s;
+            }
+          }
+        }
+      default:
+        // Fallback for integer types
+        for (int batch = 0; batch < n; batch++) {
+          final batchOffset = batch * batchSize;
+          for (int ch = 0; ch < c; ch++) {
+            final offset = batchOffset + ch * channelSize;
+            final m = mean[ch];
+            final s = std[ch];
+            for (int i = 0; i < channelSize; i++) {
+              final idx = offset + i;
+              final value = tensor.storage.getAsDouble(idx);
+              tensor.storage.setFromDouble(idx, (value - m) / s);
+            }
+          }
+        }
     }
   }
 
@@ -211,9 +274,26 @@ class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   void _scale(TensorBuffer tensor) {
     final numel = tensor.numel;
-    for (int i = 0; i < numel; i++) {
-      final value = tensor.storage.getAsDouble(i);
-      tensor.storage.setFromDouble(i, (value - offset) / scale);
+    final data = tensor.storage.data;
+
+    // Dtype-specialized loop to avoid per-element switch overhead
+    switch (tensor.dtype) {
+      case DType.float32:
+        final list = data as Float32List;
+        for (int i = 0; i < numel; i++) {
+          list[i] = (list[i] - offset) / scale;
+        }
+      case DType.float64:
+        final list = data as Float64List;
+        for (int i = 0; i < numel; i++) {
+          list[i] = (list[i] - offset) / scale;
+        }
+      default:
+        // Fallback for integer types
+        for (int i = 0; i < numel; i++) {
+          final value = tensor.storage.getAsDouble(i);
+          tensor.storage.setFromDouble(i, (value - offset) / scale);
+        }
     }
   }
 

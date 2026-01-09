@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-01-09
+
+### Performance Optimizations
+
+- **Dtype-specialized loops**: Hot paths in transform operations now use dtype-specific code paths with direct `Float32List`/`Float64List` access, avoiding per-element switch overhead:
+  - `NormalizeOp._normalize3D()`, `NormalizeOp._normalize4D()`
+  - `ScaleOp._scale()`
+  - `ClipOp._clip()`
+  - `GaussianBlurOp._applySeparableBlur()`
+  - `ResizeOp._resizeNearest()`, `_resizeBilinear()`, `_resizeBicubic()`
+  - `CenterCropOp._crop3D()`, `_crop4D()`
+  - `concat()` with optimized axis=0 bulk copy
+
+- **Clone-Before-Modify optimization**: `ClipOp.apply()` now avoids double copy by checking `isContiguous` before deciding whether to `clone()` or `contiguous()`
+
+- **Isolate threshold**: `TensorPipeline.runAsync()` now accepts optional `isolateThreshold` parameter (default: 100,000 elements). Small tensors skip isolate overhead and run synchronously
+
+- **Buffer reuse**: `GaussianBlurOp` now pre-allocates and reuses temp buffer across channels, reducing allocations
+
+- **Concat linear copy**: `concat()` now uses pre-computed strides for linear index calculation instead of recursive index computation. Axis=0 concatenation of contiguous tensors uses bulk `setRange()` copy
+
+- **Loop unrolling**: `ResizeOp._resizeBicubic()` unrolls 4x4 kernel with pre-computed weights and indices
+
 ## [0.4.0] - 2026-01-09
 
 ### Added
