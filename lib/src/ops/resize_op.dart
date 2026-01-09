@@ -1,5 +1,7 @@
 import 'dart:math' as math;
+import 'dart:typed_data';
 
+import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
@@ -186,13 +188,31 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     final scaleY = srcH / height;
     final scaleX = srcW / width;
 
-    for (int y = 0; y < height; y++) {
-      final srcY = (y * scaleY).floor().clamp(0, srcH - 1);
-      for (int x = 0; x < width; x++) {
-        final srcX = (x * scaleX).floor().clamp(0, srcW - 1);
-        final value = input.storage.getAsDouble(srcOffset + srcY * srcW + srcX);
-        output.storage.setFromDouble(dstOffset + y * width + x, value);
-      }
+    // Dtype-specialized for hot path optimization
+    switch (input.dtype) {
+      case DType.float32:
+        final inList = input.storage.data as Float32List;
+        final outList = output.storage.data as Float32List;
+        for (int y = 0; y < height; y++) {
+          final srcY = (y * scaleY).floor().clamp(0, srcH - 1);
+          final srcRowOffset = srcOffset + srcY * srcW;
+          final dstRowOffset = dstOffset + y * width;
+          for (int x = 0; x < width; x++) {
+            final srcX = (x * scaleX).floor().clamp(0, srcW - 1);
+            outList[dstRowOffset + x] = inList[srcRowOffset + srcX];
+          }
+        }
+      default:
+        // Generic fallback
+        for (int y = 0; y < height; y++) {
+          final srcY = (y * scaleY).floor().clamp(0, srcH - 1);
+          for (int x = 0; x < width; x++) {
+            final srcX = (x * scaleX).floor().clamp(0, srcW - 1);
+            final value =
+                input.storage.getAsDouble(srcOffset + srcY * srcW + srcX);
+            output.storage.setFromDouble(dstOffset + y * width + x, value);
+          }
+        }
     }
   }
 
@@ -209,32 +229,71 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     final scaleX =
         alignCorners && width > 1 ? (srcW - 1) / (width - 1) : srcW / width;
 
-    for (int y = 0; y < height; y++) {
-      final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
-      final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
-      final y0 = srcY.floor().clamp(0, srcH - 1);
-      final y1 = (y0 + 1).clamp(0, srcH - 1);
-      final fy = srcY - y0;
+    // Dtype-specialized for hot path optimization
+    switch (input.dtype) {
+      case DType.float32:
+        final inList = input.storage.data as Float32List;
+        final outList = output.storage.data as Float32List;
+        for (int y = 0; y < height; y++) {
+          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+          final y0 = srcY.floor().clamp(0, srcH - 1);
+          final y1 = (y0 + 1).clamp(0, srcH - 1);
+          final fy = srcY - y0;
+          final oneMinusFy = 1 - fy;
 
-      for (int x = 0; x < width; x++) {
-        final rawSrcX = alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
-        final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
-        final x0 = srcX.floor().clamp(0, srcW - 1);
-        final x1 = (x0 + 1).clamp(0, srcW - 1);
-        final fx = srcX - x0;
+          for (int x = 0; x < width; x++) {
+            final rawSrcX =
+                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+            final x0 = srcX.floor().clamp(0, srcW - 1);
+            final x1 = (x0 + 1).clamp(0, srcW - 1);
+            final fx = srcX - x0;
+            final oneMinusFx = 1 - fx;
 
-        final v00 = input.storage.getAsDouble(srcOffset + y0 * srcW + x0);
-        final v01 = input.storage.getAsDouble(srcOffset + y0 * srcW + x1);
-        final v10 = input.storage.getAsDouble(srcOffset + y1 * srcW + x0);
-        final v11 = input.storage.getAsDouble(srcOffset + y1 * srcW + x1);
+            final v00 = inList[srcOffset + y0 * srcW + x0];
+            final v01 = inList[srcOffset + y0 * srcW + x1];
+            final v10 = inList[srcOffset + y1 * srcW + x0];
+            final v11 = inList[srcOffset + y1 * srcW + x1];
 
-        final value = v00 * (1 - fx) * (1 - fy) +
-            v01 * fx * (1 - fy) +
-            v10 * (1 - fx) * fy +
-            v11 * fx * fy;
+            final value = v00 * oneMinusFx * oneMinusFy +
+                v01 * fx * oneMinusFy +
+                v10 * oneMinusFx * fy +
+                v11 * fx * fy;
 
-        output.storage.setFromDouble(dstOffset + y * width + x, value);
-      }
+            outList[dstOffset + y * width + x] = value;
+          }
+        }
+      default:
+        // Generic fallback
+        for (int y = 0; y < height; y++) {
+          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+          final y0 = srcY.floor().clamp(0, srcH - 1);
+          final y1 = (y0 + 1).clamp(0, srcH - 1);
+          final fy = srcY - y0;
+
+          for (int x = 0; x < width; x++) {
+            final rawSrcX =
+                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+            final x0 = srcX.floor().clamp(0, srcW - 1);
+            final x1 = (x0 + 1).clamp(0, srcW - 1);
+            final fx = srcX - x0;
+
+            final v00 = input.storage.getAsDouble(srcOffset + y0 * srcW + x0);
+            final v01 = input.storage.getAsDouble(srcOffset + y0 * srcW + x1);
+            final v10 = input.storage.getAsDouble(srcOffset + y1 * srcW + x0);
+            final v11 = input.storage.getAsDouble(srcOffset + y1 * srcW + x1);
+
+            final value = v00 * (1 - fx) * (1 - fy) +
+                v01 * fx * (1 - fy) +
+                v10 * (1 - fx) * fy +
+                v11 * fx * fy;
+
+            output.storage.setFromDouble(dstOffset + y * width + x, value);
+          }
+        }
     }
   }
 
@@ -251,32 +310,104 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     final scaleX =
         alignCorners && width > 1 ? (srcW - 1) / (width - 1) : srcW / width;
 
-    for (int y = 0; y < height; y++) {
-      final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
-      final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
-      final y0 = srcY.floor();
-      final fy = srcY - y0;
+    // Dtype-specialized for hot path optimization
+    switch (input.dtype) {
+      case DType.float32:
+        final inList = input.storage.data as Float32List;
+        final outList = output.storage.data as Float32List;
+        for (int y = 0; y < height; y++) {
+          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+          final y0 = srcY.floor();
+          final fy = srcY - y0;
 
-      for (int x = 0; x < width; x++) {
-        final rawSrcX = alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
-        final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
-        final x0 = srcX.floor();
-        final fx = srcX - x0;
+          // Pre-compute y weights
+          final wy0 = _cubicWeight(-1 - fy);
+          final wy1 = _cubicWeight(-fy);
+          final wy2 = _cubicWeight(1 - fy);
+          final wy3 = _cubicWeight(2 - fy);
 
-        double value = 0.0;
-        for (int j = -1; j <= 2; j++) {
-          final yj = (y0 + j).clamp(0, srcH - 1);
-          final wy = _cubicWeight(j - fy);
-          for (int i = -1; i <= 2; i++) {
-            final xi = (x0 + i).clamp(0, srcW - 1);
-            final wx = _cubicWeight(i - fx);
-            final v = input.storage.getAsDouble(srcOffset + yj * srcW + xi);
-            value += v * wx * wy;
+          // Pre-compute y indices
+          final yj0 = (y0 - 1).clamp(0, srcH - 1);
+          final yj1 = y0.clamp(0, srcH - 1);
+          final yj2 = (y0 + 1).clamp(0, srcH - 1);
+          final yj3 = (y0 + 2).clamp(0, srcH - 1);
+
+          for (int x = 0; x < width; x++) {
+            final rawSrcX =
+                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+            final x0 = srcX.floor();
+            final fx = srcX - x0;
+
+            // Pre-compute x weights
+            final wx0 = _cubicWeight(-1 - fx);
+            final wx1 = _cubicWeight(-fx);
+            final wx2 = _cubicWeight(1 - fx);
+            final wx3 = _cubicWeight(2 - fx);
+
+            // Pre-compute x indices
+            final xi0 = (x0 - 1).clamp(0, srcW - 1);
+            final xi1 = x0.clamp(0, srcW - 1);
+            final xi2 = (x0 + 1).clamp(0, srcW - 1);
+            final xi3 = (x0 + 2).clamp(0, srcW - 1);
+
+            // Unrolled 4x4 kernel for performance
+            final value = wy0 *
+                    (wx0 * inList[srcOffset + yj0 * srcW + xi0] +
+                        wx1 * inList[srcOffset + yj0 * srcW + xi1] +
+                        wx2 * inList[srcOffset + yj0 * srcW + xi2] +
+                        wx3 * inList[srcOffset + yj0 * srcW + xi3]) +
+                wy1 *
+                    (wx0 * inList[srcOffset + yj1 * srcW + xi0] +
+                        wx1 * inList[srcOffset + yj1 * srcW + xi1] +
+                        wx2 * inList[srcOffset + yj1 * srcW + xi2] +
+                        wx3 * inList[srcOffset + yj1 * srcW + xi3]) +
+                wy2 *
+                    (wx0 * inList[srcOffset + yj2 * srcW + xi0] +
+                        wx1 * inList[srcOffset + yj2 * srcW + xi1] +
+                        wx2 * inList[srcOffset + yj2 * srcW + xi2] +
+                        wx3 * inList[srcOffset + yj2 * srcW + xi3]) +
+                wy3 *
+                    (wx0 * inList[srcOffset + yj3 * srcW + xi0] +
+                        wx1 * inList[srcOffset + yj3 * srcW + xi1] +
+                        wx2 * inList[srcOffset + yj3 * srcW + xi2] +
+                        wx3 * inList[srcOffset + yj3 * srcW + xi3]);
+
+            outList[dstOffset + y * width + x] = value;
           }
         }
+      default:
+        // Generic fallback
+        for (int y = 0; y < height; y++) {
+          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+          final y0 = srcY.floor();
+          final fy = srcY - y0;
 
-        output.storage.setFromDouble(dstOffset + y * width + x, value);
-      }
+          for (int x = 0; x < width; x++) {
+            final rawSrcX =
+                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+            final x0 = srcX.floor();
+            final fx = srcX - x0;
+
+            double value = 0.0;
+            for (int j = -1; j <= 2; j++) {
+              final yj = (y0 + j).clamp(0, srcH - 1);
+              final wy = _cubicWeight(j - fy);
+              for (int i = -1; i <= 2; i++) {
+                final xi = (x0 + i).clamp(0, srcW - 1);
+                final wx = _cubicWeight(i - fx);
+                final v =
+                    input.storage.getAsDouble(srcOffset + yj * srcW + xi);
+                value += v * wx * wy;
+              }
+            }
+
+            output.storage.setFromDouble(dstOffset + y * width + x, value);
+          }
+        }
     }
   }
 
@@ -433,15 +564,38 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
 
     final output = TensorBuffer.zeros([c, height, width], dtype: input.dtype);
 
-    for (int ch = 0; ch < c; ch++) {
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          final srcIdx = ch * srcH * srcW + (startY + y) * srcW + (startX + x);
-          final dstIdx = ch * height * width + y * width + x;
-          final value = input.storage.getAsDouble(srcIdx);
-          output.storage.setFromDouble(dstIdx, value);
+    // Dtype-specialized for hot path optimization
+    switch (input.dtype) {
+      case DType.float32:
+        final inList = input.storage.data as Float32List;
+        final outList = output.storage.data as Float32List;
+        final srcChannelStride = srcH * srcW;
+        final dstChannelStride = height * width;
+        for (int ch = 0; ch < c; ch++) {
+          final srcChOffset = ch * srcChannelStride;
+          final dstChOffset = ch * dstChannelStride;
+          for (int y = 0; y < height; y++) {
+            final srcRowOffset = srcChOffset + (startY + y) * srcW + startX;
+            final dstRowOffset = dstChOffset + y * width;
+            // Row-wise copy for better cache performance
+            for (int x = 0; x < width; x++) {
+              outList[dstRowOffset + x] = inList[srcRowOffset + x];
+            }
+          }
         }
-      }
+      default:
+        // Generic fallback
+        for (int ch = 0; ch < c; ch++) {
+          for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+              final srcIdx =
+                  ch * srcH * srcW + (startY + y) * srcW + (startX + x);
+              final dstIdx = ch * height * width + y * width + x;
+              final value = input.storage.getAsDouble(srcIdx);
+              output.storage.setFromDouble(dstIdx, value);
+            }
+          }
+        }
     }
 
     return output;
@@ -458,22 +612,48 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
 
     final srcBatchStride = c * srcH * srcW;
     final dstBatchStride = c * height * width;
+    final srcChannelStride = srcH * srcW;
+    final dstChannelStride = height * width;
 
-    for (int batch = 0; batch < n; batch++) {
-      for (int ch = 0; ch < c; ch++) {
-        for (int y = 0; y < height; y++) {
-          for (int x = 0; x < width; x++) {
-            final srcIdx = batch * srcBatchStride +
-                ch * srcH * srcW +
-                (startY + y) * srcW +
-                (startX + x);
-            final dstIdx =
-                batch * dstBatchStride + ch * height * width + y * width + x;
-            final value = input.storage.getAsDouble(srcIdx);
-            output.storage.setFromDouble(dstIdx, value);
+    // Dtype-specialized for hot path optimization
+    switch (input.dtype) {
+      case DType.float32:
+        final inList = input.storage.data as Float32List;
+        final outList = output.storage.data as Float32List;
+        for (int batch = 0; batch < n; batch++) {
+          final srcBatchOffset = batch * srcBatchStride;
+          final dstBatchOffset = batch * dstBatchStride;
+          for (int ch = 0; ch < c; ch++) {
+            final srcChOffset = srcBatchOffset + ch * srcChannelStride;
+            final dstChOffset = dstBatchOffset + ch * dstChannelStride;
+            for (int y = 0; y < height; y++) {
+              final srcRowOffset = srcChOffset + (startY + y) * srcW + startX;
+              final dstRowOffset = dstChOffset + y * width;
+              // Row-wise copy for better cache performance
+              for (int x = 0; x < width; x++) {
+                outList[dstRowOffset + x] = inList[srcRowOffset + x];
+              }
+            }
           }
         }
-      }
+      default:
+        // Generic fallback
+        for (int batch = 0; batch < n; batch++) {
+          for (int ch = 0; ch < c; ch++) {
+            for (int y = 0; y < height; y++) {
+              for (int x = 0; x < width; x++) {
+                final srcIdx = batch * srcBatchStride +
+                    ch * srcChannelStride +
+                    (startY + y) * srcW +
+                    (startX + x);
+                final dstIdx =
+                    batch * dstBatchStride + ch * dstChannelStride + y * width + x;
+                final value = input.storage.getAsDouble(srcIdx);
+                output.storage.setFromDouble(dstIdx, value);
+              }
+            }
+          }
+        }
     }
 
     return output;

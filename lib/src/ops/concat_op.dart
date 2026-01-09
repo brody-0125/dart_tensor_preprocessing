@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 
@@ -78,17 +81,57 @@ TensorBuffer concat(List<TensorBuffer> tensors, {int axis = 0}) {
   // Create output tensor
   final output = TensorBuffer.zeros(outputShape, dtype: firstTensor.dtype);
 
-  // Copy data from each tensor
-  int outputOffset = 0;
-  for (final tensor in tensors) {
-    final tensorAxisSize = tensor.shape[normalizedAxis];
-    _copyTensorToConcat(tensor, output, outputOffset, normalizedAxis);
-    outputOffset += tensorAxisSize;
+  // Optimized copy using linear indexing
+  // For axis=0 and contiguous tensors, use bulk copy
+  if (normalizedAxis == 0 && tensors.every((t) => t.isContiguous)) {
+    _copyContiguousAxis0(tensors, output);
+  } else {
+    // General case: use strided copy
+    int axisOffset = 0;
+    for (final tensor in tensors) {
+      final contiguous = tensor.isContiguous ? tensor : tensor.contiguous();
+      final tensorAxisSize = contiguous.shape[normalizedAxis];
+      _copyTensorToConcat(contiguous, output, axisOffset, normalizedAxis);
+      axisOffset += tensorAxisSize;
+    }
   }
 
   return output;
 }
 
+/// Optimized bulk copy for axis=0 concatenation of contiguous tensors.
+void _copyContiguousAxis0(List<TensorBuffer> tensors, TensorBuffer output) {
+  switch (output.dtype) {
+    case DType.float32:
+      final outList = output.storage.data as Float32List;
+      int offset = 0;
+      for (final tensor in tensors) {
+        final inList = tensor.storage.data as Float32List;
+        outList.setRange(offset, offset + tensor.numel, inList);
+        offset += tensor.numel;
+      }
+    case DType.float64:
+      final outList = output.storage.data as Float64List;
+      int offset = 0;
+      for (final tensor in tensors) {
+        final inList = tensor.storage.data as Float64List;
+        outList.setRange(offset, offset + tensor.numel, inList);
+        offset += tensor.numel;
+      }
+    default:
+      // Generic fallback using setRange for typed lists
+      int offset = 0;
+      for (final tensor in tensors) {
+        for (int i = 0; i < tensor.numel; i++) {
+          final value = tensor.storage.getAsDouble(i);
+          output.storage.setFromDouble(offset + i, value);
+        }
+        offset += tensor.numel;
+      }
+  }
+}
+
+/// Copy tensor data using linear stride calculation instead of recursion.
 void _copyTensorToConcat(
   TensorBuffer source,
   TensorBuffer destination,
@@ -99,42 +142,51 @@ void _copyTensorToConcat(
   final destShape = destination.shape;
   final rank = sourceShape.length;
 
-  // Recursive copy with proper axis handling
-  void copyRecursive(List<int> sourceIndices, List<int> destIndices, int dim) {
-    if (dim == rank) {
-      // Calculate linear indices
-      int srcIdx = 0;
-      int srcStride = 1;
-      for (int i = rank - 1; i >= 0; i--) {
-        srcIdx += sourceIndices[i] * srcStride;
-        srcStride *= sourceShape[i];
-      }
-
-      int destIdx = 0;
-      int destStride = 1;
-      for (int i = rank - 1; i >= 0; i--) {
-        destIdx += destIndices[i] * destStride;
-        destStride *= destShape[i];
-      }
-
-      final value = source.storage.getAsDouble(srcIdx);
-      destination.storage.setFromDouble(destIdx, value);
-      return;
-    }
-
-    final dimSize = sourceShape[dim];
-    for (int i = 0; i < dimSize; i++) {
-      sourceIndices[dim] = i;
-      if (dim == concatAxis) {
-        destIndices[dim] = axisOffset + i;
-      } else {
-        destIndices[dim] = i;
-      }
-      copyRecursive(sourceIndices, destIndices, dim + 1);
-    }
+  // Pre-compute strides for both tensors
+  final srcStrides = List<int>.filled(rank, 1);
+  final destStrides = List<int>.filled(rank, 1);
+  for (int i = rank - 2; i >= 0; i--) {
+    srcStrides[i] = srcStrides[i + 1] * sourceShape[i + 1];
+    destStrides[i] = destStrides[i + 1] * destShape[i + 1];
   }
 
-  final sourceIndices = List<int>.filled(rank, 0);
-  final destIndices = List<int>.filled(rank, 0);
-  copyRecursive(sourceIndices, destIndices, 0);
+  // Compute total number of elements and iterate linearly
+  final numel = source.numel;
+
+  // Dtype-specialized for hot path optimization
+  switch (source.dtype) {
+    case DType.float32:
+      final srcList = source.storage.data as Float32List;
+      final destList = destination.storage.data as Float32List;
+
+      for (int srcIdx = 0; srcIdx < numel; srcIdx++) {
+        // Convert source linear index to multi-dimensional index
+        // then to destination linear index
+        int remaining = srcIdx;
+        int destIdx = 0;
+        for (int dim = 0; dim < rank; dim++) {
+          final coord = remaining ~/ srcStrides[dim];
+          remaining = remaining % srcStrides[dim];
+          // Adjust coordinate for concat axis
+          final destCoord = (dim == concatAxis) ? coord + axisOffset : coord;
+          destIdx += destCoord * destStrides[dim];
+        }
+        destList[destIdx] = srcList[srcIdx];
+      }
+
+    default:
+      // Generic fallback
+      for (int srcIdx = 0; srcIdx < numel; srcIdx++) {
+        int remaining = srcIdx;
+        int destIdx = 0;
+        for (int dim = 0; dim < rank; dim++) {
+          final coord = remaining ~/ srcStrides[dim];
+          remaining = remaining % srcStrides[dim];
+          final destCoord = (dim == concatAxis) ? coord + axisOffset : coord;
+          destIdx += destCoord * destStrides[dim];
+        }
+        final value = source.storage.getAsDouble(srcIdx);
+        destination.storage.setFromDouble(destIdx, value);
+      }
+  }
 }

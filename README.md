@@ -18,7 +18,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.4.0
+  dart_tensor_preprocessing: ^0.4.1
 ```
 
 ## Quick Start
@@ -62,6 +62,10 @@ final result = pipeline.run(input);
 
 // Async execution (runs in isolate)
 final result = await pipeline.runAsync(input);
+
+// Async with custom isolate threshold (default: 100,000 elements)
+// Small tensors skip isolate overhead and run synchronously
+final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 ```
 
 ## Available Operations
