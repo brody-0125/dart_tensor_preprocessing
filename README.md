@@ -18,7 +18,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.4.1
+  dart_tensor_preprocessing: ^0.5.0
 ```
 
 ## Quick Start
@@ -81,6 +81,8 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 ### Normalization
 - `NormalizeOp` - Channel-wise normalization (presets: ImageNet, CIFAR-10, symmetric)
 - `ScaleOp` - Scale values (e.g., [0-255] to [0-1])
+- `BatchNormOp` - Batch normalization for CNN inference (PyTorch compatible)
+- `LayerNormOp` - Layer normalization for Transformer inference (presets: BERT, BERT-Large)
 
 ### Layout
 - `PermuteOp` - Axis reordering (e.g., HWC to CHW)
@@ -176,6 +178,8 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `ReLUOp` / `LeakyReLUOp` | `F.relu()` / `F.leaky_relu()` |
 | `SigmoidOp` / `TanhOp` | `torch.sigmoid()` / `torch.tanh()` |
 | `SoftmaxOp` | `F.softmax()` |
+| `BatchNormOp` | `torch.nn.BatchNorm2d` (inference) |
+| `LayerNormOp` | `torch.nn.LayerNorm` |
 | `TensorBuffer.full()` | `torch.full()` |
 | `TensorBuffer.random()` | `torch.rand()` |
 | `TensorBuffer.randn()` | `torch.randn()` |
