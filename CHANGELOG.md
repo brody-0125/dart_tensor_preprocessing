@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-01-10
+
+### Added
+
+- **BatchNormOp** - Batch normalization for CNN inference (`batch_norm_op.dart`):
+  - Full PyTorch-compatible `torch.nn.BatchNorm2d` implementation
+  - Pre-computed scale/shift coefficients for efficient inference: `y = x * scale + shift`
+  - Supports 3D `[C,H,W]` and 4D `[N,C,H,W]` tensors
+  - `BatchNormOp.fromStateDict()` factory for loading PyTorch weights
+  - Dtype-specialized loops for Float32/Float64
+  - In-place support via `applyInPlace()`
+
+- **LayerNormOp** - Layer normalization for Transformer inference (`layer_norm_op.dart`):
+  - Full PyTorch-compatible `torch.nn.LayerNorm` implementation
+  - Normalizes over last N dimensions (e.g., `[768]` for BERT)
+  - **Welford's algorithm** for numerically stable mean/variance computation
+  - `LayerNormOp.bert()` and `LayerNormOp.bertLarge()` factory presets
+  - `LayerNormOp.fromStateDict()` factory for loading PyTorch weights
+  - Dtype-specialized loops for Float32/Float64
+  - In-place support via `applyInPlace()`
+
+### PyTorch Compatibility
+
+| Operation | PyTorch Equivalent |
+|-----------|-------------------|
+| `BatchNormOp` | `torch.nn.BatchNorm2d` (inference) |
+| `LayerNormOp` | `torch.nn.LayerNorm` |
+
 ## [0.4.1] - 2026-01-09
 
 ### Performance Optimizations

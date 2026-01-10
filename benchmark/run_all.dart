@@ -8,6 +8,7 @@ import 'tensor_creation_benchmark.dart' as creation;
 import 'tensor_ops_benchmark.dart' as ops;
 import 'pipeline_benchmark.dart' as pipeline;
 import 'memory_benchmark.dart' as memory;
+import 'normalization_benchmark.dart' as normalization;
 import 'utils/benchmark_utils.dart';
 
 void main() async {
@@ -22,6 +23,7 @@ void main() async {
   await creation.runTensorCreationBenchmarks();
   await ops.runTensorOpsBenchmarks();
   await pipeline.runPipelineBenchmarks();
+  await normalization.runNormalizationBenchmarks();
   await memory.runMemoryBenchmarks();
 
   stopwatch.stop();

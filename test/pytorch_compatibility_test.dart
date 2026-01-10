@@ -740,6 +740,255 @@ void main() {
       });
     });
 
+    group('BatchNormOp', () {
+      /// ```python
+      /// import torch
+      /// import torch.nn as nn
+      ///
+      /// # Create BatchNorm2d with specific running stats
+      /// bn = nn.BatchNorm2d(3, eps=1e-5, affine=True)
+      /// bn.running_mean = torch.tensor([0.5, 0.3, 0.7])
+      /// bn.running_var = torch.tensor([0.25, 0.16, 0.09])
+      /// bn.weight.data = torch.tensor([1.0, 2.0, 0.5])
+      /// bn.bias.data = torch.tensor([0.0, 1.0, -0.5])
+      /// bn.eval()  # inference mode
+      ///
+      /// x = torch.tensor([[[[1.0, 0.5], [0.0, 0.25]],
+      ///                    [[0.5, 0.3], [0.1, 0.2]],
+      ///                    [[0.8, 0.6], [0.7, 0.9]]]])
+      /// y = bn(x)
+      /// print(y[0, 0, 0, 0].item())  # 0.9999...
+      /// print(y[0, 1, 0, 0].item())  # 2.0
+      /// print(y[0, 2, 0, 0].item())  # -0.3333...
+      /// ```
+      test('BatchNormOp matches PyTorch nn.BatchNorm2d', () {
+        final op = BatchNormOp(
+          runningMean: [0.5, 0.3, 0.7],
+          runningVar: [0.25, 0.16, 0.09],
+          weight: [1.0, 2.0, 0.5],
+          bias: [0.0, 1.0, -0.5],
+          eps: 1e-5,
+        );
+
+        final input = TensorBuffer.fromFloat32List(
+          Float32List.fromList([
+            // Channel 0
+            1.0, 0.5, 0.0, 0.25,
+            // Channel 1
+            0.5, 0.3, 0.1, 0.2,
+            // Channel 2
+            0.8, 0.6, 0.7, 0.9,
+          ]),
+          [1, 3, 2, 2],
+        );
+
+        final output = op.apply(input);
+
+        // Channel 0: (1.0 - 0.5) / sqrt(0.25 + 1e-5) * 1.0 + 0.0
+        //          = 0.5 / 0.5 * 1.0 = ~1.0
+        expect(output[[0, 0, 0, 0]], closeTo(1.0, 1e-4));
+
+        // Channel 1: (0.5 - 0.3) / sqrt(0.16 + 1e-5) * 2.0 + 1.0
+        //          = 0.2 / 0.4 * 2.0 + 1.0 = 1.0 + 1.0 = ~2.0
+        expect(output[[0, 1, 0, 0]], closeTo(2.0, 1e-4));
+
+        // Channel 2: (0.8 - 0.7) / sqrt(0.09 + 1e-5) * 0.5 + (-0.5)
+        //          = 0.1 / 0.3 * 0.5 - 0.5 = ~-0.333
+        expect(output[[0, 2, 0, 0]], closeTo(-0.3333, 1e-3));
+      });
+
+      /// ```python
+      /// # 3D input [C, H, W]
+      /// x = torch.tensor([[[0.0, 1.0], [0.5, 0.5]],
+      ///                   [[0.2, 0.8], [0.4, 0.6]]])
+      /// bn = nn.BatchNorm2d(2, eps=1e-5)
+      /// bn.running_mean = torch.tensor([0.5, 0.5])
+      /// bn.running_var = torch.tensor([0.25, 0.25])
+      /// bn.eval()
+      /// y = bn(x.unsqueeze(0)).squeeze(0)
+      /// # (0.0 - 0.5) / sqrt(0.25 + 1e-5) = -1.0
+      /// print(y[0, 0, 0].item())  # -0.9999...
+      /// ```
+      test('BatchNormOp with 3D tensor matches PyTorch', () {
+        final op = BatchNormOp(
+          runningMean: [0.5, 0.5],
+          runningVar: [0.25, 0.25],
+        );
+
+        final input = TensorBuffer.fromFloat32List(
+          Float32List.fromList([
+            // Channel 0
+            0.0, 1.0, 0.5, 0.5,
+            // Channel 1
+            0.2, 0.8, 0.4, 0.6,
+          ]),
+          [2, 2, 2],
+        );
+
+        final output = op.apply(input);
+
+        // (0.0 - 0.5) / sqrt(0.25 + 1e-5) = -1.0
+        expect(output[[0, 0, 0]], closeTo(-1.0, 1e-4));
+        // (1.0 - 0.5) / sqrt(0.25 + 1e-5) = 1.0
+        expect(output[[0, 0, 1]], closeTo(1.0, 1e-4));
+        // (0.5 - 0.5) / sqrt(0.25 + 1e-5) = 0.0
+        expect(output[[0, 1, 0]], closeTo(0.0, 1e-4));
+      });
+
+      /// ```python
+      /// # Batch processing
+      /// x = torch.randn(4, 3, 8, 8)  # 4 batches
+      /// bn = nn.BatchNorm2d(3)
+      /// bn.running_mean = torch.tensor([0.0, 0.0, 0.0])
+      /// bn.running_var = torch.tensor([1.0, 1.0, 1.0])
+      /// bn.eval()
+      /// y = bn(x)
+      /// # Output should have same shape
+      /// assert y.shape == x.shape
+      /// ```
+      test('BatchNormOp preserves batch dimension', () {
+        final op = BatchNormOp(
+          runningMean: [0.0, 0.0, 0.0],
+          runningVar: [1.0, 1.0, 1.0],
+        );
+
+        final input = TensorBuffer.zeros([4, 3, 8, 8]);
+        final output = op.apply(input);
+
+        expect(output.shape, equals([4, 3, 8, 8]));
+      });
+    });
+
+    group('LayerNormOp', () {
+      /// ```python
+      /// import torch
+      /// import torch.nn as nn
+      ///
+      /// ln = nn.LayerNorm([4], eps=1e-5)
+      /// ln.weight.data = torch.tensor([1.0, 1.0, 1.0, 1.0])
+      /// ln.bias.data = torch.tensor([0.0, 0.0, 0.0, 0.0])
+      ///
+      /// x = torch.tensor([[1.0, 2.0, 3.0, 4.0]])  # mean=2.5, var=1.25
+      /// y = ln(x)
+      /// # (1.0 - 2.5) / sqrt(1.25 + 1e-5) = -1.3416...
+      /// print(y[0, 0].item())
+      /// ```
+      test('LayerNormOp matches PyTorch nn.LayerNorm', () {
+        final op = LayerNormOp(
+          normalizedShape: [4],
+          weight: [1.0, 1.0, 1.0, 1.0],
+          bias: [0.0, 0.0, 0.0, 0.0],
+          eps: 1e-5,
+        );
+
+        final input = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1.0, 2.0, 3.0, 4.0]),
+          [1, 4],
+        );
+
+        final output = op.apply(input);
+
+        // mean = 2.5, var = 1.25
+        // (1.0 - 2.5) / sqrt(1.25 + 1e-5) = -1.3416...
+        expect(output[[0, 0]], closeTo(-1.3416, 1e-3));
+        // (2.0 - 2.5) / sqrt(1.25 + 1e-5) = -0.4472...
+        expect(output[[0, 1]], closeTo(-0.4472, 1e-3));
+        // (3.0 - 2.5) / sqrt(1.25 + 1e-5) = 0.4472...
+        expect(output[[0, 2]], closeTo(0.4472, 1e-3));
+        // (4.0 - 2.5) / sqrt(1.25 + 1e-5) = 1.3416...
+        expect(output[[0, 3]], closeTo(1.3416, 1e-3));
+      });
+
+      /// ```python
+      /// # With weight and bias
+      /// ln = nn.LayerNorm([3], eps=1e-5)
+      /// ln.weight.data = torch.tensor([2.0, 1.0, 0.5])
+      /// ln.bias.data = torch.tensor([1.0, 0.0, -1.0])
+      ///
+      /// x = torch.tensor([[1.0, 2.0, 3.0],
+      ///                   [4.0, 5.0, 6.0]])  # 2 samples
+      /// y = ln(x)
+      /// # Sample 0: mean=2, var=2/3
+      /// # Sample 1: mean=5, var=2/3
+      /// ```
+      test('LayerNormOp with weight/bias matches PyTorch', () {
+        final op = LayerNormOp(
+          normalizedShape: [3],
+          weight: [2.0, 1.0, 0.5],
+          bias: [1.0, 0.0, -1.0],
+          eps: 1e-5,
+        );
+
+        final input = TensorBuffer.fromFloat32List(
+          Float32List.fromList([
+            1.0, 2.0, 3.0, // Sample 0
+            4.0, 5.0, 6.0, // Sample 1
+          ]),
+          [2, 3],
+        );
+
+        final output = op.apply(input);
+
+        // Sample 0: mean=2, var=2/3
+        // (1.0 - 2) / sqrt(2/3 + 1e-5) * 2.0 + 1.0 = -1.2247 * 2 + 1 = -1.4494
+        expect(output[[0, 0]], closeTo(-1.4494, 1e-3));
+        // (2.0 - 2) / sqrt(2/3 + 1e-5) * 1.0 + 0.0 = 0
+        expect(output[[0, 1]], closeTo(0.0, 1e-3));
+        // (3.0 - 2) / sqrt(2/3 + 1e-5) * 0.5 + (-1.0) = 0.6124 - 1 = -0.3876
+        expect(output[[0, 2]], closeTo(-0.3876, 1e-3));
+      });
+
+      /// ```python
+      /// # 3D input [batch, seq, features] - common for transformers
+      /// ln = nn.LayerNorm([768], eps=1e-5)
+      /// x = torch.randn(2, 10, 768)  # batch=2, seq=10, hidden=768
+      /// y = ln(x)
+      /// assert y.shape == x.shape
+      /// ```
+      test('LayerNormOp handles transformer-style input', () {
+        // Simplified test with smaller dimensions
+        final op = LayerNormOp(
+          normalizedShape: [8],
+          eps: 1e-5,
+        );
+
+        final input = TensorBuffer.zeros([2, 4, 8]); // [batch, seq, features]
+        final output = op.apply(input);
+
+        expect(output.shape, equals([2, 4, 8]));
+        // All zeros -> all outputs should be 0 (or NaN-safe value)
+        // With Welford algorithm and eps, should be 0
+      });
+
+      /// ```python
+      /// # Multi-dimensional normalized shape
+      /// ln = nn.LayerNorm([4, 4], eps=1e-5)
+      /// x = torch.randn(2, 4, 4)
+      /// y = ln(x)
+      /// assert y.shape == x.shape
+      /// ```
+      test('LayerNormOp with multi-dim normalized shape', () {
+        final op = LayerNormOp(
+          normalizedShape: [2, 3],
+          eps: 1e-5,
+        );
+
+        final input = TensorBuffer.fromFloat32List(
+          Float32List.fromList([
+            1.0, 2.0, 3.0, 4.0, 5.0, 6.0, // Instance 0
+            7.0, 8.0, 9.0, 10.0, 11.0, 12.0, // Instance 1
+          ]),
+          [2, 2, 3],
+        );
+
+        final output = op.apply(input);
+
+        expect(output.shape, equals([2, 2, 3]));
+        // Instance 0: mean=3.5, values normalized
+        // Instance 1: mean=9.5, values normalized
+      });
+    });
+
     group('DType Compatibility', () {
       /// ```python
       /// t_f32 = torch.zeros(2, 3, dtype=torch.float32)

@@ -49,5 +49,7 @@ export 'src/ops/concat_op.dart';
 export 'src/ops/arithmetic_op.dart';
 export 'src/ops/math_op.dart';
 export 'src/ops/activation_op.dart';
+export 'src/ops/batch_norm_op.dart';
+export 'src/ops/layer_norm_op.dart';
 export 'src/pipeline/tensor_pipeline.dart';
 export 'src/pipeline/presets.dart';
