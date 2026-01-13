@@ -5,6 +5,57 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2026-01-13
+
+### Added
+
+- **BufferPool** - Memory pooling API for buffer reuse (`buffer_pool.dart`):
+  - Singleton `BufferPool.instance` for global buffer reuse
+  - Power-of-2 size bucketing for efficient allocation
+  - Per-dtype buffer pools (Float32, Float64, Int32, Uint8, etc.)
+  - `acquire(minSize, dtype)` and `release(buffer)` methods
+  - `acquireFloat32()`, `acquireFloat64()`, etc. convenience extensions
+  - Max buffers per bucket limit (8) to prevent unbounded memory growth
+  - `pooledCount` and `pooledBytes` for monitoring
+
+- **TypedData Views** - Zero-copy tensor view utilities (`typed_data_views.dart`):
+  - `TypedDataViews.float32SublistView()` - Zero-copy Float32List slicing
+  - `TypedDataViews.float64SublistView()` - Zero-copy Float64List slicing
+  - `TypedDataViews.viewAs()` - Create typed view from ByteBuffer at offset
+  - `TensorViewExtension` on TensorBuffer:
+    - `sliceFirst(start, end)` - Zero-copy slice along first dimension
+    - `isViewable` - Check if tensor can be used as a view
+    - `toChannelsLast()` - NCHW to NHWC without copying
+    - `toChannelsFirst()` - NHWC to NCHW without copying
+    - `flatten()` - 1D view of contiguous tensor
+    - `unbind(dim)` - Split tensor into views along dimension
+    - `select(dim, index)` - Select single index with reduced rank
+    - `narrow(dim, start, length)` - Narrow dimension without copying
+
+- **Utility Libraries** (`lib/src/utils/`):
+  - `dtype_dispatcher.dart` - DTypeDispatcher for dtype-specialized dispatch
+  - `tensor_indexing.dart` - TensorIndexer for index calculations (index2D, index3D, index4D, linearToCoords, coordsToLinear, computeStrides)
+
+- **TensorBuffer/TensorStorage Factory Methods**:
+  - `TensorBuffer.fromFloat64List()` - Create tensor from Float64List
+  - `TensorStorage.fromFloat64List()` - Create storage from Float64List
+
+### Changed
+
+- **SoftmaxOp Optimization**: Now preserves input dtype (Float32/Float64) instead of always using Float64. Added dtype-specialized implementations for better performance.
+
+- **Double-copy elimination**: Operations now use `cloneForModification()` pattern (`input.isContiguous ? input.clone() : input.contiguous()`) to avoid unnecessary copies:
+  - `ReLUOp`, `LeakyReLUOp`, `SigmoidOp`, `TanhOp`, `SoftmaxOp`
+  - `AbsOp`, `NegOp`, `SqrtOp`, `ExpOp`, `LogOp` (UnaryMathOp)
+  - `NormalizeOp`, `ScaleOp`
+
+### Internal
+
+- Added `cloneForModification()` helper to `RequiresContiguous` mixin in `transform_op.dart`
+- Integrated `DTypeDispatcher` into activation ops (`ReLUOp`, `LeakyReLUOp`, `SigmoidOp`, `TanhOp`) for dtype-specialized loops
+- Integrated `DTypeDispatcher` into `ScaleOp` for consistent dtype handling
+- Replaced stride computation with `TensorIndexer.computeStrides()` in `SoftmaxOp` (removed 3x code duplication)
+
 ## [0.5.0] - 2026-01-10
 
 ### Added

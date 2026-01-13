@@ -643,6 +643,23 @@ class TensorBuffer {
     );
   }
 
+  /// Creates a tensor from an existing [Float64List] with the given [shape].
+  ///
+  /// Throws [ShapeMismatchException] if data length doesn't match shape.
+  static TensorBuffer fromFloat64List(Float64List data, List<int> shape) {
+    final expectedNumel = shape.fold(1, (a, b) => a * b);
+    if (data.length != expectedNumel) {
+      throw ShapeMismatchException(
+        actual: shape,
+        message: 'Data length (${data.length}) does not match shape $shape (numel: $expectedNumel)',
+      );
+    }
+    return TensorBuffer(
+      storage: TensorStorage.fromFloat64List(data),
+      shape: List.unmodifiable(shape),
+    );
+  }
+
   /// Creates a tensor from an existing [Uint8List] with the given [shape].
   ///
   /// Throws [ShapeMismatchException] if data length doesn't match shape.

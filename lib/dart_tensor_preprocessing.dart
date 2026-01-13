@@ -31,6 +31,7 @@
 /// See [PipelinePresets] for pre-configured pipelines for common models.
 library;
 
+export 'src/core/buffer_pool.dart';
 export 'src/core/dtype.dart';
 export 'src/core/memory_format.dart';
 export 'src/core/tensor_buffer.dart';
@@ -53,3 +54,6 @@ export 'src/ops/batch_norm_op.dart';
 export 'src/ops/layer_norm_op.dart';
 export 'src/pipeline/tensor_pipeline.dart';
 export 'src/pipeline/presets.dart';
+export 'src/utils/dtype_dispatcher.dart';
+export 'src/utils/tensor_indexing.dart';
+export 'src/utils/typed_data_views.dart';
