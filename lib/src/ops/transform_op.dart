@@ -40,6 +40,27 @@ mixin RequiresContiguous on TransformOp {
     }
     return input;
   }
+
+  /// Creates an output buffer from input, ensuring contiguity with single copy.
+  ///
+  /// If input is contiguous, clones it. Otherwise, creates contiguous copy.
+  /// This avoids the double-copy pattern of `ensureContiguous() + clone()`.
+  ///
+  /// Use this when you need a contiguous output buffer that will be modified
+  /// in place, without affecting the original input.
+  ///
+  /// Example:
+  /// ```dart
+  /// @override
+  /// TensorBuffer apply(TensorBuffer input) {
+  ///   final output = cloneForModification(input);
+  ///   _modifyInPlace(output);
+  ///   return output;
+  /// }
+  /// ```
+  TensorBuffer cloneForModification(TensorBuffer input) {
+    return input.isContiguous ? input.clone() : input.contiguous();
+  }
 }
 
 /// A no-op transform that returns the input unchanged.

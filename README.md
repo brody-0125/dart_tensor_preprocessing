@@ -18,7 +18,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.5.0
+  dart_tensor_preprocessing: ^0.5.1
 ```
 
 ## Quick Start
@@ -139,6 +139,50 @@ DType.int64    // ONNX ID: 7
 DType.uint8    // ONNX ID: 2
 ```
 
+### BufferPool
+
+Memory pooling for buffer reuse, reducing GC pressure in hot paths.
+
+```dart
+final pool = BufferPool.instance;
+
+// Acquire buffer (reuses from pool if available)
+final buffer = pool.acquireFloat32(1000);
+
+// ... use buffer ...
+
+// Release back to pool for reuse
+pool.release(buffer);
+
+// Monitor pool usage
+print('Pooled: ${pool.pooledCount} buffers, ${pool.pooledBytes} bytes');
+```
+
+### Zero-Copy View Operations
+
+TensorBuffer extension methods for zero-copy tensor manipulation:
+
+```dart
+// Slice along first dimension (batch slicing)
+final batch = tensor.sliceFirst(2, 5);  // Views elements 2..4
+
+// Split tensor into views
+final items = tensor.unbind(0);  // List of views along dim 0
+
+// Select single index (reduces rank)
+final first = tensor.select(0, 0);  // First item, shape reduced
+
+// Narrow dimension
+final narrowed = tensor.narrow(0, 1, 3);  // 3 elements starting at 1
+
+// Format conversion without copying
+final nhwc = nchwTensor.toChannelsLast();   // NCHW -> NHWC view
+final nchw = nhwcTensor.toChannelsFirst();  // NHWC -> NCHW view
+
+// Flatten to 1D view
+final flat = tensor.flatten();
+```
+
 ## Memory Formats
 
 | Format | Layout | Strides (for [1,3,224,224]) |
@@ -186,6 +230,10 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `TensorBuffer.eye()` | `torch.eye()` |
 | `TensorBuffer.linspace()` | `torch.linspace()` |
 | `TensorBuffer.arange()` | `torch.arange()` |
+| `tensor.select(dim, index)` | `tensor.select(dim, index)` |
+| `tensor.narrow(dim, start, len)` | `tensor.narrow(dim, start, len)` |
+| `tensor.unbind(dim)` | `tensor.unbind(dim)` |
+| `tensor.flatten()` | `tensor.flatten()` |
 
 ## Performance Benchmarks
 

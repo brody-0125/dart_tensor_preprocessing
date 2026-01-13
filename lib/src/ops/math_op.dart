@@ -14,8 +14,7 @@ abstract class UnaryMathOp extends TransformOp
 
   @override
   TensorBuffer apply(TensorBuffer input) {
-    final contiguous = ensureContiguous(input);
-    final output = contiguous.clone();
+    final output = cloneForModification(input);
     _apply(output);
     return output;
   }

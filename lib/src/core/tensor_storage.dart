@@ -30,6 +30,11 @@ class TensorStorage {
     return TensorStorage(data, DType.float32);
   }
 
+  /// Creates storage from a [Float64List].
+  factory TensorStorage.fromFloat64List(Float64List data) {
+    return TensorStorage(data, DType.float64);
+  }
+
   /// Creates storage from a [Uint8List].
   factory TensorStorage.fromUint8List(Uint8List data) {
     return TensorStorage(data, DType.uint8);

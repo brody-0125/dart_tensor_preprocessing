@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
+import '../utils/dtype_dispatcher.dart';
 import 'transform_op.dart';
 
 /// Normalizes tensor values per channel using mean and standard deviation.
@@ -72,10 +73,8 @@ class NormalizeOp extends TransformOp
 
   @override
   TensorBuffer apply(TensorBuffer input) {
-    final contiguous = ensureContiguous(input);
-    _validateShape(contiguous.shape);
-
-    final output = contiguous.clone();
+    _validateShape(input.shape);
+    final output = cloneForModification(input);
     _normalize(output);
     return output;
   }
@@ -257,9 +256,7 @@ class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   TensorBuffer apply(TensorBuffer input) {
-    final contiguous = ensureContiguous(input);
-
-    final output = contiguous.clone();
+    final output = cloneForModification(input);
     _scale(output);
     return output;
   }
@@ -273,28 +270,28 @@ class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
   }
 
   void _scale(TensorBuffer tensor) {
-    final numel = tensor.numel;
-    final data = tensor.storage.data;
-
-    // Dtype-specialized loop to avoid per-element switch overhead
-    switch (tensor.dtype) {
-      case DType.float32:
-        final list = data as Float32List;
+    final s = scale;
+    final o = offset;
+    DTypeDispatcher.dispatchVoid(
+      tensor,
+      onFloat32: (list, numel) {
         for (int i = 0; i < numel; i++) {
-          list[i] = (list[i] - offset) / scale;
+          list[i] = (list[i] - o) / s;
         }
-      case DType.float64:
-        final list = data as Float64List;
+      },
+      onFloat64: (list, numel) {
         for (int i = 0; i < numel; i++) {
-          list[i] = (list[i] - offset) / scale;
+          list[i] = (list[i] - o) / s;
         }
-      default:
-        // Fallback for integer types
-        for (int i = 0; i < numel; i++) {
-          final value = tensor.storage.getAsDouble(i);
-          tensor.storage.setFromDouble(i, (value - offset) / scale);
+      },
+      fallback: (t) {
+        final n = t.numel;
+        for (int i = 0; i < n; i++) {
+          final value = t.storage.getAsDouble(i);
+          t.storage.setFromDouble(i, (value - o) / s);
         }
-    }
+      },
+    );
   }
 
   @override
