@@ -5,6 +5,7 @@ import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import '../utils/dtype_dispatcher.dart';
+import '../utils/simd_ops.dart';
 import '../utils/tensor_indexing.dart';
 import 'transform_op.dart';
 
@@ -42,9 +43,8 @@ class ReLUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     DTypeDispatcher.dispatchVoid(
       tensor,
       onFloat32: (list, numel) {
-        for (int i = 0; i < numel; i++) {
-          if (list[i] < 0) list[i] = 0;
-        }
+        // Use SIMD acceleration for Float32
+        SimdOps.relu(list);
       },
       onFloat64: (list, numel) {
         for (int i = 0; i < numel; i++) {
@@ -103,9 +103,8 @@ class LeakyReLUOp extends TransformOp with InPlaceTransform, RequiresContiguous 
     DTypeDispatcher.dispatchVoid(
       tensor,
       onFloat32: (list, numel) {
-        for (int i = 0; i < numel; i++) {
-          if (list[i] < 0) list[i] *= slope;
-        }
+        // Use SIMD acceleration for Float32
+        SimdOps.leakyRelu(list, slope);
       },
       onFloat64: (list, numel) {
         for (int i = 0; i < numel; i++) {

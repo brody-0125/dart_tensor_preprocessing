@@ -16,6 +16,20 @@ enum InterpolationMode {
 
   /// Bicubic interpolation (slowest, highest quality).
   bicubic,
+
+  /// Area interpolation (best for downsampling, anti-aliasing).
+  ///
+  /// Computes output by averaging source pixels within each output pixel's area.
+  /// Avoids aliasing artifacts during downsampling.
+  /// Equivalent to `F.interpolate(mode='area')` in PyTorch.
+  area,
+
+  /// Lanczos interpolation (high quality, uses Lanczos3 kernel).
+  ///
+  /// Uses sinc-based kernel with a=3, sampling 6x6 source pixels.
+  /// Best for high-quality upscaling and downscaling.
+  /// Equivalent to `InterpolationMode.LANCZOS` in torchvision.
+  lanczos,
 }
 
 /// Resizes a tensor to a fixed [height] and [width].
@@ -173,6 +187,24 @@ class ResizeOp extends TransformOp with RequiresContiguous {
             srcOffset: srcOffset,
             dstOffset: dstOffset,
           );
+        case InterpolationMode.area:
+          _resizeArea(
+            input: input,
+            output: output,
+            srcH: srcH,
+            srcW: srcW,
+            srcOffset: srcOffset,
+            dstOffset: dstOffset,
+          );
+        case InterpolationMode.lanczos:
+          _resizeLanczos(
+            input: input,
+            output: output,
+            srcH: srcH,
+            srcW: srcW,
+            srcOffset: srcOffset,
+            dstOffset: dstOffset,
+          );
       }
     }
   }
@@ -315,66 +347,81 @@ class ResizeOp extends TransformOp with RequiresContiguous {
       case DType.float32:
         final inList = input.storage.data as Float32List;
         final outList = output.storage.data as Float32List;
-        for (int y = 0; y < height; y++) {
-          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
-          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
-          final y0 = srcY.floor();
-          final fy = srcY - y0;
 
-          // Pre-compute y weights
-          final wy0 = _cubicWeight(-1 - fy);
-          final wy1 = _cubicWeight(-fy);
-          final wy2 = _cubicWeight(1 - fy);
-          final wy3 = _cubicWeight(2 - fy);
+        // Cache-friendly blocking: process output in 64x64 blocks
+        // This ensures source pixels stay in L1 cache during processing
+        const blockSize = 64;
 
-          // Pre-compute y indices
-          final yj0 = (y0 - 1).clamp(0, srcH - 1);
-          final yj1 = y0.clamp(0, srcH - 1);
-          final yj2 = (y0 + 1).clamp(0, srcH - 1);
-          final yj3 = (y0 + 2).clamp(0, srcH - 1);
+        for (int by = 0; by < height; by += blockSize) {
+          final endY = math.min(by + blockSize, height);
 
-          for (int x = 0; x < width; x++) {
-            final rawSrcX =
-                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
-            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
-            final x0 = srcX.floor();
-            final fx = srcX - x0;
+          for (int bx = 0; bx < width; bx += blockSize) {
+            final endX = math.min(bx + blockSize, width);
 
-            // Pre-compute x weights
-            final wx0 = _cubicWeight(-1 - fx);
-            final wx1 = _cubicWeight(-fx);
-            final wx2 = _cubicWeight(1 - fx);
-            final wx3 = _cubicWeight(2 - fx);
+            // Process block
+            for (int y = by; y < endY; y++) {
+              final rawSrcY =
+                  alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+              final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+              final y0 = srcY.floor();
+              final fy = srcY - y0;
 
-            // Pre-compute x indices
-            final xi0 = (x0 - 1).clamp(0, srcW - 1);
-            final xi1 = x0.clamp(0, srcW - 1);
-            final xi2 = (x0 + 1).clamp(0, srcW - 1);
-            final xi3 = (x0 + 2).clamp(0, srcW - 1);
+              // Pre-compute y weights
+              final wy0 = _cubicWeight(-1 - fy);
+              final wy1 = _cubicWeight(-fy);
+              final wy2 = _cubicWeight(1 - fy);
+              final wy3 = _cubicWeight(2 - fy);
 
-            // Unrolled 4x4 kernel for performance
-            final value = wy0 *
-                    (wx0 * inList[srcOffset + yj0 * srcW + xi0] +
-                        wx1 * inList[srcOffset + yj0 * srcW + xi1] +
-                        wx2 * inList[srcOffset + yj0 * srcW + xi2] +
-                        wx3 * inList[srcOffset + yj0 * srcW + xi3]) +
-                wy1 *
-                    (wx0 * inList[srcOffset + yj1 * srcW + xi0] +
-                        wx1 * inList[srcOffset + yj1 * srcW + xi1] +
-                        wx2 * inList[srcOffset + yj1 * srcW + xi2] +
-                        wx3 * inList[srcOffset + yj1 * srcW + xi3]) +
-                wy2 *
-                    (wx0 * inList[srcOffset + yj2 * srcW + xi0] +
-                        wx1 * inList[srcOffset + yj2 * srcW + xi1] +
-                        wx2 * inList[srcOffset + yj2 * srcW + xi2] +
-                        wx3 * inList[srcOffset + yj2 * srcW + xi3]) +
-                wy3 *
-                    (wx0 * inList[srcOffset + yj3 * srcW + xi0] +
-                        wx1 * inList[srcOffset + yj3 * srcW + xi1] +
-                        wx2 * inList[srcOffset + yj3 * srcW + xi2] +
-                        wx3 * inList[srcOffset + yj3 * srcW + xi3]);
+              // Pre-compute y indices
+              final yj0 = (y0 - 1).clamp(0, srcH - 1);
+              final yj1 = y0.clamp(0, srcH - 1);
+              final yj2 = (y0 + 1).clamp(0, srcH - 1);
+              final yj3 = (y0 + 2).clamp(0, srcH - 1);
 
-            outList[dstOffset + y * width + x] = value;
+              for (int x = bx; x < endX; x++) {
+                final rawSrcX =
+                    alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+                final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+                final x0 = srcX.floor();
+                final fx = srcX - x0;
+
+                // Pre-compute x weights
+                final wx0 = _cubicWeight(-1 - fx);
+                final wx1 = _cubicWeight(-fx);
+                final wx2 = _cubicWeight(1 - fx);
+                final wx3 = _cubicWeight(2 - fx);
+
+                // Pre-compute x indices
+                final xi0 = (x0 - 1).clamp(0, srcW - 1);
+                final xi1 = x0.clamp(0, srcW - 1);
+                final xi2 = (x0 + 1).clamp(0, srcW - 1);
+                final xi3 = (x0 + 2).clamp(0, srcW - 1);
+
+                // Unrolled 4x4 kernel for performance
+                final value = wy0 *
+                        (wx0 * inList[srcOffset + yj0 * srcW + xi0] +
+                            wx1 * inList[srcOffset + yj0 * srcW + xi1] +
+                            wx2 * inList[srcOffset + yj0 * srcW + xi2] +
+                            wx3 * inList[srcOffset + yj0 * srcW + xi3]) +
+                    wy1 *
+                        (wx0 * inList[srcOffset + yj1 * srcW + xi0] +
+                            wx1 * inList[srcOffset + yj1 * srcW + xi1] +
+                            wx2 * inList[srcOffset + yj1 * srcW + xi2] +
+                            wx3 * inList[srcOffset + yj1 * srcW + xi3]) +
+                    wy2 *
+                        (wx0 * inList[srcOffset + yj2 * srcW + xi0] +
+                            wx1 * inList[srcOffset + yj2 * srcW + xi1] +
+                            wx2 * inList[srcOffset + yj2 * srcW + xi2] +
+                            wx3 * inList[srcOffset + yj2 * srcW + xi3]) +
+                    wy3 *
+                        (wx0 * inList[srcOffset + yj3 * srcW + xi0] +
+                            wx1 * inList[srcOffset + yj3 * srcW + xi1] +
+                            wx2 * inList[srcOffset + yj3 * srcW + xi2] +
+                            wx3 * inList[srcOffset + yj3 * srcW + xi3]);
+
+                outList[dstOffset + y * width + x] = value;
+              }
+            }
           }
         }
       default:
@@ -419,6 +466,236 @@ class ResizeOp extends TransformOp with RequiresContiguous {
       return -0.5 * at * at * at + 2.5 * at * at - 4 * at + 2;
     }
     return 0;
+  }
+
+  /// Area interpolation for high-quality downsampling.
+  ///
+  /// Computes each output pixel as the weighted average of all source pixels
+  /// that overlap with the output pixel's area. Handles fractional coverage
+  /// at boundaries for anti-aliasing.
+  void _resizeArea({
+    required TensorBuffer input,
+    required TensorBuffer output,
+    required int srcH,
+    required int srcW,
+    required int srcOffset,
+    required int dstOffset,
+  }) {
+    final scaleY = srcH / height;
+    final scaleX = srcW / width;
+
+    // Dtype-specialized for hot path optimization
+    switch (input.dtype) {
+      case DType.float32:
+        final inList = input.storage.data as Float32List;
+        final outList = output.storage.data as Float32List;
+        for (int y = 0; y < height; y++) {
+          // Source region covered by output pixel [y]
+          final srcY0 = y * scaleY;
+          final srcY1 = (y + 1) * scaleY;
+
+          for (int x = 0; x < width; x++) {
+            // Source region covered by output pixel [x]
+            final srcX0 = x * scaleX;
+            final srcX1 = (x + 1) * scaleX;
+
+            // Accumulate weighted sum
+            double sum = 0;
+            double totalWeight = 0;
+
+            final y0Floor = srcY0.floor().clamp(0, srcH - 1);
+            final y1Ceil = srcY1.ceil().clamp(0, srcH);
+            final x0Floor = srcX0.floor().clamp(0, srcW - 1);
+            final x1Ceil = srcX1.ceil().clamp(0, srcW);
+
+            for (int sy = y0Floor; sy < y1Ceil; sy++) {
+              // Compute vertical overlap
+              final overlapTop = math.max(srcY0, sy.toDouble());
+              final overlapBottom = math.min(srcY1, (sy + 1).toDouble());
+              final overlapY = math.max(0.0, overlapBottom - overlapTop);
+
+              for (int sx = x0Floor; sx < x1Ceil; sx++) {
+                // Compute horizontal overlap
+                final overlapLeft = math.max(srcX0, sx.toDouble());
+                final overlapRight = math.min(srcX1, (sx + 1).toDouble());
+                final overlapX = math.max(0.0, overlapRight - overlapLeft);
+
+                final weight = overlapX * overlapY;
+                if (weight > 0) {
+                  sum += inList[srcOffset + sy * srcW + sx] * weight;
+                  totalWeight += weight;
+                }
+              }
+            }
+
+            outList[dstOffset + y * width + x] =
+                totalWeight > 0 ? sum / totalWeight : 0;
+          }
+        }
+      default:
+        // Generic fallback
+        for (int y = 0; y < height; y++) {
+          final srcY0 = y * scaleY;
+          final srcY1 = (y + 1) * scaleY;
+
+          for (int x = 0; x < width; x++) {
+            final srcX0 = x * scaleX;
+            final srcX1 = (x + 1) * scaleX;
+
+            double sum = 0;
+            double totalWeight = 0;
+
+            final y0Floor = srcY0.floor().clamp(0, srcH - 1);
+            final y1Ceil = srcY1.ceil().clamp(0, srcH);
+            final x0Floor = srcX0.floor().clamp(0, srcW - 1);
+            final x1Ceil = srcX1.ceil().clamp(0, srcW);
+
+            for (int sy = y0Floor; sy < y1Ceil; sy++) {
+              final overlapTop = math.max(srcY0, sy.toDouble());
+              final overlapBottom = math.min(srcY1, (sy + 1).toDouble());
+              final overlapY = math.max(0.0, overlapBottom - overlapTop);
+
+              for (int sx = x0Floor; sx < x1Ceil; sx++) {
+                final overlapLeft = math.max(srcX0, sx.toDouble());
+                final overlapRight = math.min(srcX1, (sx + 1).toDouble());
+                final overlapX = math.max(0.0, overlapRight - overlapLeft);
+
+                final weight = overlapX * overlapY;
+                if (weight > 0) {
+                  final v =
+                      input.storage.getAsDouble(srcOffset + sy * srcW + sx);
+                  sum += v * weight;
+                  totalWeight += weight;
+                }
+              }
+            }
+
+            output.storage.setFromDouble(
+              dstOffset + y * width + x,
+              totalWeight > 0 ? sum / totalWeight : 0,
+            );
+          }
+        }
+    }
+  }
+
+  /// Lanczos interpolation using Lanczos3 kernel (a=3).
+  ///
+  /// Uses sinc-based kernel for high-quality interpolation.
+  /// Samples 6x6 source pixels for each output pixel.
+  void _resizeLanczos({
+    required TensorBuffer input,
+    required TensorBuffer output,
+    required int srcH,
+    required int srcW,
+    required int srcOffset,
+    required int dstOffset,
+  }) {
+    final scaleY =
+        alignCorners && height > 1 ? (srcH - 1) / (height - 1) : srcH / height;
+    final scaleX =
+        alignCorners && width > 1 ? (srcW - 1) / (width - 1) : srcW / width;
+
+    // Lanczos window size (a=3 means 6x6 kernel)
+    const a = 3;
+
+    // Dtype-specialized for hot path optimization
+    switch (input.dtype) {
+      case DType.float32:
+        final inList = input.storage.data as Float32List;
+        final outList = output.storage.data as Float32List;
+        for (int y = 0; y < height; y++) {
+          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+          final y0 = srcY.floor();
+          final fy = srcY - y0;
+
+          for (int x = 0; x < width; x++) {
+            final rawSrcX =
+                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+            final x0 = srcX.floor();
+            final fx = srcX - x0;
+
+            double value = 0.0;
+            double weightSum = 0.0;
+
+            // 6x6 kernel (a=3: indices from -2 to 3)
+            for (int j = -(a - 1); j <= a; j++) {
+              final yj = (y0 + j).clamp(0, srcH - 1);
+              final wy = _lanczosKernel(j - fy, a);
+
+              for (int i = -(a - 1); i <= a; i++) {
+                final xi = (x0 + i).clamp(0, srcW - 1);
+                final wx = _lanczosKernel(i - fx, a);
+                final weight = wx * wy;
+
+                value += inList[srcOffset + yj * srcW + xi] * weight;
+                weightSum += weight;
+              }
+            }
+
+            // Normalize by weight sum to handle edge effects
+            outList[dstOffset + y * width + x] =
+                weightSum > 0 ? value / weightSum : 0;
+          }
+        }
+      default:
+        // Generic fallback
+        for (int y = 0; y < height; y++) {
+          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+          final y0 = srcY.floor();
+          final fy = srcY - y0;
+
+          for (int x = 0; x < width; x++) {
+            final rawSrcX =
+                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+            final x0 = srcX.floor();
+            final fx = srcX - x0;
+
+            double value = 0.0;
+            double weightSum = 0.0;
+
+            for (int j = -(a - 1); j <= a; j++) {
+              final yj = (y0 + j).clamp(0, srcH - 1);
+              final wy = _lanczosKernel(j - fy, a);
+
+              for (int i = -(a - 1); i <= a; i++) {
+                final xi = (x0 + i).clamp(0, srcW - 1);
+                final wx = _lanczosKernel(i - fx, a);
+                final weight = wx * wy;
+
+                final v =
+                    input.storage.getAsDouble(srcOffset + yj * srcW + xi);
+                value += v * weight;
+                weightSum += weight;
+              }
+            }
+
+            output.storage.setFromDouble(
+              dstOffset + y * width + x,
+              weightSum > 0 ? value / weightSum : 0,
+            );
+          }
+        }
+    }
+  }
+
+  /// Lanczos kernel: sinc(x) * sinc(x/a)
+  ///
+  /// L(x) = sinc(x) * sinc(x/a) for |x| < a
+  ///      = 0                   for |x| >= a
+  ///
+  /// where sinc(x) = sin(pi*x) / (pi*x)
+  double _lanczosKernel(double x, int a) {
+    if (x == 0) return 1.0;
+    final ax = x.abs();
+    if (ax >= a) return 0.0;
+    final px = math.pi * x;
+    final pxa = px / a;
+    return (math.sin(px) / px) * (math.sin(pxa) / pxa);
   }
 }
 

@@ -4,6 +4,7 @@ import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import '../utils/dtype_dispatcher.dart';
+import '../utils/simd_ops.dart';
 import 'transform_op.dart';
 
 /// Normalizes tensor values per channel using mean and standard deviation.
@@ -272,12 +273,17 @@ class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
   void _scale(TensorBuffer tensor) {
     final s = scale;
     final o = offset;
+    // (value - offset) / scale = value * invScale + bias
+    // where invScale = 1/scale and bias = -offset/scale
+    final invScale = 1.0 / s;
+    final bias = -o / s;
+
     DTypeDispatcher.dispatchVoid(
       tensor,
       onFloat32: (list, numel) {
-        for (int i = 0; i < numel; i++) {
-          list[i] = (list[i] - o) / s;
-        }
+        // Use SIMD acceleration for Float32
+        SimdOps.multiplyScalar(list, invScale);
+        SimdOps.addScalar(list, bias);
       },
       onFloat64: (list, numel) {
         for (int i = 0; i < numel; i++) {
