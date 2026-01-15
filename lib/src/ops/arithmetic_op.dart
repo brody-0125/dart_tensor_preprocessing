@@ -1,7 +1,11 @@
 import 'dart:math' as math;
+import 'dart:typed_data';
 
+import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
+import '../utils/dtype_dispatcher.dart';
+import '../utils/simd_ops.dart';
 import 'transform_op.dart';
 
 /// Base class for binary arithmetic operations.
@@ -45,17 +49,9 @@ abstract class ArithmeticOp extends TransformOp
   }
 
   void _apply(TensorBuffer tensor) {
-    final numel = tensor.numel;
-
     if (scalar != null) {
-      // Scalar mode
-      final s = scalar!;
-      for (int i = 0; i < numel; i++) {
-        final value = tensor.storage.getAsDouble(i);
-        tensor.storage.setFromDouble(i, operation(value, s));
-      }
+      _applyScalar(tensor, scalar!);
     } else {
-      // Tensor mode
       final otherContiguous = ensureContiguous(other!);
       if (tensor.numel != otherContiguous.numel) {
         throw ShapeMismatchException(
@@ -64,13 +60,15 @@ abstract class ArithmeticOp extends TransformOp
               'Tensor shapes must match for element-wise operation: ${tensor.shape} vs ${otherContiguous.shape}',
         );
       }
-      for (int i = 0; i < numel; i++) {
-        final a = tensor.storage.getAsDouble(i);
-        final b = otherContiguous.storage.getAsDouble(i);
-        tensor.storage.setFromDouble(i, operation(a, b));
-      }
+      _applyTensor(tensor, otherContiguous);
     }
   }
+
+  /// Applies scalar operation with dtype-specialized implementation.
+  void _applyScalar(TensorBuffer tensor, double s);
+
+  /// Applies tensor operation with dtype-specialized implementation.
+  void _applyTensor(TensorBuffer tensor, TensorBuffer other);
 
   @override
   List<int> computeOutputShape(List<int> inputShape) => inputShape;
@@ -97,6 +95,48 @@ class AddOp extends ArithmeticOp {
 
   @override
   double operation(double a, double b) => a + b;
+
+  @override
+  void _applyScalar(TensorBuffer tensor, double s) {
+    DTypeDispatcher.dispatchVoid(
+      tensor,
+      onFloat32: (list, numel) => SimdOps.addScalar(list, s),
+      onFloat64: (list, numel) {
+        for (var i = 0; i < numel; i++) {
+          list[i] += s;
+        }
+      },
+      fallback: (t) {
+        final n = t.numel;
+        for (var i = 0; i < n; i++) {
+          t.storage.setFromDouble(i, t.storage.getAsDouble(i) + s);
+        }
+      },
+    );
+  }
+
+  @override
+  void _applyTensor(TensorBuffer tensor, TensorBuffer other) {
+    if (tensor.dtype == DType.float32 && other.dtype == DType.float32) {
+      final a = tensor.storage.data as Float32List;
+      final b = other.storage.data as Float32List;
+      SimdOps.add(a, b, a);
+    } else if (tensor.dtype == DType.float64 && other.dtype == DType.float64) {
+      final a = tensor.storage.data as Float64List;
+      final b = other.storage.data as Float64List;
+      final n = tensor.numel;
+      for (var i = 0; i < n; i++) {
+        a[i] += b[i];
+      }
+    } else {
+      final n = tensor.numel;
+      for (var i = 0; i < n; i++) {
+        final a = tensor.storage.getAsDouble(i);
+        final b = other.storage.getAsDouble(i);
+        tensor.storage.setFromDouble(i, a + b);
+      }
+    }
+  }
 }
 
 /// Subtracts a scalar or tensor from the input element-wise.
@@ -120,6 +160,48 @@ class SubOp extends ArithmeticOp {
 
   @override
   double operation(double a, double b) => a - b;
+
+  @override
+  void _applyScalar(TensorBuffer tensor, double s) {
+    DTypeDispatcher.dispatchVoid(
+      tensor,
+      onFloat32: (list, numel) => SimdOps.subtractScalar(list, s),
+      onFloat64: (list, numel) {
+        for (var i = 0; i < numel; i++) {
+          list[i] -= s;
+        }
+      },
+      fallback: (t) {
+        final n = t.numel;
+        for (var i = 0; i < n; i++) {
+          t.storage.setFromDouble(i, t.storage.getAsDouble(i) - s);
+        }
+      },
+    );
+  }
+
+  @override
+  void _applyTensor(TensorBuffer tensor, TensorBuffer other) {
+    if (tensor.dtype == DType.float32 && other.dtype == DType.float32) {
+      final a = tensor.storage.data as Float32List;
+      final b = other.storage.data as Float32List;
+      SimdOps.subtract(a, b, a);
+    } else if (tensor.dtype == DType.float64 && other.dtype == DType.float64) {
+      final a = tensor.storage.data as Float64List;
+      final b = other.storage.data as Float64List;
+      final n = tensor.numel;
+      for (var i = 0; i < n; i++) {
+        a[i] -= b[i];
+      }
+    } else {
+      final n = tensor.numel;
+      for (var i = 0; i < n; i++) {
+        final a = tensor.storage.getAsDouble(i);
+        final b = other.storage.getAsDouble(i);
+        tensor.storage.setFromDouble(i, a - b);
+      }
+    }
+  }
 }
 
 /// Multiplies the input by a scalar or tensor element-wise.
@@ -143,6 +225,48 @@ class MulOp extends ArithmeticOp {
 
   @override
   double operation(double a, double b) => a * b;
+
+  @override
+  void _applyScalar(TensorBuffer tensor, double s) {
+    DTypeDispatcher.dispatchVoid(
+      tensor,
+      onFloat32: (list, numel) => SimdOps.multiplyScalar(list, s),
+      onFloat64: (list, numel) {
+        for (var i = 0; i < numel; i++) {
+          list[i] *= s;
+        }
+      },
+      fallback: (t) {
+        final n = t.numel;
+        for (var i = 0; i < n; i++) {
+          t.storage.setFromDouble(i, t.storage.getAsDouble(i) * s);
+        }
+      },
+    );
+  }
+
+  @override
+  void _applyTensor(TensorBuffer tensor, TensorBuffer other) {
+    if (tensor.dtype == DType.float32 && other.dtype == DType.float32) {
+      final a = tensor.storage.data as Float32List;
+      final b = other.storage.data as Float32List;
+      SimdOps.multiply(a, b, a);
+    } else if (tensor.dtype == DType.float64 && other.dtype == DType.float64) {
+      final a = tensor.storage.data as Float64List;
+      final b = other.storage.data as Float64List;
+      final n = tensor.numel;
+      for (var i = 0; i < n; i++) {
+        a[i] *= b[i];
+      }
+    } else {
+      final n = tensor.numel;
+      for (var i = 0; i < n; i++) {
+        final a = tensor.storage.getAsDouble(i);
+        final b = other.storage.getAsDouble(i);
+        tensor.storage.setFromDouble(i, a * b);
+      }
+    }
+  }
 }
 
 /// Divides the input by a scalar or tensor element-wise.
@@ -166,6 +290,50 @@ class DivOp extends ArithmeticOp {
 
   @override
   double operation(double a, double b) => a / b;
+
+  @override
+  void _applyScalar(TensorBuffer tensor, double s) {
+    // Division by scalar is multiplication by reciprocal
+    final invS = 1.0 / s;
+    DTypeDispatcher.dispatchVoid(
+      tensor,
+      onFloat32: (list, numel) => SimdOps.multiplyScalar(list, invS),
+      onFloat64: (list, numel) {
+        for (var i = 0; i < numel; i++) {
+          list[i] *= invS;
+        }
+      },
+      fallback: (t) {
+        final n = t.numel;
+        for (var i = 0; i < n; i++) {
+          t.storage.setFromDouble(i, t.storage.getAsDouble(i) * invS);
+        }
+      },
+    );
+  }
+
+  @override
+  void _applyTensor(TensorBuffer tensor, TensorBuffer other) {
+    if (tensor.dtype == DType.float32 && other.dtype == DType.float32) {
+      final a = tensor.storage.data as Float32List;
+      final b = other.storage.data as Float32List;
+      SimdOps.divide(a, b, a);
+    } else if (tensor.dtype == DType.float64 && other.dtype == DType.float64) {
+      final a = tensor.storage.data as Float64List;
+      final b = other.storage.data as Float64List;
+      final n = tensor.numel;
+      for (var i = 0; i < n; i++) {
+        a[i] /= b[i];
+      }
+    } else {
+      final n = tensor.numel;
+      for (var i = 0; i < n; i++) {
+        final a = tensor.storage.getAsDouble(i);
+        final b = other.storage.getAsDouble(i);
+        tensor.storage.setFromDouble(i, a / b);
+      }
+    }
+  }
 }
 
 /// Raises each element to the given power.

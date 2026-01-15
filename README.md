@@ -18,7 +18,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.5.1
+  dart_tensor_preprocessing: ^0.6.0
 ```
 
 ## Quick Start
@@ -71,7 +71,7 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 ## Available Operations
 
 ### Resize & Crop
-- `ResizeOp` - Resize to fixed dimensions (nearest, bilinear, bicubic)
+- `ResizeOp` - Resize to fixed dimensions (nearest, bilinear, bicubic, area, lanczos)
 - `ResizeShortestOp` - Resize preserving aspect ratio
 - `CenterCropOp` - Center crop to fixed dimensions
 - `ClipOp` - Element-wise value clamping (presets: unit, symmetric, uint8)
@@ -83,6 +83,7 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 - `ScaleOp` - Scale values (e.g., [0-255] to [0-1])
 - `BatchNormOp` - Batch normalization for CNN inference (PyTorch compatible)
 - `LayerNormOp` - Layer normalization for Transformer inference (presets: BERT, BERT-Large)
+- `GroupNormOp` - Group normalization for modern CNNs (PyTorch compatible)
 
 ### Layout
 - `PermuteOp` - Axis reordering (e.g., HWC to CHW)
@@ -203,10 +204,16 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `tensor.squeeze()` | `tensor.squeeze()` |
 | `tensor.unsqueeze()` | `tensor.unsqueeze()` |
 | `tensor.sum()` / `sumAxis()` | `tensor.sum()` |
+| `tensor.sumAxes([...])` | `tensor.sum(dim=[...])` |
 | `tensor.mean()` / `meanAxis()` | `tensor.mean()` |
+| `tensor.meanAxes([...])` | `tensor.mean(dim=[...])` |
 | `tensor.min()` / `max()` | `tensor.min()` / `max()` |
+| `tensor.minAxes([...])` | `tensor.amin(dim=[...])` |
+| `tensor.maxAxes([...])` | `tensor.amax(dim=[...])` |
 | `NormalizeOp.imagenet()` | `transforms.Normalize(mean, std)` |
 | `ResizeOp(mode: bilinear)` | `F.interpolate(mode='bilinear')` |
+| `ResizeOp(mode: area)` | `F.interpolate(mode='area')` |
+| `ResizeOp(mode: lanczos)` | Lanczos3 interpolation |
 | `ToTensorOp()` | `transforms.ToTensor()` |
 | `ClipOp(min, max)` | `torch.clamp(min, max)` |
 | `PadOp(mode: reflect)` | `F.pad(mode='reflect')` |
@@ -224,6 +231,7 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `SoftmaxOp` | `F.softmax()` |
 | `BatchNormOp` | `torch.nn.BatchNorm2d` (inference) |
 | `LayerNormOp` | `torch.nn.LayerNorm` |
+| `GroupNormOp` | `torch.nn.GroupNorm` |
 | `TensorBuffer.full()` | `torch.full()` |
 | `TensorBuffer.random()` | `torch.rand()` |
 | `TensorBuffer.randn()` | `torch.randn()` |

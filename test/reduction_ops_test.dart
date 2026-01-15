@@ -463,6 +463,164 @@ void main() {
       });
     });
 
+    group('sumAxes (multi-axis)', () {
+      test('3D tensor along axes [0, 2]', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+          [2, 3, 2],
+        );
+        // Shape [2, 3, 2] -> [3] after reducing axes 0 and 2
+        final result = tensor.sumAxes([0, 2]);
+        expect(result.shape, equals([3]));
+        // [[1+2, 3+4, 5+6], [7+8, 9+10, 11+12]] along axis 2 = [[3, 7, 11], [15, 19, 23]]
+        // then along axis 0 = [18, 26, 34]
+        expect(result.toList(), equals([18.0, 26.0, 34.0]));
+      });
+
+      test('3D tensor with keepDims=true', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+          [2, 3, 2],
+        );
+        final result = tensor.sumAxes([0, 2], keepDims: true);
+        expect(result.shape, equals([1, 3, 1]));
+        expect(result.toList(), equals([18.0, 26.0, 34.0]));
+      });
+
+      test('negative axis indices', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+          [2, 3, 2],
+        );
+        // axes [-1, -3] is same as [0, 2]
+        final result = tensor.sumAxes([-1, -3]);
+        expect(result.shape, equals([3]));
+        expect(result.toList(), equals([18.0, 26.0, 34.0]));
+      });
+
+      test('empty axes returns original tensor', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4]),
+          [2, 2],
+        );
+        final result = tensor.sumAxes([]);
+        expect(result.shape, equals([2, 2]));
+        expect(result.toList(), equals([1.0, 2.0, 3.0, 4.0]));
+      });
+
+      test('single axis', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4, 5, 6]),
+          [2, 3],
+        );
+        final result = tensor.sumAxes([1]);
+        expect(result.shape, equals([2]));
+        expect(result.toList(), equals([6.0, 15.0]));
+      });
+
+      test('all axes reduces to scalar-like tensor', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4, 5, 6]),
+          [2, 3],
+        );
+        final result = tensor.sumAxes([0, 1]);
+        expect(result.shape, equals([1]));
+        expect(result.toList(), equals([21.0]));
+      });
+
+      test('duplicate axes throws InvalidParameterException', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4]),
+          [2, 2],
+        );
+        expect(
+          () => tensor.sumAxes([0, 0]),
+          throwsA(isA<InvalidParameterException>()),
+        );
+      });
+
+      test('out of bounds axis throws IndexOutOfBoundsException', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4]),
+          [2, 2],
+        );
+        expect(
+          () => tensor.sumAxes([0, 5]),
+          throwsA(isA<IndexOutOfBoundsException>()),
+        );
+      });
+    });
+
+    group('meanAxes (multi-axis)', () {
+      test('3D tensor along axes [0, 2]', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+          [2, 3, 2],
+        );
+        final result = tensor.meanAxes([0, 2]);
+        expect(result.shape, equals([3]));
+        // Mean of [1,2,7,8] = 4.5, [3,4,9,10] = 6.5, [5,6,11,12] = 8.5
+        expect(result.toList(), equals([4.5, 6.5, 8.5]));
+      });
+
+      test('keepDims=true', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+          [2, 3, 2],
+        );
+        final result = tensor.meanAxes([0, 2], keepDims: true);
+        expect(result.shape, equals([1, 3, 1]));
+      });
+    });
+
+    group('minAxes (multi-axis)', () {
+      test('3D tensor along axes [0, 2]', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+          [2, 3, 2],
+        );
+        final result = tensor.minAxes([0, 2]);
+        expect(result.shape, equals([3]));
+        // Min of [1,2,7,8] = 1, [3,4,9,10] = 3, [5,6,11,12] = 5
+        expect(result.toList(), equals([1.0, 3.0, 5.0]));
+      });
+
+      test('with negative values', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, -2, 3, -4, 5, -6, 7, -8, 9, -10, 11, -12]),
+          [2, 3, 2],
+        );
+        final result = tensor.minAxes([0, 2]);
+        expect(result.shape, equals([3]));
+        // Min along axes 0,2: compare [1,-2,7,-8], [3,-4,9,-10], [5,-6,11,-12]
+        expect(result.toList(), equals([-8.0, -10.0, -12.0]));
+      });
+    });
+
+    group('maxAxes (multi-axis)', () {
+      test('3D tensor along axes [0, 2]', () {
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+          [2, 3, 2],
+        );
+        final result = tensor.maxAxes([0, 2]);
+        expect(result.shape, equals([3]));
+        // Max of [1,2,7,8] = 8, [3,4,9,10] = 10, [5,6,11,12] = 12
+        expect(result.toList(), equals([8.0, 10.0, 12.0]));
+      });
+
+      test('4D tensor multi-axis', () {
+        // Shape: [2, 2, 2, 2]
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList(List.generate(16, (i) => (i + 1).toDouble())),
+          [2, 2, 2, 2],
+        );
+        // Reduce axes [1, 3]
+        final result = tensor.maxAxes([1, 3]);
+        expect(result.shape, equals([2, 2]));
+      });
+    });
+
     group('combined operations', () {
       test('sum, mean, min, max on same tensor', () {
         final tensor = TensorBuffer.fromFloat32List(

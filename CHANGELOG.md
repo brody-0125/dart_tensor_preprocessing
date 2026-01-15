@@ -5,6 +5,67 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-01-16
+
+### Added
+
+- **Multi-axis Reductions** - Reduce along multiple axes at once (`tensor_buffer_reduce.dart`):
+  - `sumAxes(List<int> axes, {bool keepDims})` - Sum along multiple axes
+  - `meanAxes(List<int> axes, {bool keepDims})` - Mean along multiple axes
+  - `minAxes(List<int> axes, {bool keepDims})` - Min along multiple axes
+  - `maxAxes(List<int> axes, {bool keepDims})` - Max along multiple axes
+  - Supports negative axis indexing
+  - Validates duplicate axes
+
+- **GroupNormOp** - Group normalization for modern CNNs (`group_norm_op.dart`):
+  - Full PyTorch-compatible `torch.nn.GroupNorm` implementation
+  - Normalizes across groups of channels (used in U-Net, modern CNNs with small batch sizes)
+  - Supports 3D `[C,H,W]` and 4D `[N,C,H,W]` tensors
+  - `GroupNormOp.withAffine()` factory for PyTorch-style initialization
+  - `GroupNormOp.fromStateDict()` factory for loading PyTorch weights
+  - Welford's algorithm for numerically stable mean/variance computation
+  - Dtype-specialized loops for Float32/Float64
+  - In-place support via `applyInPlace()`
+
+- **SIMD Operations** - Vectorized tensor operations (`simd_ops.dart`):
+  - Uses Float32x4 SIMD instructions for 2-4x speedup on Float32 tensors
+  - `SimdOps.multiplyScalar()`, `SimdOps.addScalar()`, `SimdOps.subtractScalar()` - Scalar operations
+  - `SimdOps.add()`, `SimdOps.subtract()`, `SimdOps.multiply()`, `SimdOps.divide()` - Element-wise binary operations
+  - `SimdOps.relu()`, `SimdOps.leakyRelu()` - Activation functions
+  - `SimdOps.normalize()` - Mean/std normalization
+  - `SimdOps.copy()`, `SimdOps.fill()`, `SimdOps.sum()`, `SimdOps.clip()`
+  - Handles both aligned and unaligned memory
+
+- **Interpolation Modes** - Additional resize algorithms (`resize_op.dart`):
+  - `InterpolationMode.area` - Weighted area averaging for high-quality downsampling with anti-aliasing (OpenCV INTER_AREA equivalent)
+  - `InterpolationMode.lanczos` - Lanczos3 (6x6 kernel) for high-quality resize with sinc-based interpolation
+
+### Changed
+
+- **BREAKING**: Reduction operations moved to extension (`TensorBufferReduce`)
+  - `sum()`, `mean()`, `min()`, `max()` - Full tensor reductions
+  - `sumAxis()`, `meanAxis()`, `minAxis()`, `maxAxis()` - Single-axis reductions
+  - `toList()` - Data extraction
+  - Existing code using these methods will work unchanged, but users importing only `tensor_buffer.dart` must now also import `tensor_buffer_reduce.dart` or the main library
+
+### Performance
+
+- **SIMD-accelerated operations**: `ScaleOp`, `ReLUOp`, `LeakyReLUOp` now use SIMD for Float32 tensors
+- **SIMD-accelerated ArithmeticOp**: `AddOp`, `SubOp`, `MulOp`, `DivOp` now use SIMD for Float32 tensors (both scalar and tensor modes)
+- **Cache-friendly bicubic resize**: 64x64 block processing for better L1 cache utilization on large tensors
+
+### Internal
+
+- Extracted reduction operations from `tensor_buffer.dart` (1170 → 740 lines) to `tensor_buffer_reduce.dart`
+- Added 14 new tests for multi-axis reductions
+- Added 61 new tests for SIMD operations, GroupNormOp, and resize modes
+
+### PyTorch Compatibility
+
+| Operation | PyTorch Equivalent |
+|-----------|-------------------|
+| `GroupNormOp` | `torch.nn.GroupNorm` |
+
 ## [0.5.1] - 2026-01-13
 
 ### Added
