@@ -9,6 +9,7 @@ import 'tensor_ops_benchmark.dart' as ops;
 import 'pipeline_benchmark.dart' as pipeline;
 import 'memory_benchmark.dart' as memory;
 import 'normalization_benchmark.dart' as normalization;
+import 'simd_microbenchmark.dart' as simd;
 import 'utils/benchmark_utils.dart';
 
 void main() async {
@@ -25,6 +26,7 @@ void main() async {
   await pipeline.runPipelineBenchmarks();
   await normalization.runNormalizationBenchmarks();
   await memory.runMemoryBenchmarks();
+  await simd.runSimdMicrobenchmarks();
 
   stopwatch.stop();
 

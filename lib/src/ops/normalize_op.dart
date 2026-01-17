@@ -129,26 +129,22 @@ class NormalizeOp extends TransformOp
     // Dtype-specialized loop to avoid per-element switch overhead
     switch (tensor.dtype) {
       case DType.float32:
+        // SIMD-optimized path for Float32
         final list = data as Float32List;
         for (int ch = 0; ch < c; ch++) {
           final offset = ch * channelSize;
-          final m = mean[ch];
-          final s = std[ch];
-          for (int i = 0; i < channelSize; i++) {
-            final idx = offset + i;
-            list[idx] = (list[idx] - m) / s;
-          }
+          final channelData =
+              Float32List.sublistView(list, offset, offset + channelSize);
+          SimdOps.normalize(channelData, mean[ch], std[ch]);
         }
       case DType.float64:
+        // SIMD-optimized path for Float64 (aligned data only, else scalar fallback)
         final list = data as Float64List;
         for (int ch = 0; ch < c; ch++) {
           final offset = ch * channelSize;
-          final m = mean[ch];
-          final s = std[ch];
-          for (int i = 0; i < channelSize; i++) {
-            final idx = offset + i;
-            list[idx] = (list[idx] - m) / s;
-          }
+          final channelData =
+              Float64List.sublistView(list, offset, offset + channelSize);
+          SimdOps.normalizeF64(channelData, mean[ch], std[ch]);
         }
       default:
         // Fallback for integer types (less common for normalization)
@@ -177,31 +173,27 @@ class NormalizeOp extends TransformOp
     // Dtype-specialized loop to avoid per-element switch overhead
     switch (tensor.dtype) {
       case DType.float32:
+        // SIMD-optimized path for Float32
         final list = data as Float32List;
         for (int batch = 0; batch < n; batch++) {
           final batchOffset = batch * batchSize;
           for (int ch = 0; ch < c; ch++) {
             final offset = batchOffset + ch * channelSize;
-            final m = mean[ch];
-            final s = std[ch];
-            for (int i = 0; i < channelSize; i++) {
-              final idx = offset + i;
-              list[idx] = (list[idx] - m) / s;
-            }
+            final channelData =
+                Float32List.sublistView(list, offset, offset + channelSize);
+            SimdOps.normalize(channelData, mean[ch], std[ch]);
           }
         }
       case DType.float64:
+        // SIMD-optimized path for Float64 (aligned data only, else scalar fallback)
         final list = data as Float64List;
         for (int batch = 0; batch < n; batch++) {
           final batchOffset = batch * batchSize;
           for (int ch = 0; ch < c; ch++) {
             final offset = batchOffset + ch * channelSize;
-            final m = mean[ch];
-            final s = std[ch];
-            for (int i = 0; i < channelSize; i++) {
-              final idx = offset + i;
-              list[idx] = (list[idx] - m) / s;
-            }
+            final channelData =
+                Float64List.sublistView(list, offset, offset + channelSize);
+            SimdOps.normalizeF64(channelData, mean[ch], std[ch]);
           }
         }
       default:

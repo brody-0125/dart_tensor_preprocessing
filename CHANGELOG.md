@@ -5,6 +5,51 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-01-17
+
+### Added
+
+- **Float64 SIMD Operations** - Vectorized operations for Float64 tensors (`simd_ops.dart`):
+  - `SimdOps.clipF64()` - Clips values using Float64x2.clamp()
+  - `SimdOps.absF64()` - Absolute value using Float64x2.abs()
+  - `SimdOps.sqrtF64()` - Square root using Float64x2.sqrt()
+  - `SimdOps.normalizeF64()` - Mean/std normalization with SIMD
+  - Uses Float64x2List.view() for aligned data (16-byte alignment)
+  - Scalar fallback for unaligned data to avoid object creation overhead
+  - ~2.5x speedup for aligned Float64 data vs scalar
+
+- **SIMD Microbenchmark** - Performance verification for SIMD operations (`benchmark/simd_microbenchmark.dart`):
+  - Direct SimdOps performance measurement (clip, abs, sqrt, normalize)
+  - Aligned vs unaligned data comparison (~4.4x performance difference)
+  - Float32 SIMD vs Float64 SIMD comparison
+  - Edge case testing for non-multiple-of-4 lengths
+
+- **SIMD Tests** - 64 tests in `simd_ops_test.dart`:
+  - Float32 SIMD tests with alignment edge cases
+  - Float64 SIMD tests (clipF64, absF64, sqrtF64, normalizeF64)
+  - Op integration tests for both Float32 and Float64
+
+### Changed
+
+- **SimdOps.abs()** and **SimdOps.sqrt()** - Now applied to `AbsOp` and `SqrtOp` for Float32 tensors
+- **SimdOps.clip()** - Now used in `ClipOp` for Float32 tensors
+- **SimdOps.normalize()** - Now used in `NormalizeOp` for Float32 tensors (per-channel)
+- **NegOp** - Now uses `SimdOps.multiplyScalar(-1)` for Float32 tensors
+- **ClipOp** - Now uses `SimdOps.clipF64()` for Float64 tensors
+- **AbsOp** - Now uses `SimdOps.absF64()` for Float64 tensors
+- **SqrtOp** - Now uses `SimdOps.sqrtF64()` for Float64 tensors
+- **NormalizeOp** - Now uses `SimdOps.normalizeF64()` for Float64 tensors (3D and 4D)
+
+### Performance
+
+- Float32 SIMD (aligned): ~6.2 GE/s
+- Float64 SIMD (aligned): ~3.3 GE/s (53% of Float32, expected due to Float64x2 vs Float32x4)
+- Unaligned fallback: ~1.3-1.5 GE/s
+
+### Internal
+
+- Integrated SIMD microbenchmark into `benchmark/run_all.dart`
+
 ## [0.6.0] - 2026-01-16
 
 ### Added

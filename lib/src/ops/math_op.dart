@@ -1,7 +1,10 @@
 import 'dart:math' as math;
+import 'dart:typed_data';
 
+import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
+import '../utils/simd_ops.dart';
 import 'transform_op.dart';
 
 /// Base class for unary math operations.
@@ -55,6 +58,20 @@ class AbsOp extends UnaryMathOp {
 
   @override
   double operation(double value) => value.abs();
+
+  @override
+  void _apply(TensorBuffer tensor) {
+    switch (tensor.dtype) {
+      case DType.float32:
+        SimdOps.abs(tensor.storage.data as Float32List);
+        return;
+      case DType.float64:
+        SimdOps.absF64(tensor.storage.data as Float64List);
+        return;
+      default:
+        super._apply(tensor);
+    }
+  }
 }
 
 /// Negates each element.
@@ -73,6 +90,15 @@ class NegOp extends UnaryMathOp {
 
   @override
   double operation(double value) => -value;
+
+  @override
+  void _apply(TensorBuffer tensor) {
+    if (tensor.dtype == DType.float32) {
+      SimdOps.multiplyScalar(tensor.storage.data as Float32List, -1.0);
+      return;
+    }
+    super._apply(tensor);
+  }
 }
 
 /// Computes the square root of each element.
@@ -93,6 +119,20 @@ class SqrtOp extends UnaryMathOp {
 
   @override
   double operation(double value) => math.sqrt(value);
+
+  @override
+  void _apply(TensorBuffer tensor) {
+    switch (tensor.dtype) {
+      case DType.float32:
+        SimdOps.sqrt(tensor.storage.data as Float32List);
+        return;
+      case DType.float64:
+        SimdOps.sqrtF64(tensor.storage.data as Float64List);
+        return;
+      default:
+        super._apply(tensor);
+    }
+  }
 }
 
 /// Computes the exponential (e^x) of each element.
