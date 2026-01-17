@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
+import '../utils/simd_ops.dart';
 import 'transform_op.dart';
 
 /// Clips tensor values to a specified range.
@@ -68,15 +69,11 @@ class ClipOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     // Dtype-specialized loop to avoid per-element switch overhead
     switch (tensor.dtype) {
       case DType.float32:
-        final list = data as Float32List;
-        for (int i = 0; i < numel; i++) {
-          list[i] = list[i].clamp(min, max);
-        }
+        // SIMD-optimized path for Float32
+        SimdOps.clip(data as Float32List, min, max);
       case DType.float64:
-        final list = data as Float64List;
-        for (int i = 0; i < numel; i++) {
-          list[i] = list[i].clamp(min, max);
-        }
+        // SIMD-optimized path for Float64 (aligned data only, else scalar fallback)
+        SimdOps.clipF64(data as Float64List, min, max);
       default:
         // Fallback for integer types
         for (int i = 0; i < numel; i++) {

@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 /// SIMD-accelerated tensor operations.
@@ -508,6 +509,78 @@ class SimdOps {
     return total;
   }
 
+  /// Element-wise square root using SIMD.
+  ///
+  /// Uses Float32x4.sqrt() for vectorized processing.
+  ///
+  /// **Complexity:** O(n) where n = data.length
+  static void sqrt(Float32List data) {
+    final length = data.length;
+    if (length == 0) return;
+
+    final simdLength = length ~/ 4 * 4;
+
+    if (data.offsetInBytes % 16 == 0) {
+      final simdView = Float32x4List.view(
+        data.buffer,
+        data.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      for (var i = 0; i < simdView.length; i++) {
+        simdView[i] = simdView[i].sqrt();
+      }
+    } else {
+      for (var i = 0; i < simdLength; i += 4) {
+        final v = Float32x4(data[i], data[i + 1], data[i + 2], data[i + 3]);
+        final result = v.sqrt();
+        data[i] = result.x;
+        data[i + 1] = result.y;
+        data[i + 2] = result.z;
+        data[i + 3] = result.w;
+      }
+    }
+
+    for (var i = simdLength; i < length; i++) {
+      data[i] = math.sqrt(data[i]);
+    }
+  }
+
+  /// Element-wise absolute value using SIMD.
+  ///
+  /// Uses Float32x4.abs() for vectorized processing.
+  ///
+  /// **Complexity:** O(n) where n = data.length
+  static void abs(Float32List data) {
+    final length = data.length;
+    if (length == 0) return;
+
+    final simdLength = length ~/ 4 * 4;
+
+    if (data.offsetInBytes % 16 == 0) {
+      final simdView = Float32x4List.view(
+        data.buffer,
+        data.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      for (var i = 0; i < simdView.length; i++) {
+        simdView[i] = simdView[i].abs();
+      }
+    } else {
+      for (var i = 0; i < simdLength; i += 4) {
+        final v = Float32x4(data[i], data[i + 1], data[i + 2], data[i + 3]);
+        final result = v.abs();
+        data[i] = result.x;
+        data[i + 1] = result.y;
+        data[i + 2] = result.z;
+        data[i + 3] = result.w;
+      }
+    }
+
+    for (var i = simdLength; i < length; i++) {
+      if (data[i] < 0) data[i] = -data[i];
+    }
+  }
+
   /// Clips values to [min, max] range using SIMD.
   ///
   /// **Complexity:** O(n) where n = data.length
@@ -545,6 +618,157 @@ class SimdOps {
       } else if (data[i] > max) {
         data[i] = max;
       }
+    }
+  }
+
+  // ============================================================
+  // Float64 SIMD Operations
+  // ============================================================
+  //
+  // Float64x2 processes 2 elements at a time (vs 4 for Float32x4).
+  // Uses Float64x2List.view() for aligned data only.
+  // Unaligned data uses scalar fallback to avoid object creation overhead.
+
+  /// Minimum length for Float64 SIMD to be beneficial.
+  /// Below this threshold, scalar is faster due to SIMD setup overhead.
+  static const int _minF64SimdLength = 4;
+
+  /// Clips Float64 values to [min, max] range using SIMD.
+  ///
+  /// Uses Float64x2.clamp() for vectorized processing on aligned data.
+  /// Falls back to scalar for unaligned data to avoid object creation overhead.
+  ///
+  /// **Complexity:** O(n) where n = data.length
+  static void clipF64(Float64List data, double min, double max) {
+    final length = data.length;
+    if (length == 0) return;
+
+    final simdLength = length ~/ 2 * 2;
+
+    // Check alignment: 16 bytes = 2 × 8-byte doubles
+    // Only use SIMD for aligned data with sufficient length
+    if (data.offsetInBytes % 16 == 0 && length >= _minF64SimdLength) {
+      final minVec = Float64x2.splat(min);
+      final maxVec = Float64x2.splat(max);
+      final simdView = Float64x2List.view(
+        data.buffer,
+        data.offsetInBytes,
+        simdLength ~/ 2,
+      );
+      for (var i = 0; i < simdView.length; i++) {
+        simdView[i] = simdView[i].clamp(minVec, maxVec);
+      }
+    } else {
+      // Scalar fallback for unaligned or small data
+      for (var i = 0; i < simdLength; i++) {
+        data[i] = data[i].clamp(min, max);
+      }
+    }
+
+    // Remaining elements
+    for (var i = simdLength; i < length; i++) {
+      data[i] = data[i].clamp(min, max);
+    }
+  }
+
+  /// Element-wise absolute value for Float64 using SIMD.
+  ///
+  /// Uses Float64x2.abs() for vectorized processing on aligned data.
+  ///
+  /// **Complexity:** O(n) where n = data.length
+  static void absF64(Float64List data) {
+    final length = data.length;
+    if (length == 0) return;
+
+    final simdLength = length ~/ 2 * 2;
+
+    if (data.offsetInBytes % 16 == 0 && length >= _minF64SimdLength) {
+      final simdView = Float64x2List.view(
+        data.buffer,
+        data.offsetInBytes,
+        simdLength ~/ 2,
+      );
+      for (var i = 0; i < simdView.length; i++) {
+        simdView[i] = simdView[i].abs();
+      }
+    } else {
+      // Scalar fallback
+      for (var i = 0; i < simdLength; i++) {
+        if (data[i] < 0) data[i] = -data[i];
+      }
+    }
+
+    for (var i = simdLength; i < length; i++) {
+      if (data[i] < 0) data[i] = -data[i];
+    }
+  }
+
+  /// Element-wise square root for Float64 using SIMD.
+  ///
+  /// Uses Float64x2.sqrt() for vectorized processing on aligned data.
+  ///
+  /// **Complexity:** O(n) where n = data.length
+  static void sqrtF64(Float64List data) {
+    final length = data.length;
+    if (length == 0) return;
+
+    final simdLength = length ~/ 2 * 2;
+
+    if (data.offsetInBytes % 16 == 0 && length >= _minF64SimdLength) {
+      final simdView = Float64x2List.view(
+        data.buffer,
+        data.offsetInBytes,
+        simdLength ~/ 2,
+      );
+      for (var i = 0; i < simdView.length; i++) {
+        simdView[i] = simdView[i].sqrt();
+      }
+    } else {
+      // Scalar fallback
+      for (var i = 0; i < simdLength; i++) {
+        data[i] = math.sqrt(data[i]);
+      }
+    }
+
+    for (var i = simdLength; i < length; i++) {
+      data[i] = math.sqrt(data[i]);
+    }
+  }
+
+  /// Normalizes Float64 values: data[i] = (data[i] - mean) / std
+  ///
+  /// Combines subtraction and division in a single pass using
+  /// pre-computed inverse standard deviation.
+  ///
+  /// **Complexity:** O(n) where n = data.length
+  static void normalizeF64(Float64List data, double mean, double std) {
+    final length = data.length;
+    if (length == 0) return;
+
+    final simdLength = length ~/ 2 * 2;
+
+    if (data.offsetInBytes % 16 == 0 && length >= _minF64SimdLength) {
+      final meanVec = Float64x2.splat(mean);
+      final invStdVec = Float64x2.splat(1.0 / std);
+      final simdView = Float64x2List.view(
+        data.buffer,
+        data.offsetInBytes,
+        simdLength ~/ 2,
+      );
+      for (var i = 0; i < simdView.length; i++) {
+        simdView[i] = (simdView[i] - meanVec) * invStdVec;
+      }
+    } else {
+      // Scalar fallback
+      final invStd = 1.0 / std;
+      for (var i = 0; i < simdLength; i++) {
+        data[i] = (data[i] - mean) * invStd;
+      }
+    }
+
+    final invStd = 1.0 / std;
+    for (var i = simdLength; i < length; i++) {
+      data[i] = (data[i] - mean) * invStd;
     }
   }
 }
