@@ -1,5 +1,73 @@
 import '../core/tensor_buffer.dart';
 
+// ============================================================================
+// Operation Capabilities
+// ============================================================================
+
+/// Describes the capabilities and characteristics of a tensor operation.
+///
+/// This metadata helps pipeline optimizers understand operation behavior
+/// without executing them. Use this for:
+/// - In-place operation chaining
+/// - Memory allocation planning
+/// - Pipeline fusion opportunities
+///
+/// Example:
+/// ```dart
+/// class MyOp extends TransformOp {
+///   @override
+///   OperationCapabilities get capabilities => const OperationCapabilities(
+///     supportsInPlace: true,
+///     preservesShape: true,
+///   );
+/// }
+/// ```
+class OperationCapabilities {
+  /// Whether the operation can modify the input tensor in place.
+  ///
+  /// Operations with `supportsInPlace: true` typically also implement
+  /// the [InPlaceTransform] mixin.
+  final bool supportsInPlace;
+
+  /// Whether the operation requires contiguous memory layout.
+  ///
+  /// Operations with `requiresContiguous: true` typically also implement
+  /// the [RequiresContiguous] mixin.
+  final bool requiresContiguous;
+
+  /// Whether the operation preserves the input shape.
+  ///
+  /// `true` for element-wise operations (normalize, relu, etc.)
+  /// `false` for shape-changing operations (resize, reshape, etc.)
+  final bool preservesShape;
+
+  /// Whether the operation may change the data type.
+  ///
+  /// `true` for type casting operations
+  /// `false` for most operations that preserve dtype
+  final bool modifiesDType;
+
+  /// Creates operation capabilities with the specified characteristics.
+  const OperationCapabilities({
+    this.supportsInPlace = false,
+    this.requiresContiguous = false,
+    this.preservesShape = true,
+    this.modifiesDType = false,
+  });
+
+  /// Default capabilities for operations that don't specify their own.
+  static const defaultCapabilities = OperationCapabilities();
+
+  @override
+  String toString() =>
+      'OperationCapabilities(inPlace: $supportsInPlace, contiguous: $requiresContiguous, '
+      'preservesShape: $preservesShape, modifiesDType: $modifiesDType)';
+}
+
+// ============================================================================
+// Transform Operation Base Class
+// ============================================================================
+
 /// Base class for all tensor transform operations.
 ///
 /// Subclasses implement [apply] to perform the actual transformation and
@@ -8,6 +76,13 @@ import '../core/tensor_buffer.dart';
 abstract class TransformOp {
   /// The human-readable name of this operation.
   String get name;
+
+  /// The capabilities of this operation.
+  ///
+  /// Override this getter to specify operation-specific capabilities.
+  /// Default returns [OperationCapabilities.defaultCapabilities].
+  OperationCapabilities get capabilities =>
+      OperationCapabilities.defaultCapabilities;
 
   /// Applies this transform to [input] and returns the result.
   TensorBuffer apply(TensorBuffer input);
