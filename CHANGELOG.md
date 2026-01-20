@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] - 2026-01-20
+
+### Internal
+
+- **TensorBuffer Factory Separation** - Moved factory methods to separate file:
+  - `tensor_buffer_factory.dart` contains: zeros, ones, full, random, randn, eye, linspace, arange, fromFloat32List, fromFloat64List, fromUint8List
+  - Reduces `tensor_buffer.dart` from ~840 lines to ~530 lines
+  - No API changes
+
+- **OpValidator** - Added centralized operation validation (`validation_utils.dart`):
+  - `OpValidator.validateRank()` - Validates tensor rank range
+  - `OpValidator.validateAxis()` - Validates and normalizes axis (supports negative indexing)
+  - `OpValidator.validateChannels()` - Validates channel count
+  - `OpValidator.validatePositiveDimension()` - Validates positive dimension
+  - `OpValidator.validateListLength()` - Validates list length
+
+- **OperationCapabilities** - Added operation metadata (`transform_op.dart`):
+  - `supportsInPlace` - Whether op can modify tensor in place
+  - `requiresContiguous` - Whether op requires contiguous memory
+  - `preservesShape` - Whether op preserves input shape
+  - `modifiesDType` - Whether op may change data type
+  - Default `capabilities` getter on `TransformOp`
+
 ## [0.6.1] - 2026-01-17
 
 ### Added
