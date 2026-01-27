@@ -101,7 +101,8 @@ class PadOp extends TransformOp with RequiresContiguous {
     _validateShape(contiguous.shape);
 
     final outputShape = computeOutputShape(contiguous.shape);
-    final output = TensorBuffer.zeros(outputShape, dtype: contiguous.dtype);
+    final output =
+        TensorBuffer.uninitialized(outputShape, dtype: contiguous.dtype);
 
     switch (mode) {
       case PadMode.constant:
@@ -364,7 +365,6 @@ class PadOp extends TransformOp with RequiresContiguous {
       }
     }
   }
-
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {

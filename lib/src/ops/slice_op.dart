@@ -102,7 +102,7 @@ class SliceOp extends TransformOp {
     }).toList();
 
     // Create output tensor
-    final output = TensorBuffer.zeros(outputShape, dtype: input.dtype);
+    final output = TensorBuffer.uninitialized(outputShape, dtype: input.dtype);
 
     // Copy data using the slice ranges
     _copySlicedData(input, output, ranges);

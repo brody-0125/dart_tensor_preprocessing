@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import '../core/buffer_pool.dart';
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
@@ -84,7 +85,8 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
     if (inputShape.length == 3) {
       // 3D: [C, H, W]
       final (c, h, w) = (inputShape[0], inputShape[1], inputShape[2]);
-      final output = TensorBuffer.zeros([c, height, width], dtype: input.dtype);
+      final output =
+          TensorBuffer.uninitialized([c, height, width], dtype: input.dtype);
 
       for (int ch = 0; ch < c; ch++) {
         for (int row = 0; row < height; row++) {
@@ -103,7 +105,7 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
       final (n, c, h, w) =
           (inputShape[0], inputShape[1], inputShape[2], inputShape[3]);
       final output =
-          TensorBuffer.zeros([n, c, height, width], dtype: input.dtype);
+          TensorBuffer.uninitialized([n, c, height, width], dtype: input.dtype);
 
       for (int batch = 0; batch < n; batch++) {
         for (int ch = 0; ch < c; ch++) {
@@ -235,90 +237,18 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
     if (inputShape.length == 3) {
       // 3D: [C, H, W]
       final (c, h, w) = (inputShape[0], inputShape[1], inputShape[2]);
-      final output = TensorBuffer.zeros([c, h, w], dtype: input.dtype);
+      final output = TensorBuffer.uninitialized([c, h, w], dtype: input.dtype);
 
-      // Pre-allocate temp buffer (reused across channels)
-      final temp = Float64List(h * w);
-
-      // Dtype-specialized for hot path optimization
-      switch (input.dtype) {
-        case DType.float32:
-          final inList = input.storage.data as Float32List;
-          final outList = output.storage.data as Float32List;
-          for (int ch = 0; ch < c; ch++) {
-            final chOffset = ch * h * w;
-            // Horizontal pass
-            for (int row = 0; row < h; row++) {
-              for (int col = 0; col < w; col++) {
-                double sum = 0.0;
-                for (int k = 0; k < kernelSize; k++) {
-                  final xi = reflectIndex(col + k - radius, w);
-                  sum += inList[chOffset + row * w + xi] * kernel[k];
-                }
-                temp[row * w + col] = sum;
-              }
-            }
-            // Vertical pass
-            for (int row = 0; row < h; row++) {
-              for (int col = 0; col < w; col++) {
-                double sum = 0.0;
-                for (int k = 0; k < kernelSize; k++) {
-                  final yi = reflectIndex(row + k - radius, h);
-                  sum += temp[yi * w + col] * kernel[k];
-                }
-                outList[chOffset + row * w + col] = sum;
-              }
-            }
-          }
-        default:
-          // Generic fallback
-          for (int ch = 0; ch < c; ch++) {
-            // Horizontal pass
-            for (int row = 0; row < h; row++) {
-              for (int col = 0; col < w; col++) {
-                double sum = 0.0;
-                for (int k = 0; k < kernelSize; k++) {
-                  final xi = reflectIndex(col + k - radius, w);
-                  final inputIdx = ch * h * w + row * w + xi;
-                  sum += input.storage.getAsDouble(inputIdx) * kernel[k];
-                }
-                temp[row * w + col] = sum;
-              }
-            }
-            // Vertical pass
-            for (int row = 0; row < h; row++) {
-              for (int col = 0; col < w; col++) {
-                double sum = 0.0;
-                for (int k = 0; k < kernelSize; k++) {
-                  final yi = reflectIndex(row + k - radius, h);
-                  sum += temp[yi * w + col] * kernel[k];
-                }
-                final outputIdx = ch * h * w + row * w + col;
-                output.storage.setFromDouble(outputIdx, sum);
-              }
-            }
-          }
-      }
-
-      return output;
-    } else {
-      // 4D: [N, C, H, W]
-      final (n, c, h, w) =
-          (inputShape[0], inputShape[1], inputShape[2], inputShape[3]);
-      final output = TensorBuffer.zeros([n, c, h, w], dtype: input.dtype);
-
-      // Pre-allocate temp buffer (reused across batches and channels)
-      final temp = Float64List(h * w);
-
-      // Dtype-specialized for hot path optimization
-      switch (input.dtype) {
-        case DType.float32:
-          final inList = input.storage.data as Float32List;
-          final outList = output.storage.data as Float32List;
-          for (int batch = 0; batch < n; batch++) {
-            final batchOffset = batch * c * h * w;
+      // Acquire pooled temp buffer (reused across channels)
+      final temp = BufferPool.instance.acquireFloat64(h * w);
+      try {
+        // Dtype-specialized for hot path optimization
+        switch (input.dtype) {
+          case DType.float32:
+            final inList = input.storage.data as Float32List;
+            final outList = output.storage.data as Float32List;
             for (int ch = 0; ch < c; ch++) {
-              final chOffset = batchOffset + ch * h * w;
+              final chOffset = ch * h * w;
               // Horizontal pass
               for (int row = 0; row < h; row++) {
                 for (int col = 0; col < w; col++) {
@@ -342,10 +272,8 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
                 }
               }
             }
-          }
-        default:
-          // Generic fallback
-          for (int batch = 0; batch < n; batch++) {
+          default:
+            // Generic fallback
             for (int ch = 0; ch < c; ch++) {
               // Horizontal pass
               for (int row = 0; row < h; row++) {
@@ -353,8 +281,7 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
                   double sum = 0.0;
                   for (int k = 0; k < kernelSize; k++) {
                     final xi = reflectIndex(col + k - radius, w);
-                    final inputIdx =
-                        batch * c * h * w + ch * h * w + row * w + xi;
+                    final inputIdx = ch * h * w + row * w + xi;
                     sum += input.storage.getAsDouble(inputIdx) * kernel[k];
                   }
                   temp[row * w + col] = sum;
@@ -368,19 +295,98 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
                     final yi = reflectIndex(row + k - radius, h);
                     sum += temp[yi * w + col] * kernel[k];
                   }
-                  final outputIdx =
-                      batch * c * h * w + ch * h * w + row * w + col;
+                  final outputIdx = ch * h * w + row * w + col;
                   output.storage.setFromDouble(outputIdx, sum);
                 }
               }
             }
-          }
+        }
+      } finally {
+        BufferPool.instance.release(temp);
       }
+      return output;
+    } else {
+      // 4D: [N, C, H, W]
+      final (n, c, h, w) =
+          (inputShape[0], inputShape[1], inputShape[2], inputShape[3]);
+      final output =
+          TensorBuffer.uninitialized([n, c, h, w], dtype: input.dtype);
 
+      // Acquire pooled temp buffer (reused across batches and channels)
+      final temp = BufferPool.instance.acquireFloat64(h * w);
+      try {
+        // Dtype-specialized for hot path optimization
+        switch (input.dtype) {
+          case DType.float32:
+            final inList = input.storage.data as Float32List;
+            final outList = output.storage.data as Float32List;
+            for (int batch = 0; batch < n; batch++) {
+              final batchOffset = batch * c * h * w;
+              for (int ch = 0; ch < c; ch++) {
+                final chOffset = batchOffset + ch * h * w;
+                // Horizontal pass
+                for (int row = 0; row < h; row++) {
+                  for (int col = 0; col < w; col++) {
+                    double sum = 0.0;
+                    for (int k = 0; k < kernelSize; k++) {
+                      final xi = reflectIndex(col + k - radius, w);
+                      sum += inList[chOffset + row * w + xi] * kernel[k];
+                    }
+                    temp[row * w + col] = sum;
+                  }
+                }
+                // Vertical pass
+                for (int row = 0; row < h; row++) {
+                  for (int col = 0; col < w; col++) {
+                    double sum = 0.0;
+                    for (int k = 0; k < kernelSize; k++) {
+                      final yi = reflectIndex(row + k - radius, h);
+                      sum += temp[yi * w + col] * kernel[k];
+                    }
+                    outList[chOffset + row * w + col] = sum;
+                  }
+                }
+              }
+            }
+          default:
+            // Generic fallback
+            for (int batch = 0; batch < n; batch++) {
+              for (int ch = 0; ch < c; ch++) {
+                // Horizontal pass
+                for (int row = 0; row < h; row++) {
+                  for (int col = 0; col < w; col++) {
+                    double sum = 0.0;
+                    for (int k = 0; k < kernelSize; k++) {
+                      final xi = reflectIndex(col + k - radius, w);
+                      final inputIdx =
+                          batch * c * h * w + ch * h * w + row * w + xi;
+                      sum += input.storage.getAsDouble(inputIdx) * kernel[k];
+                    }
+                    temp[row * w + col] = sum;
+                  }
+                }
+                // Vertical pass
+                for (int row = 0; row < h; row++) {
+                  for (int col = 0; col < w; col++) {
+                    double sum = 0.0;
+                    for (int k = 0; k < kernelSize; k++) {
+                      final yi = reflectIndex(row + k - radius, h);
+                      sum += temp[yi * w + col] * kernel[k];
+                    }
+                    final outputIdx =
+                        batch * c * h * w + ch * h * w + row * w + col;
+                    output.storage.setFromDouble(outputIdx, sum);
+                  }
+                }
+              }
+            }
+        }
+      } finally {
+        BufferPool.instance.release(temp);
+      }
       return output;
     }
   }
-
 
   @override
   List<int> computeOutputShape(List<int> inputShape) => inputShape;

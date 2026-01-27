@@ -101,7 +101,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     final srcW = input.shape[2];
 
     final outputShape = [c, height, width];
-    final output = TensorBuffer.zeros(outputShape, dtype: input.dtype);
+    final output = TensorBuffer.uninitialized(outputShape, dtype: input.dtype);
 
     _resizeChannels(
       input: input,
@@ -123,7 +123,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     final srcW = input.shape[3];
 
     final outputShape = [n, c, height, width];
-    final output = TensorBuffer.zeros(outputShape, dtype: input.dtype);
+    final output = TensorBuffer.uninitialized(outputShape, dtype: input.dtype);
 
     final srcBatchStride = c * srcH * srcW;
     final dstBatchStride = c * height * width;
@@ -446,8 +446,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
               for (int i = -1; i <= 2; i++) {
                 final xi = (x0 + i).clamp(0, srcW - 1);
                 final wx = _cubicWeight(i - fx);
-                final v =
-                    input.storage.getAsDouble(srcOffset + yj * srcW + xi);
+                final v = input.storage.getAsDouble(srcOffset + yj * srcW + xi);
                 value += v * wx * wy;
               }
             }
@@ -667,8 +666,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
                 final wx = _lanczosKernel(i - fx, a);
                 final weight = wx * wy;
 
-                final v =
-                    input.storage.getAsDouble(srcOffset + yj * srcW + xi);
+                final v = input.storage.getAsDouble(srcOffset + yj * srcW + xi);
                 value += v * weight;
                 weightSum += weight;
               }
@@ -839,7 +837,8 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
     final srcH = input.shape[1];
     final srcW = input.shape[2];
 
-    final output = TensorBuffer.zeros([c, height, width], dtype: input.dtype);
+    final output =
+        TensorBuffer.uninitialized([c, height, width], dtype: input.dtype);
 
     // Dtype-specialized for hot path optimization
     switch (input.dtype) {
@@ -885,7 +884,7 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
     final srcW = input.shape[3];
 
     final output =
-        TensorBuffer.zeros([n, c, height, width], dtype: input.dtype);
+        TensorBuffer.uninitialized([n, c, height, width], dtype: input.dtype);
 
     final srcBatchStride = c * srcH * srcW;
     final dstBatchStride = c * height * width;
@@ -923,8 +922,10 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
                     ch * srcChannelStride +
                     (startY + y) * srcW +
                     (startX + x);
-                final dstIdx =
-                    batch * dstBatchStride + ch * dstChannelStride + y * width + x;
+                final dstIdx = batch * dstBatchStride +
+                    ch * dstChannelStride +
+                    y * width +
+                    x;
                 final value = input.storage.getAsDouble(srcIdx);
                 output.storage.setFromDouble(dstIdx, value);
               }

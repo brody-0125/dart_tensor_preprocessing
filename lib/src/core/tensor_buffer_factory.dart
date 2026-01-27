@@ -25,6 +25,26 @@ extension TensorBufferFactory on TensorBuffer {
 // Note: The following are implemented as static methods on TensorBuffer
 // in the main tensor_buffer.dart file, but their implementations are here.
 
+/// Creates a tensor buffer without initializing values.
+///
+/// In Dart, typed data buffers are zero-initialized by the VM,
+/// so this is functionally equivalent to [_zerosImpl]. The semantic
+/// distinction signals intent: the caller will overwrite all elements.
+TensorBuffer _uninitializedImpl(
+  List<int> shape, {
+  DType dtype = DType.float32,
+  MemoryFormat memoryFormat = MemoryFormat.contiguous,
+}) {
+  TensorBuffer._validateShapeStatic(shape);
+  final numel = shape.fold(1, (a, b) => a * b);
+  final data = dtype.createBuffer(numel);
+  return TensorBuffer(
+    storage: TensorStorage(data, dtype),
+    shape: List.unmodifiable(shape),
+    memoryFormat: memoryFormat,
+  );
+}
+
 /// Creates a tensor filled with zeros.
 TensorBuffer _zerosImpl(
   List<int> shape, {
