@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
 import 'package:dart_tensor_preprocessing/src/core/dtype.dart';
+import 'package:dart_tensor_preprocessing/src/core/memory_format.dart';
 import 'package:dart_tensor_preprocessing/src/core/tensor_buffer.dart';
 import 'package:dart_tensor_preprocessing/src/exceptions/tensor_exceptions.dart';
 
@@ -33,8 +34,10 @@ void main() {
     });
 
     test('supports different dtypes', () {
-      final tensorFloat = TensorBuffer.full([2], fillValue: 3.0, dtype: DType.float32);
-      final tensorInt = TensorBuffer.full([2], fillValue: 3.0, dtype: DType.int32);
+      final tensorFloat =
+          TensorBuffer.full([2], fillValue: 3.0, dtype: DType.float32);
+      final tensorInt =
+          TensorBuffer.full([2], fillValue: 3.0, dtype: DType.int32);
 
       expect(tensorFloat.dtype, equals(DType.float32));
       expect(tensorInt.dtype, equals(DType.int32));
@@ -265,6 +268,48 @@ void main() {
         () => TensorBuffer.arange(start: 5.0, end: 0.0, step: 1.0),
         throwsA(isA<InvalidParameterException>()),
       );
+    });
+  });
+
+  group('TensorBuffer.uninitialized', () {
+    test('creates tensor with correct shape and dtype', () {
+      final tensor = TensorBuffer.uninitialized([2, 3]);
+
+      expect(tensor.shape, equals([2, 3]));
+      expect(tensor.numel, equals(6));
+      expect(tensor.dtype, equals(DType.float32));
+    });
+
+    test('supports float64 dtype', () {
+      final tensor = TensorBuffer.uninitialized([3, 4], dtype: DType.float64);
+
+      expect(tensor.shape, equals([3, 4]));
+      expect(tensor.dtype, equals(DType.float64));
+      expect(tensor.numel, equals(12));
+    });
+
+    test('supports uint8 dtype', () {
+      final tensor = TensorBuffer.uninitialized([2, 2], dtype: DType.uint8);
+
+      expect(tensor.shape, equals([2, 2]));
+      expect(tensor.dtype, equals(DType.uint8));
+    });
+
+    test('validates shape', () {
+      expect(
+        () => TensorBuffer.uninitialized([-1, 3]),
+        throwsA(isA<InvalidParameterException>()),
+      );
+    });
+
+    test('supports memory format parameter', () {
+      final tensor = TensorBuffer.uninitialized(
+        [1, 3, 4, 4],
+        memoryFormat: MemoryFormat.channelsLast,
+      );
+
+      expect(tensor.shape, equals([1, 3, 4, 4]));
+      expect(tensor.memoryFormat, equals(MemoryFormat.channelsLast));
     });
   });
 }

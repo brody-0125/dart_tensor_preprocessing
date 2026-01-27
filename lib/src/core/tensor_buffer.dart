@@ -147,7 +147,8 @@ class TensorBuffer {
     if (newNumel != numel) {
       throw ShapeMismatchException(
         actual: newShape,
-        message: 'Cannot reshape tensor of size $numel to $newShape (size $newNumel)',
+        message:
+            'Cannot reshape tensor of size $numel to $newShape (size $newNumel)',
       );
     }
 
@@ -343,6 +344,17 @@ class TensorBuffer {
 
     return storage.getAsDouble(offset);
   }
+
+  /// Creates a tensor buffer without initializing values.
+  ///
+  /// WARNING: The buffer contains undefined values until written.
+  /// Only use when you will immediately write all elements.
+  static TensorBuffer uninitialized(
+    List<int> shape, {
+    DType dtype = DType.float32,
+    MemoryFormat memoryFormat = MemoryFormat.contiguous,
+  }) =>
+      _uninitializedImpl(shape, dtype: dtype, memoryFormat: memoryFormat);
 
   /// Creates a tensor filled with zeros.
   static TensorBuffer zeros(

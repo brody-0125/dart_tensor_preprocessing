@@ -79,7 +79,8 @@ TensorBuffer concat(List<TensorBuffer> tensors, {int axis = 0}) {
   outputShape[normalizedAxis] = totalAxisSize;
 
   // Create output tensor
-  final output = TensorBuffer.zeros(outputShape, dtype: firstTensor.dtype);
+  final output =
+      TensorBuffer.uninitialized(outputShape, dtype: firstTensor.dtype);
 
   // Optimized copy using linear indexing
   // For axis=0 and contiguous tensors, use bulk copy

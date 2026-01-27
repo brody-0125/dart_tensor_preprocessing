@@ -18,7 +18,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.6.2
+  dart_tensor_preprocessing: ^0.6.3
 ```
 
 ## Quick Start

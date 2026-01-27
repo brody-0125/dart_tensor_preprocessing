@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.3] - 2026-01-28
+
+### Added
+
+- **`TensorBuffer.uninitialized()` factory** - Creates tensor buffer without zero-fill for cases where all elements will be immediately overwritten
+  - Supports all DTypes and MemoryFormat options
+  - Semantically signals intent to overwrite, avoiding redundant initialization
+
+### Changed
+
+- **Uninitialized buffer usage** - Operations that fully overwrite output now use `TensorBuffer.uninitialized()` instead of `zeros()`:
+  - `ResizeOp` (3D/4D), `CenterCropOp` (3D/4D), `concat()`, `SliceOp`, `RandomCropOp` (3D/4D), `GaussianBlurOp` (3D/4D), `PadOp` (all modes)
+
+- **BufferPool integration in GaussianBlurOp** - Temporary `Float64List` buffers now acquired from `BufferPool` and properly released via `try/finally` to prevent leaks on exceptions
+
 ## [0.6.2] - 2026-01-20
 
 ### Internal
