@@ -38,8 +38,8 @@ class BenchmarkResult {
 
   @override
   String toString() {
-    final ms = formatDuration(Duration(
-        microseconds: (elapsed.inMicroseconds / iterations).round()));
+    final ms = formatDuration(
+        Duration(microseconds: (elapsed.inMicroseconds / iterations).round()));
     final ops = formatOps(opsPerSecond);
     final o1 = isConstantTime == true ? ' ✓ O(1)' : '';
     return '$name: $ms ($ops)$o1';

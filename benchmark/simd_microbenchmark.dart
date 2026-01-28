@@ -87,7 +87,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
     iterations: 200,
   );
   results.add(result);
-  print('$result  [${_formatThroughput(alignmentTestSize, result.opsPerSecond)}]');
+  print(
+      '$result  [${_formatThroughput(alignmentTestSize, result.opsPerSecond)}]');
 
   // Unaligned data (offset = 1 element = 4 bytes, not 16-byte aligned)
   final buffer = Float32List(alignmentTestSize + 1);
@@ -100,7 +101,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
     iterations: 200,
   );
   results.add(result);
-  print('$result  [${_formatThroughput(alignmentTestSize, result.opsPerSecond)}]');
+  print(
+      '$result  [${_formatThroughput(alignmentTestSize, result.opsPerSecond)}]');
 
   // ===== Float32 SIMD vs Float64 SIMD Comparison =====
   printHeader('Float32 SIMD vs Float64 SIMD');
@@ -208,7 +210,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
     iterations: 200,
   );
   results.add(result);
-  print('$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
+  print(
+      '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
 
   // Unaligned Float64 data (offset = 1 element = 8 bytes, not 16-byte aligned)
   final bufferF64 = Float64List(float64TestSize + 1);
@@ -221,7 +224,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
     iterations: 200,
   );
   results.add(result);
-  print('$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
+  print(
+      '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
 
   print('');
 
@@ -236,7 +240,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
     iterations: 200,
   );
   results.add(result);
-  print('$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
+  print(
+      '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
 
   final bufferClipF64 = Float64List(float64TestSize + 1);
   _fillDataF64(bufferClipF64, range: 2.0, signed: true);
@@ -249,7 +254,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
     iterations: 200,
   );
   results.add(result);
-  print('$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
+  print(
+      '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
 
   // ===== Edge case: Non-multiple-of-4 lengths =====
   printHeader('Edge Case: Non-Multiple-of-4 Lengths');

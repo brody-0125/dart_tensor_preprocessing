@@ -266,64 +266,94 @@ class ResizeOp extends TransformOp with RequiresContiguous {
       case DType.float32:
         final inList = input.storage.data as Float32List;
         final outList = output.storage.data as Float32List;
-        for (int y = 0; y < height; y++) {
-          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
-          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
-          final y0 = srcY.floor().clamp(0, srcH - 1);
-          final y1 = (y0 + 1).clamp(0, srcH - 1);
-          final fy = srcY - y0;
-          final oneMinusFy = 1 - fy;
 
-          for (int x = 0; x < width; x++) {
-            final rawSrcX =
-                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
-            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
-            final x0 = srcX.floor().clamp(0, srcW - 1);
-            final x1 = (x0 + 1).clamp(0, srcW - 1);
-            final fx = srcX - x0;
-            final oneMinusFx = 1 - fx;
+        // Cache-friendly blocking: process output in 64x64 blocks
+        // This ensures source pixels stay in L1 cache during processing
+        const blockSize = 64;
 
-            final v00 = inList[srcOffset + y0 * srcW + x0];
-            final v01 = inList[srcOffset + y0 * srcW + x1];
-            final v10 = inList[srcOffset + y1 * srcW + x0];
-            final v11 = inList[srcOffset + y1 * srcW + x1];
+        for (int by = 0; by < height; by += blockSize) {
+          final endY = math.min(by + blockSize, height);
 
-            final value = v00 * oneMinusFx * oneMinusFy +
-                v01 * fx * oneMinusFy +
-                v10 * oneMinusFx * fy +
-                v11 * fx * fy;
+          for (int bx = 0; bx < width; bx += blockSize) {
+            final endX = math.min(bx + blockSize, width);
 
-            outList[dstOffset + y * width + x] = value;
+            // Process block
+            for (int y = by; y < endY; y++) {
+              final rawSrcY =
+                  alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+              final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+              final y0 = srcY.floor().clamp(0, srcH - 1);
+              final y1 = (y0 + 1).clamp(0, srcH - 1);
+              final fy = srcY - y0;
+              final oneMinusFy = 1 - fy;
+
+              for (int x = bx; x < endX; x++) {
+                final rawSrcX =
+                    alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+                final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+                final x0 = srcX.floor().clamp(0, srcW - 1);
+                final x1 = (x0 + 1).clamp(0, srcW - 1);
+                final fx = srcX - x0;
+                final oneMinusFx = 1 - fx;
+
+                final v00 = inList[srcOffset + y0 * srcW + x0];
+                final v01 = inList[srcOffset + y0 * srcW + x1];
+                final v10 = inList[srcOffset + y1 * srcW + x0];
+                final v11 = inList[srcOffset + y1 * srcW + x1];
+
+                final value = v00 * oneMinusFx * oneMinusFy +
+                    v01 * fx * oneMinusFy +
+                    v10 * oneMinusFx * fy +
+                    v11 * fx * fy;
+
+                outList[dstOffset + y * width + x] = value;
+              }
+            }
           }
         }
       default:
-        // Generic fallback
-        for (int y = 0; y < height; y++) {
-          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
-          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
-          final y0 = srcY.floor().clamp(0, srcH - 1);
-          final y1 = (y0 + 1).clamp(0, srcH - 1);
-          final fy = srcY - y0;
+        // Generic fallback with cache-friendly blocking
+        const blockSize = 64;
 
-          for (int x = 0; x < width; x++) {
-            final rawSrcX =
-                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
-            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
-            final x0 = srcX.floor().clamp(0, srcW - 1);
-            final x1 = (x0 + 1).clamp(0, srcW - 1);
-            final fx = srcX - x0;
+        for (int by = 0; by < height; by += blockSize) {
+          final endY = math.min(by + blockSize, height);
 
-            final v00 = input.storage.getAsDouble(srcOffset + y0 * srcW + x0);
-            final v01 = input.storage.getAsDouble(srcOffset + y0 * srcW + x1);
-            final v10 = input.storage.getAsDouble(srcOffset + y1 * srcW + x0);
-            final v11 = input.storage.getAsDouble(srcOffset + y1 * srcW + x1);
+          for (int bx = 0; bx < width; bx += blockSize) {
+            final endX = math.min(bx + blockSize, width);
 
-            final value = v00 * (1 - fx) * (1 - fy) +
-                v01 * fx * (1 - fy) +
-                v10 * (1 - fx) * fy +
-                v11 * fx * fy;
+            for (int y = by; y < endY; y++) {
+              final rawSrcY =
+                  alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+              final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+              final y0 = srcY.floor().clamp(0, srcH - 1);
+              final y1 = (y0 + 1).clamp(0, srcH - 1);
+              final fy = srcY - y0;
 
-            output.storage.setFromDouble(dstOffset + y * width + x, value);
+              for (int x = bx; x < endX; x++) {
+                final rawSrcX =
+                    alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+                final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+                final x0 = srcX.floor().clamp(0, srcW - 1);
+                final x1 = (x0 + 1).clamp(0, srcW - 1);
+                final fx = srcX - x0;
+
+                final v00 =
+                    input.storage.getAsDouble(srcOffset + y0 * srcW + x0);
+                final v01 =
+                    input.storage.getAsDouble(srcOffset + y0 * srcW + x1);
+                final v10 =
+                    input.storage.getAsDouble(srcOffset + y1 * srcW + x0);
+                final v11 =
+                    input.storage.getAsDouble(srcOffset + y1 * srcW + x1);
+
+                final value = v00 * (1 - fx) * (1 - fy) +
+                    v01 * fx * (1 - fy) +
+                    v10 * (1 - fx) * fy +
+                    v11 * fx * fy;
+
+                output.storage.setFromDouble(dstOffset + y * width + x, value);
+              }
+            }
           }
         }
     }
@@ -488,91 +518,113 @@ class ResizeOp extends TransformOp with RequiresContiguous {
       case DType.float32:
         final inList = input.storage.data as Float32List;
         final outList = output.storage.data as Float32List;
-        for (int y = 0; y < height; y++) {
-          // Source region covered by output pixel [y]
-          final srcY0 = y * scaleY;
-          final srcY1 = (y + 1) * scaleY;
 
-          for (int x = 0; x < width; x++) {
-            // Source region covered by output pixel [x]
-            final srcX0 = x * scaleX;
-            final srcX1 = (x + 1) * scaleX;
+        // Cache-friendly blocking: process output in 64x64 blocks
+        const blockSize = 64;
 
-            // Accumulate weighted sum
-            double sum = 0;
-            double totalWeight = 0;
+        for (int by = 0; by < height; by += blockSize) {
+          final endY = math.min(by + blockSize, height);
 
-            final y0Floor = srcY0.floor().clamp(0, srcH - 1);
-            final y1Ceil = srcY1.ceil().clamp(0, srcH);
-            final x0Floor = srcX0.floor().clamp(0, srcW - 1);
-            final x1Ceil = srcX1.ceil().clamp(0, srcW);
+          for (int bx = 0; bx < width; bx += blockSize) {
+            final endX = math.min(bx + blockSize, width);
 
-            for (int sy = y0Floor; sy < y1Ceil; sy++) {
-              // Compute vertical overlap
-              final overlapTop = math.max(srcY0, sy.toDouble());
-              final overlapBottom = math.min(srcY1, (sy + 1).toDouble());
-              final overlapY = math.max(0.0, overlapBottom - overlapTop);
+            for (int y = by; y < endY; y++) {
+              // Source region covered by output pixel [y]
+              final srcY0 = y * scaleY;
+              final srcY1 = (y + 1) * scaleY;
 
-              for (int sx = x0Floor; sx < x1Ceil; sx++) {
-                // Compute horizontal overlap
-                final overlapLeft = math.max(srcX0, sx.toDouble());
-                final overlapRight = math.min(srcX1, (sx + 1).toDouble());
-                final overlapX = math.max(0.0, overlapRight - overlapLeft);
+              for (int x = bx; x < endX; x++) {
+                // Source region covered by output pixel [x]
+                final srcX0 = x * scaleX;
+                final srcX1 = (x + 1) * scaleX;
 
-                final weight = overlapX * overlapY;
-                if (weight > 0) {
-                  sum += inList[srcOffset + sy * srcW + sx] * weight;
-                  totalWeight += weight;
+                // Accumulate weighted sum
+                double sum = 0;
+                double totalWeight = 0;
+
+                final y0Floor = srcY0.floor().clamp(0, srcH - 1);
+                final y1Ceil = srcY1.ceil().clamp(0, srcH);
+                final x0Floor = srcX0.floor().clamp(0, srcW - 1);
+                final x1Ceil = srcX1.ceil().clamp(0, srcW);
+
+                for (int sy = y0Floor; sy < y1Ceil; sy++) {
+                  // Compute vertical overlap
+                  final overlapTop = math.max(srcY0, sy.toDouble());
+                  final overlapBottom = math.min(srcY1, (sy + 1).toDouble());
+                  final overlapY = math.max(0.0, overlapBottom - overlapTop);
+
+                  for (int sx = x0Floor; sx < x1Ceil; sx++) {
+                    // Compute horizontal overlap
+                    final overlapLeft = math.max(srcX0, sx.toDouble());
+                    final overlapRight = math.min(srcX1, (sx + 1).toDouble());
+                    final overlapX = math.max(0.0, overlapRight - overlapLeft);
+
+                    final weight = overlapX * overlapY;
+                    if (weight > 0) {
+                      sum += inList[srcOffset + sy * srcW + sx] * weight;
+                      totalWeight += weight;
+                    }
+                  }
                 }
+
+                outList[dstOffset + y * width + x] =
+                    totalWeight > 0 ? sum / totalWeight : 0;
               }
             }
-
-            outList[dstOffset + y * width + x] =
-                totalWeight > 0 ? sum / totalWeight : 0;
           }
         }
       default:
-        // Generic fallback
-        for (int y = 0; y < height; y++) {
-          final srcY0 = y * scaleY;
-          final srcY1 = (y + 1) * scaleY;
+        // Generic fallback with cache-friendly blocking
+        const blockSize = 64;
 
-          for (int x = 0; x < width; x++) {
-            final srcX0 = x * scaleX;
-            final srcX1 = (x + 1) * scaleX;
+        for (int by = 0; by < height; by += blockSize) {
+          final endY = math.min(by + blockSize, height);
 
-            double sum = 0;
-            double totalWeight = 0;
+          for (int bx = 0; bx < width; bx += blockSize) {
+            final endX = math.min(bx + blockSize, width);
 
-            final y0Floor = srcY0.floor().clamp(0, srcH - 1);
-            final y1Ceil = srcY1.ceil().clamp(0, srcH);
-            final x0Floor = srcX0.floor().clamp(0, srcW - 1);
-            final x1Ceil = srcX1.ceil().clamp(0, srcW);
+            for (int y = by; y < endY; y++) {
+              final srcY0 = y * scaleY;
+              final srcY1 = (y + 1) * scaleY;
 
-            for (int sy = y0Floor; sy < y1Ceil; sy++) {
-              final overlapTop = math.max(srcY0, sy.toDouble());
-              final overlapBottom = math.min(srcY1, (sy + 1).toDouble());
-              final overlapY = math.max(0.0, overlapBottom - overlapTop);
+              for (int x = bx; x < endX; x++) {
+                final srcX0 = x * scaleX;
+                final srcX1 = (x + 1) * scaleX;
 
-              for (int sx = x0Floor; sx < x1Ceil; sx++) {
-                final overlapLeft = math.max(srcX0, sx.toDouble());
-                final overlapRight = math.min(srcX1, (sx + 1).toDouble());
-                final overlapX = math.max(0.0, overlapRight - overlapLeft);
+                double sum = 0;
+                double totalWeight = 0;
 
-                final weight = overlapX * overlapY;
-                if (weight > 0) {
-                  final v =
-                      input.storage.getAsDouble(srcOffset + sy * srcW + sx);
-                  sum += v * weight;
-                  totalWeight += weight;
+                final y0Floor = srcY0.floor().clamp(0, srcH - 1);
+                final y1Ceil = srcY1.ceil().clamp(0, srcH);
+                final x0Floor = srcX0.floor().clamp(0, srcW - 1);
+                final x1Ceil = srcX1.ceil().clamp(0, srcW);
+
+                for (int sy = y0Floor; sy < y1Ceil; sy++) {
+                  final overlapTop = math.max(srcY0, sy.toDouble());
+                  final overlapBottom = math.min(srcY1, (sy + 1).toDouble());
+                  final overlapY = math.max(0.0, overlapBottom - overlapTop);
+
+                  for (int sx = x0Floor; sx < x1Ceil; sx++) {
+                    final overlapLeft = math.max(srcX0, sx.toDouble());
+                    final overlapRight = math.min(srcX1, (sx + 1).toDouble());
+                    final overlapX = math.max(0.0, overlapRight - overlapLeft);
+
+                    final weight = overlapX * overlapY;
+                    if (weight > 0) {
+                      final v =
+                          input.storage.getAsDouble(srcOffset + sy * srcW + sx);
+                      sum += v * weight;
+                      totalWeight += weight;
+                    }
+                  }
                 }
+
+                output.storage.setFromDouble(
+                  dstOffset + y * width + x,
+                  totalWeight > 0 ? sum / totalWeight : 0,
+                );
               }
             }
-
-            output.storage.setFromDouble(
-              dstOffset + y * width + x,
-              totalWeight > 0 ? sum / totalWeight : 0,
-            );
           }
         }
     }

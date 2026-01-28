@@ -27,7 +27,8 @@ import 'transform_op.dart';
 /// );
 /// final result = batchNorm(tensor);
 /// ```
-class BatchNormOp extends TransformOp with InPlaceTransform, RequiresContiguous {
+class BatchNormOp extends TransformOp
+    with InPlaceTransform, RequiresContiguous {
   /// Learned per-channel mean from training (running_mean).
   final List<double> runningMean;
 

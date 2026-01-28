@@ -73,7 +73,8 @@ class ReLUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 /// ```dart
 /// final result = LeakyReLUOp(negativeSlope: 0.1)(tensor);
 /// ```
-class LeakyReLUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
+class LeakyReLUOp extends TransformOp
+    with InPlaceTransform, RequiresContiguous {
   /// The slope for negative values. Default is 0.01.
   final double negativeSlope;
 
