@@ -190,7 +190,8 @@ extension TensorViewExtension on TensorBuffer {
       throw RangeError('dim $dim out of range for rank $rank');
     }
     if (index < 0 || index >= shape[dim]) {
-      throw RangeError('index $index out of range for dim $dim size ${shape[dim]}');
+      throw RangeError(
+          'index $index out of range for dim $dim size ${shape[dim]}');
     }
 
     final newShape = [...shape]..removeAt(dim);
@@ -220,7 +221,8 @@ extension TensorViewExtension on TensorBuffer {
       throw RangeError('dim $dim out of range for rank $rank');
     }
     if (start < 0 || start + length > shape[dim]) {
-      throw RangeError('Invalid narrow range: start=$start, length=$length, dim size=${shape[dim]}');
+      throw RangeError(
+          'Invalid narrow range: start=$start, length=$length, dim size=${shape[dim]}');
     }
 
     final newShape = [...shape];

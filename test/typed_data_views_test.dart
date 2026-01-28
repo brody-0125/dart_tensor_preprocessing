@@ -71,7 +71,8 @@ void main() {
       });
 
       test('shares storage with original', () {
-        final data = Float32List.fromList(List.generate(12, (i) => i.toDouble()));
+        final data =
+            Float32List.fromList(List.generate(12, (i) => i.toDouble()));
         final tensor = TensorBuffer.fromFloat32List(data, [3, 4]);
 
         final slice = tensor.sliceFirst(1, 2);

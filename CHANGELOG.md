@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.4] - 2026-01-28
+
+### Added
+
+- **`ResizeNormalizeFusedOp`** - Fused resize + normalize operation that eliminates intermediate tensor allocation
+  - Combines bilinear resize and per-channel normalization in a single pass
+  - `factory ResizeNormalizeFusedOp.imagenet(...)` convenience constructor
+  - Supports 3D `[C, H, W]` and 4D `[N, C, H, W]` inputs
+  - Cache-friendly 64x64 blocking for optimal L1 cache usage
+
+### Changed
+
+- **Cache-friendly blocking for bilinear resize** - Applied 64x64 blocking pattern to `_resizeBilinear()` for both Float32-specialized and generic fallback paths
+- **Cache-friendly blocking for area resize** - Applied 64x64 blocking pattern to `_resizeArea()` for both Float32-specialized and generic fallback paths
+- **`ResizeNormalizeFusedOp.name`** - Now includes `alignCorners` parameter for better debugging visibility
+- **Generic path style consistency** - Pre-computes `oneMinusFy`/`oneMinusFx` in `_bilinearNormalizeGeneric` matching Float32 path style
+
+### Tests
+
+- Added edge case tests for `ResizeNormalizeFusedOp`: 1x1 input, same-size resize, alignCorners with dim=1, 25x upscale
+- Added validation tests: negative width, 5D input rejection, `alignCorners` in name
+- Added path coverage tests: 4D+alignCorners, 4D+Float64 generic fallback, factory default alignCorners
+- Added shape coverage tests: 4D non-contiguous, 4+ channel, batch=1 4D, computeOutputShape 2D behavior
+
 ## [0.6.3] - 2026-01-28
 
 ### Added

@@ -154,7 +154,8 @@ Future<List<BenchmarkResult>> runPipelineBenchmarks() async {
     iterations: 5,
   );
   results.add(result);
-  print('${result.name}: ${(result.avgMilliseconds / 10).toStringAsFixed(2)}ms per image');
+  print(
+      '${result.name}: ${(result.avgMilliseconds / 10).toStringAsFixed(2)}ms per image');
 
   return results;
 }

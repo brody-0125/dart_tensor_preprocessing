@@ -281,7 +281,8 @@ void main() {
     });
 
     test('LeakyReLUOp name', () {
-      expect(LeakyReLUOp(negativeSlope: 0.2).name, equals('LeakyReLU(slope=0.2)'));
+      expect(
+          LeakyReLUOp(negativeSlope: 0.2).name, equals('LeakyReLU(slope=0.2)'));
     });
 
     test('SigmoidOp name', () {

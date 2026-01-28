@@ -31,7 +31,8 @@ import 'transform_op.dart';
 /// );
 /// final output = groupNorm.apply(input);
 /// ```
-class GroupNormOp extends TransformOp with InPlaceTransform, RequiresContiguous {
+class GroupNormOp extends TransformOp
+    with InPlaceTransform, RequiresContiguous {
   /// Number of groups to divide channels into.
   final int numGroups;
 
@@ -226,7 +227,8 @@ class GroupNormOp extends TransformOp with InPlaceTransform, RequiresContiguous 
           groupSize,
         );
       default:
-        _groupNorm3DGeneric(tensor, c, spatialSize, channelsPerGroup, groupSize);
+        _groupNorm3DGeneric(
+            tensor, c, spatialSize, channelsPerGroup, groupSize);
     }
   }
 

@@ -27,7 +27,8 @@ import 'transform_op.dart';
 /// );
 /// final result = layerNorm(tensor);
 /// ```
-class LayerNormOp extends TransformOp with InPlaceTransform, RequiresContiguous {
+class LayerNormOp extends TransformOp
+    with InPlaceTransform, RequiresContiguous {
   /// Shape of the normalized dimensions (e.g., [768] for BERT).
   ///
   /// Normalization is performed over the last N dimensions where
@@ -157,8 +158,7 @@ class LayerNormOp extends TransformOp with InPlaceTransform, RequiresContiguous 
   int get normalizedSize => _normalizedSize;
 
   @override
-  String get name =>
-      'LayerNorm(shape=$normalizedShape, eps=$eps)';
+  String get name => 'LayerNorm(shape=$normalizedShape, eps=$eps)';
 
   @override
   TensorBuffer apply(TensorBuffer input) {
