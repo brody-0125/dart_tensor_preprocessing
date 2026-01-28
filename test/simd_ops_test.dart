@@ -558,8 +558,7 @@ void main() {
       final tensor = TensorBuffer.fromFloat64List(data, [1, 2, 4]);
 
       // Normalize with mean=45, std=10
-      final result =
-          NormalizeOp(mean: [45.0], std: [10.0]).apply(tensor);
+      final result = NormalizeOp(mean: [45.0], std: [10.0]).apply(tensor);
 
       expect(result[[0, 0, 0]], closeTo(-3.5, 1e-10)); // (10-45)/10 = -3.5
       expect(result[[0, 0, 1]], closeTo(-2.5, 1e-10)); // (20-45)/10 = -2.5

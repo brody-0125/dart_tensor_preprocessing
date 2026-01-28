@@ -8,8 +8,10 @@ void main() {
     group('InterpolationMode.nearest', () {
       test('upscales 2x2 to 4x4', () {
         final data = Float32List.fromList([
-          1, 2,
-          3, 4,
+          1,
+          2,
+          3,
+          4,
         ]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
         final op = ResizeOp(
@@ -29,10 +31,22 @@ void main() {
 
       test('downscales 4x4 to 2x2', () {
         final data = Float32List.fromList([
-          1, 2, 3, 4,
-          5, 6, 7, 8,
-          9, 10, 11, 12,
-          13, 14, 15, 16,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
         ]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
         final op = ResizeOp(
@@ -49,8 +63,10 @@ void main() {
     group('InterpolationMode.bilinear', () {
       test('upscales with interpolation', () {
         final data = Float32List.fromList([
-          0, 10,
-          10, 20,
+          0,
+          10,
+          10,
+          20,
         ]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
         final op = ResizeOp(
@@ -111,10 +127,22 @@ void main() {
     group('InterpolationMode.area', () {
       test('downscales 4x4 to 2x2 with averaging', () {
         final data = Float32List.fromList([
-          1, 2, 3, 4,
-          5, 6, 7, 8,
-          9, 10, 11, 12,
-          13, 14, 15, 16,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
         ]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
         final op = ResizeOp(
@@ -152,8 +180,10 @@ void main() {
 
       test('falls back to bilinear for upscaling', () {
         final data = Float32List.fromList([
-          1, 2,
-          3, 4,
+          1,
+          2,
+          3,
+          4,
         ]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
         final op = ResizeOp(
@@ -185,9 +215,15 @@ void main() {
     group('InterpolationMode.lanczos', () {
       test('upscales with Lanczos3 kernel', () {
         final data = Float32List.fromList([
-          0, 100, 0,
-          100, 255, 100,
-          0, 100, 0,
+          0,
+          100,
+          0,
+          100,
+          255,
+          100,
+          0,
+          100,
+          0,
         ]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 3, 3]);
         final op = ResizeOp(
@@ -247,7 +283,8 @@ void main() {
 
     group('dtype support', () {
       test('handles Float64 tensors with all modes', () {
-        final tensor = TensorBuffer.full([1, 4, 4], fillValue: 10.0, dtype: DType.float64);
+        final tensor =
+            TensorBuffer.full([1, 4, 4], fillValue: 10.0, dtype: DType.float64);
 
         for (final mode in InterpolationMode.values) {
           final op = ResizeOp(height: 8, width: 8, mode: mode);

@@ -159,9 +159,11 @@ void main() {
     });
 
     test('computeOutputShape', () {
-      expect(SqueezeOp.all().computeOutputShape([1, 3, 1, 224]), equals([3, 224]));
+      expect(
+          SqueezeOp.all().computeOutputShape([1, 3, 1, 224]), equals([3, 224]));
       expect(SqueezeOp(0).computeOutputShape([1, 3, 224]), equals([3, 224]));
-      expect(SqueezeOp(1).computeOutputShape([1, 3, 224]), equals([1, 3, 224])); // Not size-1
+      expect(SqueezeOp(1).computeOutputShape([1, 3, 224]),
+          equals([1, 3, 224])); // Not size-1
     });
   });
 
@@ -178,7 +180,8 @@ void main() {
       expect(ReshapeOp([-1]).computeOutputShape([2, 3, 4]), equals([24]));
       expect(ReshapeOp([2, -1]).computeOutputShape([2, 3, 4]), equals([2, 12]));
       expect(ReshapeOp([-1, 4]).computeOutputShape([2, 3, 4]), equals([6, 4]));
-      expect(ReshapeOp([2, -1, 4]).computeOutputShape([2, 3, 4]), equals([2, 3, 4]));
+      expect(ReshapeOp([2, -1, 4]).computeOutputShape([2, 3, 4]),
+          equals([2, 3, 4]));
     });
 
     test('multiple -1 throws', () {

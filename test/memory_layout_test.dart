@@ -56,13 +56,15 @@ void main() {
   group('Stride Calculations - Contiguous', () {
     test('1D contiguous strides', () {
       // 1D tensor always has stride of 1
-      final strides = TensorBuffer.computeStrides([10], MemoryFormat.contiguous);
+      final strides =
+          TensorBuffer.computeStrides([10], MemoryFormat.contiguous);
       expect(strides, equals([1]));
     });
 
     test('2D contiguous strides', () {
       // Shape [3, 4]: stride[0] = 4, stride[1] = 1
-      final strides = TensorBuffer.computeStrides([3, 4], MemoryFormat.contiguous);
+      final strides =
+          TensorBuffer.computeStrides([3, 4], MemoryFormat.contiguous);
       expect(strides, equals([4, 1]));
     });
 
@@ -138,8 +140,8 @@ void main() {
 
     test('typical ImageNet shape channelsLast', () {
       // NHWC strides for ImageNet standard shape [1, 3, 224, 224]
-      final strides =
-          TensorBuffer.computeStrides([1, 3, 224, 224], MemoryFormat.channelsLast);
+      final strides = TensorBuffer.computeStrides(
+          [1, 3, 224, 224], MemoryFormat.channelsLast);
       expect(strides[0], equals(224 * 224 * 3)); // 150528
       expect(strides[1], equals(1)); // C is fastest
       expect(strides[2], equals(224 * 3)); // 672
@@ -170,8 +172,7 @@ void main() {
   group('Memory Format Conversion - Data Integrity', () {
     test('NCHW to NHWC preserves all values', () {
       // Create 4D tensor with unique values
-      final data = Float32List.fromList(
-          List.generate(24, (i) => i.toDouble()));
+      final data = Float32List.fromList(List.generate(24, (i) => i.toDouble()));
       final nchw = TensorBuffer.fromFloat32List(data, [1, 2, 3, 4]);
 
       // Permute to NHWC: [0, 2, 3, 1]
@@ -202,8 +203,7 @@ void main() {
 
     test('CHW to HWC preserves data (3D)', () {
       // CHW → HWC conversion for 3D tensors
-      final data = Float32List.fromList(
-          List.generate(12, (i) => i.toDouble()));
+      final data = Float32List.fromList(List.generate(12, (i) => i.toDouble()));
       final chw = TensorBuffer.fromFloat32List(data, [3, 2, 2]);
 
       final hwc = chw.transpose([1, 2, 0]);
@@ -267,12 +267,14 @@ void main() {
     test('contiguous creates new storage only when needed', () {
       // Already contiguous tensor returns itself
       final contiguousTensor = TensorBuffer.zeros([2, 3, 4]);
-      expect(identical(contiguousTensor.contiguous(), contiguousTensor), isTrue);
+      expect(
+          identical(contiguousTensor.contiguous(), contiguousTensor), isTrue);
 
       // Non-contiguous tensor creates new storage
       final nonContiguous = contiguousTensor.transpose([2, 0, 1]);
       final madeContinuous = nonContiguous.contiguous();
-      expect(identical(madeContinuous.storage, contiguousTensor.storage), isFalse);
+      expect(
+          identical(madeContinuous.storage, contiguousTensor.storage), isFalse);
     });
 
     test('clone always creates new storage', () {
@@ -365,8 +367,7 @@ void main() {
     test('correct value access after transpose', () {
       // Verify correct value access after transpose
       // [0,1,2,3,4,5] → 2x3 matrix → transpose → 3x2 matrix
-      final data = Float32List.fromList(
-          List.generate(6, (i) => i.toDouble()));
+      final data = Float32List.fromList(List.generate(6, (i) => i.toDouble()));
       final tensor = TensorBuffer.fromFloat32List(data, [2, 3]);
       // [[0, 1, 2], [3, 4, 5]]
 
@@ -384,8 +385,7 @@ void main() {
     test('correct value access with 4D NCHW to NHWC', () {
       // Value access after 4D NCHW → NHWC conversion
       // [N=1, C=2, H=2, W=2] tensor
-      final data = Float32List.fromList(
-          List.generate(8, (i) => i.toDouble()));
+      final data = Float32List.fromList(List.generate(8, (i) => i.toDouble()));
       final nchw = TensorBuffer.fromFloat32List(data, [1, 2, 2, 2]);
 
       final nhwc = nchw.transpose([0, 2, 3, 1]);
@@ -400,8 +400,7 @@ void main() {
 
     test('non-contiguous tensor iteration via indices', () {
       // Index-based traversal of non-contiguous tensor
-      final data = Float32List.fromList(
-          List.generate(12, (i) => i.toDouble()));
+      final data = Float32List.fromList(List.generate(12, (i) => i.toDouble()));
       final tensor = TensorBuffer.fromFloat32List(data, [3, 4]);
       final transposed = tensor.transpose([1, 0]); // [4, 3]
 

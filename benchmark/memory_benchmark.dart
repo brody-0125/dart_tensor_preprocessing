@@ -18,7 +18,8 @@ Future<List<BenchmarkResult>> runMemoryBenchmarks() async {
 
   // ===== Tensor Size vs Memory =====
   print('\nTensor Size vs Expected Memory:');
-  print('${'Size'.padLeft(15)} | ${'Elements'.padLeft(12)} | ${'Expected'.padLeft(12)} | ${'Actual RSS'.padLeft(12)}');
+  print(
+      '${'Size'.padLeft(15)} | ${'Elements'.padLeft(12)} | ${'Expected'.padLeft(12)} | ${'Actual RSS'.padLeft(12)}');
   print('${'-' * 15}-+-${'-' * 12}-+-${'-' * 12}-+-${'-' * 12}');
 
   for (final size in [1000, 100000, 1000000, 10000000]) {
@@ -35,12 +36,10 @@ Future<List<BenchmarkResult>> runMemoryBenchmarks() async {
     final expectedBytes = size * 4; // float32 = 4 bytes
     final actualDelta = before != null && after != null ? after - before : null;
 
-    print(
-      '${formatBytes(size * 4).padLeft(15)} | '
-      '${size.toString().padLeft(12)} | '
-      '${formatBytes(expectedBytes).padLeft(12)} | '
-      '${(actualDelta != null ? formatBytes(actualDelta) : 'N/A').padLeft(12)}'
-    );
+    print('${formatBytes(size * 4).padLeft(15)} | '
+        '${size.toString().padLeft(12)} | '
+        '${formatBytes(expectedBytes).padLeft(12)} | '
+        '${(actualDelta != null ? formatBytes(actualDelta) : 'N/A').padLeft(12)}');
 
     // Keep tensor alive
     if (tensor.numel > 0) {}
@@ -73,7 +72,7 @@ Future<List<BenchmarkResult>> runMemoryBenchmarks() async {
 
   print('Operation        | Memory Delta');
   print('${'-' * 16}-+-${'-' * 15}');
-  
+
   if (baseMemory != null && afterTranspose != null) {
     final delta = afterTranspose - baseMemory;
     final status = delta < 1024 ? '✓ O(1)' : '⚠️ Unexpected';
@@ -103,7 +102,7 @@ Future<List<BenchmarkResult>> runMemoryBenchmarks() async {
 
   // ===== Copy Operations Memory =====
   print('\nCopy Operations Memory Impact:');
-  
+
   await Future.delayed(const Duration(milliseconds: 50));
   final beforeClone = getCurrentMemory();
 
@@ -115,7 +114,8 @@ Future<List<BenchmarkResult>> runMemoryBenchmarks() async {
   if (beforeClone != null && afterClone != null) {
     final delta = afterClone - beforeClone;
     const expected = 1000 * 1000 * 4; // 4MB for float32
-    print('clone([1000,1000]): ${formatBytes(delta)} (expected ~${formatBytes(expected)})');
+    print(
+        'clone([1000,1000]): ${formatBytes(delta)} (expected ~${formatBytes(expected)})');
   } else {
     print('clone([1000,1000]): N/A');
   }

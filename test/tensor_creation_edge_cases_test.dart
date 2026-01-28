@@ -392,7 +392,8 @@ void main() {
 
     test('channels-last throws for 2D', () {
       expect(
-        () => TensorBuffer.zeros([224, 224], memoryFormat: MemoryFormat.channelsLast),
+        () => TensorBuffer.zeros([224, 224],
+            memoryFormat: MemoryFormat.channelsLast),
         throwsUnsupportedError,
       );
     });

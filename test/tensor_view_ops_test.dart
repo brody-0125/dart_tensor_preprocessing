@@ -24,8 +24,8 @@ void main() {
       });
 
       test('transpose preserves data access', () {
-        final data = Float32List.fromList(
-            List.generate(24, (i) => i.toDouble()));
+        final data =
+            Float32List.fromList(List.generate(24, (i) => i.toDouble()));
         final tensor = TensorBuffer.fromFloat32List(data, [2, 3, 4]);
 
         // [2, 3, 4] -> [4, 2, 3] via [2, 0, 1]
@@ -259,8 +259,8 @@ void main() {
       });
 
       test('contiguous on transposed tensor creates copy', () {
-        final data = Float32List.fromList(
-            List.generate(24, (i) => i.toDouble()));
+        final data =
+            Float32List.fromList(List.generate(24, (i) => i.toDouble()));
         final tensor = TensorBuffer.fromFloat32List(data, [2, 3, 4]);
         final transposed = tensor.transpose([2, 0, 1]);
 
@@ -322,8 +322,8 @@ void main() {
       });
 
       test('clone preserves data', () {
-        final data = Float32List.fromList(
-            List.generate(12, (i) => i.toDouble()));
+        final data =
+            Float32List.fromList(List.generate(12, (i) => i.toDouble()));
         final tensor = TensorBuffer.fromFloat32List(data, [3, 4]);
         final cloned = tensor.clone();
 

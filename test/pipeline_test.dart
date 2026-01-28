@@ -285,7 +285,8 @@ void main() {
     });
 
     test('InvalidParameterException provides details', () {
-      final exception = InvalidParameterException('size', -1, 'Must be positive');
+      final exception =
+          InvalidParameterException('size', -1, 'Must be positive');
 
       expect(exception.message, contains('size'));
       expect(exception.message, contains('-1'));
