@@ -18,7 +18,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.6.3
+  dart_tensor_preprocessing: ^0.6.4
 ```
 
 ## Quick Start
@@ -93,6 +93,9 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 ### Data Augmentation
 - `RandomCropOp` - Random cropping with deterministic seed support
 - `GaussianBlurOp` - Gaussian blur using separable convolution
+
+### Fused Operations
+- `ResizeNormalizeFusedOp` - Combines resize + normalize in single pass (eliminates intermediate tensor)
 
 ### Utility
 - `concat()` - Concatenates tensors along specified axis
@@ -242,6 +245,7 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `tensor.narrow(dim, start, len)` | `tensor.narrow(dim, start, len)` |
 | `tensor.unbind(dim)` | `tensor.unbind(dim)` |
 | `tensor.flatten()` | `tensor.flatten()` |
+| `ResizeNormalizeFusedOp` | `F.interpolate()` + `transforms.Normalize()` (fused) |
 
 ## Performance Benchmarks
 
