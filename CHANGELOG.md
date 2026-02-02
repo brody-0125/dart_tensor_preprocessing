@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.5] - 2026-02-02
+
+### Added
+
+- **OperationCapabilities metadata** - All operations with `InPlaceTransform` and `RequiresContiguous` mixins now override `capabilities` getter:
+  - `ReLUOp`, `LeakyReLUOp`, `SigmoidOp`, `TanhOp`, `SoftmaxOp`
+  - `UnaryMathOp` (AbsOp, NegOp, SqrtOp, ExpOp, LogOp)
+  - `ArithmeticOp` (AddOp, SubOp, MulOp, DivOp), `PowOp`
+  - `BatchNormOp`, `LayerNormOp`, `GroupNormOp`
+  - `NormalizeOp`, `ScaleOp`, `ClipOp`
+  - `ResizeOp`, `CenterCropOp`, `RandomCropOp`, `GaussianBlurOp`, `PadOp`
+  - `TypeCastOp`, `ToTensorOp`, `ToImageOp`
+
+- **NaN/Infinity edge case tests** - 23 new tests in `simd_ops_test.dart`:
+  - Float32/Float64 NaN handling for clip, abs, sqrt, normalize, relu operations
+  - Float32/Float64 Infinity handling for clip, abs, sqrt, normalize, relu operations
+  - Op-level NaN/Inf handling tests for ClipOp, AbsOp, SqrtOp, ReLUOp
+
+### Changed
+
+- **Code consistency** - Standardized `cloneForModification()` usage across all in-place operations:
+  - `BatchNormOp`, `LayerNormOp`, `ClipOp`, `ArithmeticOp`, `PowOp` now use `cloneForModification()`
+  - Eliminates potential double-copy issues from manual contiguity checks
+
+### Performance
+
+- **`PowOp` dtype specialization** - Added Float32/Float64 specialized loops for direct TypedList access
+
+### Documentation
+
+- **Time/space complexity** - Added Big-O complexity documentation to key operations:
+  - `ResizeOp` - Complexity table for all interpolation modes (nearest, bilinear, bicubic, area, lanczos)
+  - `NormalizeOp` - O(n) time with SIMD acceleration
+  - `BatchNormOp` - O(n) time with pre-computed coefficients
+  - `LayerNormOp` - O(n) time with Welford's algorithm
+  - `GroupNormOp` - O(n) time with per-group normalization
+  - `SoftmaxOp` - O(n) time with 3-pass algorithm
+  - `GaussianBlurOp` - O(C×H×W×k) time using separable convolution
+  - `ResizeNormalizeFusedOp` - O(C×H_out×W_out) with no intermediate tensor
+
+### Tests
+
+- Total test count: 897 (23 new NaN/Inf edge case tests)
+
 ## [0.6.4] - 2026-01-28
 
 ### Added

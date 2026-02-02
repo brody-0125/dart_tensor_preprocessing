@@ -16,6 +16,12 @@ abstract class UnaryMathOp extends TransformOp
   double operation(double value);
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
     final output = cloneForModification(input);
     _apply(output);

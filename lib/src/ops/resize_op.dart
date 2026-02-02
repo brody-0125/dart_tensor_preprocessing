@@ -35,6 +35,20 @@ enum InterpolationMode {
 /// Resizes a tensor to a fixed [height] and [width].
 ///
 /// Supports 3D tensors `[C, H, W]` and 4D tensors `[N, C, H, W]`.
+///
+/// ## Complexity
+///
+/// Let `C` = channels, `H_out` = output height, `W_out` = output width.
+///
+/// | Mode | Time | Space | Notes |
+/// |------|------|-------|-------|
+/// | nearest | O(C × H_out × W_out) | O(C × H_out × W_out) | Fastest |
+/// | bilinear | O(C × H_out × W_out) | O(C × H_out × W_out) | 2×2 interpolation |
+/// | bicubic | O(C × H_out × W_out) | O(C × H_out × W_out) | 4×4 kernel |
+/// | area | O(C × H_out × W_out × scale²) | O(C × H_out × W_out) | Best for downsampling |
+/// | lanczos | O(C × H_out × W_out × 36) | O(C × H_out × W_out) | 6×6 kernel |
+///
+/// All modes use 64×64 cache-friendly blocking for improved L1 cache utilization.
 class ResizeOp extends TransformOp with RequiresContiguous {
   /// The target height.
   final int height;
@@ -66,6 +80,12 @@ class ResizeOp extends TransformOp with RequiresContiguous {
 
   @override
   String get name => 'Resize(${height}x$width, $mode)';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        requiresContiguous: true,
+        preservesShape: false,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -851,6 +871,12 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
 
   @override
   String get name => 'CenterCrop(${height}x$width)';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        requiresContiguous: true,
+        preservesShape: false,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

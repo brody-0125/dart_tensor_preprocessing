@@ -21,6 +21,13 @@ import 'transform_op.dart';
 ///   y[c] = (x[c] - group_mean) / sqrt(group_var + eps) * weight[c] + bias[c]
 /// ```
 ///
+/// ## Complexity
+///
+/// Let `n` = total elements, `G` = numGroups, `C` = numChannels, `HW` = spatial size.
+///
+/// - **Time**: O(n) with 2 passes per group: compute mean/var (Welford's), then normalize.
+/// - **Space**: O(n) for output tensor (or O(1) with in-place mode).
+///
 /// **Usage**:
 /// ```dart
 /// final groupNorm = GroupNormOp(
@@ -153,6 +160,12 @@ class GroupNormOp extends TransformOp
 
   @override
   String get name => 'GroupNorm(groups=$numGroups, channels=$numChannels)';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

@@ -41,6 +41,12 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
   String get name => 'RandomCrop(height=$height, width=$width, seed=$seed)';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        requiresContiguous: true,
+        preservesShape: false,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
     final contiguous = ensureContiguous(input);
     _validateShape(contiguous.shape);
@@ -144,6 +150,13 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
 ///
 /// Uses separable Gaussian convolution for efficiency.
 /// Kernel size must be odd and >= 1.
+///
+/// ## Complexity
+///
+/// Let `C` = channels, `H` = height, `W` = width, `k` = kernelSize.
+///
+/// - **Time**: O(C × H × W × k) using separable convolution (instead of O(C × H × W × k²)).
+/// - **Space**: O(C × H × W) for output + O(H × W) temporary buffer from BufferPool.
 class GaussianBlurOp extends TransformOp with RequiresContiguous {
   /// Kernel size for blur (must be odd).
   final int kernelSize;
@@ -183,6 +196,11 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
 
   @override
   String get name => 'GaussianBlur(kernelSize=$kernelSize, sigma=$sigma)';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        requiresContiguous: true,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

@@ -13,12 +13,14 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 - **Type-safe**: ONNX-compatible tensor types (Float32, Int64, Uint8, etc.)
 - **Zero-copy**: View/stride manipulation for reshape/transpose operations
 - **Declarative**: Chain operations into reusable pipelines
+- **SIMD Accelerated**: Float32/Float64 vectorized operations for 2-4x speedup
+- **Memory Efficient**: Buffer pooling, uninitialized allocation, fused operations
 
 ## Installation
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.6.4
+  dart_tensor_preprocessing: ^0.6.5
 ```
 
 ## Quick Start
@@ -96,6 +98,25 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 
 ### Fused Operations
 - `ResizeNormalizeFusedOp` - Combines resize + normalize in single pass (eliminates intermediate tensor)
+
+### Activation Functions
+- `ReLUOp` - Rectified Linear Unit (SIMD accelerated)
+- `LeakyReLUOp` - Leaky ReLU with configurable slope (SIMD accelerated)
+- `SigmoidOp` - Sigmoid activation
+- `TanhOp` - Hyperbolic tangent activation
+- `SoftmaxOp` - Softmax along specified axis
+
+### Math Operations
+- `AbsOp` - Absolute value (SIMD accelerated)
+- `NegOp` - Negation (SIMD accelerated)
+- `SqrtOp` - Square root (SIMD accelerated)
+- `ExpOp` - Exponential (e^x)
+- `LogOp` - Natural logarithm
+- `PowOp` - Power operation
+
+### Arithmetic Operations
+- `AddOp` / `SubOp` - Element-wise addition/subtraction (SIMD accelerated)
+- `MulOp` / `DivOp` - Element-wise multiplication/division (SIMD accelerated)
 
 ### Utility
 - `concat()` - Concatenates tensors along specified axis
@@ -187,6 +208,26 @@ final nchw = nhwcTensor.toChannelsFirst();  // NHWC -> NCHW view
 final flat = tensor.flatten();
 ```
 
+## In-Place Operations
+
+Many operations support in-place modification to avoid allocation overhead:
+
+```dart
+// In-place operations (modify tensor directly)
+ReLUOp().applyInPlace(tensor);
+NormalizeOp.imagenet().applyInPlace(tensor);
+ClipOp(min: 0, max: 1).applyInPlace(tensor);
+BatchNormOp(...).applyInPlace(tensor);
+
+// Query operation capabilities
+final op = ReLUOp();
+print(op.capabilities.supportsInPlace);    // true
+print(op.capabilities.requiresContiguous); // true
+print(op.capabilities.preservesShape);     // true
+```
+
+Operations supporting in-place: `ReLUOp`, `LeakyReLUOp`, `SigmoidOp`, `TanhOp`, `AbsOp`, `NegOp`, `SqrtOp`, `ExpOp`, `LogOp`, `PowOp`, `AddOp`, `SubOp`, `MulOp`, `DivOp`, `ClipOp`, `NormalizeOp`, `ScaleOp`, `BatchNormOp`, `LayerNormOp`, `GroupNormOp`.
+
 ## Memory Formats
 
 | Format | Layout | Strides (for [1,3,224,224]) |
@@ -250,6 +291,35 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 ## Performance Benchmarks
 
 Run benchmarks with `dart run benchmark/run_all.dart`.
+
+### SIMD Acceleration
+
+Operations with Float32x4/Float64x2 SIMD vectorization:
+
+| Operation | SIMD Throughput | Speedup |
+|-----------|-----------------|---------|
+| `ClipOp` | ~6.2 GE/s (Float32) | ~4x |
+| `AbsOp` | ~6.2 GE/s (Float32) | ~4x |
+| `SqrtOp` | ~6.2 GE/s (Float32) | ~4x |
+| `NormalizeOp` | ~6.2 GE/s (Float32) | ~4x |
+| `ReLUOp` / `LeakyReLUOp` | ~6.2 GE/s (Float32) | ~4x |
+| `ScaleOp` | ~6.2 GE/s (Float32) | ~4x |
+| `AddOp` / `SubOp` / `MulOp` / `DivOp` | ~6.2 GE/s (Float32) | ~4x |
+
+> GE/s = Giga Elements per second. Float64 SIMD achieves ~53% of Float32 performance due to Float64x2 vs Float32x4.
+
+### Operation Complexity
+
+| Operation | Time Complexity | Space Complexity |
+|-----------|-----------------|------------------|
+| `ResizeOp` (bilinear) | O(C × H × W) | O(C × H × W) |
+| `ResizeOp` (bicubic) | O(C × H × W × 16) | O(C × H × W) |
+| `ResizeOp` (lanczos) | O(C × H × W × 36) | O(C × H × W) |
+| `NormalizeOp` | O(n) | O(n) or O(1) in-place |
+| `BatchNormOp` | O(n) | O(n) or O(1) in-place |
+| `LayerNormOp` | O(n) | O(n) or O(1) in-place |
+| `GaussianBlurOp` | O(C × H × W × k) | O(C × H × W) |
+| `ResizeNormalizeFusedOp` | O(C × H × W) | O(C × H × W) |
 
 ### Zero-Copy Operations (O(1))
 

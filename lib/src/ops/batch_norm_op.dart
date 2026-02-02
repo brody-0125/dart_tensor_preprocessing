@@ -16,6 +16,12 @@ import 'transform_op.dart';
 ///
 /// Equivalent to `torch.nn.BatchNorm2d` in PyTorch (inference mode).
 ///
+/// ## Complexity
+///
+/// - **Time**: O(n) where n = total elements. Uses pre-computed scale/shift coefficients.
+/// - **Space**: O(n) for output tensor (or O(1) with in-place mode).
+/// - **Construction**: O(C) to pre-compute coefficients, where C = channels.
+///
 /// ## Example
 ///
 /// ```dart
@@ -169,17 +175,15 @@ class BatchNormOp extends TransformOp
   String get name => 'BatchNorm(channels=$numChannels, eps=$eps)';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
     _validateShape(input.shape);
-
-    // Optimized: single copy regardless of contiguity
-    final TensorBuffer output;
-    if (input.isContiguous) {
-      output = input.clone();
-    } else {
-      output = input.contiguous();
-    }
-
+    final output = cloneForModification(input);
     _batchNorm(output);
     return output;
   }

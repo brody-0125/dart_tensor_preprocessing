@@ -41,15 +41,14 @@ class ClipOp extends TransformOp with InPlaceTransform, RequiresContiguous {
   String get name => 'Clip(min=$min, max=$max)';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
-    // Optimization: if input is already contiguous, clone() once.
-    // If not contiguous, contiguous() creates a copy, so no need to clone again.
-    final TensorBuffer output;
-    if (input.isContiguous) {
-      output = input.clone();
-    } else {
-      output = input.contiguous();
-    }
+    final output = cloneForModification(input);
     _clip(output);
     return output;
   }

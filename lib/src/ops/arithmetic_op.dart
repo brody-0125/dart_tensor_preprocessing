@@ -33,9 +33,14 @@ abstract class ArithmeticOp extends TransformOp
   double operation(double a, double b);
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
-    final contiguous = ensureContiguous(input);
-    final output = contiguous.clone();
+    final output = cloneForModification(input);
     _apply(output);
     return output;
   }
@@ -354,9 +359,14 @@ class PowOp extends TransformOp with InPlaceTransform, RequiresContiguous {
   String get name => 'Pow(exponent=$exponent)';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
-    final contiguous = ensureContiguous(input);
-    final output = contiguous.clone();
+    final output = cloneForModification(input);
     _pow(output);
     return output;
   }
@@ -371,9 +381,26 @@ class PowOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   void _pow(TensorBuffer tensor) {
     final numel = tensor.numel;
-    for (int i = 0; i < numel; i++) {
-      final value = tensor.storage.getAsDouble(i);
-      tensor.storage.setFromDouble(i, math.pow(value, exponent).toDouble());
+    final exp = exponent;
+    final data = tensor.storage.data;
+
+    // Dtype-specialized loops for better performance
+    switch (tensor.dtype) {
+      case DType.float32:
+        final list = data as Float32List;
+        for (int i = 0; i < numel; i++) {
+          list[i] = math.pow(list[i], exp).toDouble();
+        }
+      case DType.float64:
+        final list = data as Float64List;
+        for (int i = 0; i < numel; i++) {
+          list[i] = math.pow(list[i], exp).toDouble();
+        }
+      default:
+        for (int i = 0; i < numel; i++) {
+          final value = tensor.storage.getAsDouble(i);
+          tensor.storage.setFromDouble(i, math.pow(value, exp).toDouble());
+        }
     }
   }
 

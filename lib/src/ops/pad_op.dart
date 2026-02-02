@@ -96,6 +96,12 @@ class PadOp extends TransformOp with RequiresContiguous {
       'Pad(top=$top, bottom=$bottom, left=$left, right=$right, mode=$mode)';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        requiresContiguous: true,
+        preservesShape: false,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
     final contiguous = ensureContiguous(input);
     _validateShape(contiguous.shape);

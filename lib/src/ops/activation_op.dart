@@ -25,6 +25,12 @@ class ReLUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
   String get name => 'ReLU';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
     final output = cloneForModification(input);
     _relu(output);
@@ -85,6 +91,12 @@ class LeakyReLUOp extends TransformOp
   String get name => 'LeakyReLU(slope=$negativeSlope)';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
     final output = cloneForModification(input);
     _leakyRelu(output);
@@ -140,6 +152,12 @@ class SigmoidOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   String get name => 'Sigmoid';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -199,6 +217,12 @@ class TanhOp extends TransformOp with InPlaceTransform, RequiresContiguous {
   String get name => 'Tanh';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
     final output = cloneForModification(input);
     _tanh(output);
@@ -249,6 +273,13 @@ class TanhOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 /// Applies softmax along the specified axis, normalizing values to sum to 1.
 /// Equivalent to `F.softmax()` in PyTorch.
 ///
+/// ## Complexity
+///
+/// Let `n` = total elements, `k` = size of softmax axis.
+///
+/// - **Time**: O(n) with 3 passes per softmax slice: find max, compute exp(x-max), normalize.
+/// - **Space**: O(n) for output tensor.
+///
 /// ```dart
 /// final result = SoftmaxOp(axis: -1)(tensor);
 /// ```
@@ -261,6 +292,11 @@ class SoftmaxOp extends TransformOp with RequiresContiguous {
 
   @override
   String get name => 'Softmax(axis=$axis)';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        requiresContiguous: true,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

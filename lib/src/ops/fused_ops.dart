@@ -14,6 +14,15 @@ import 'transform_op.dart';
 /// normalize steps.
 ///
 /// Supports 3D `[C, H, W]` and 4D `[N, C, H, W]` inputs.
+///
+/// ## Complexity
+///
+/// Let `C` = channels, `H_out` = output height, `W_out` = output width.
+///
+/// - **Time**: O(C × H_out × W_out) with fused bilinear + normalize in single pass.
+/// - **Space**: O(C × H_out × W_out) for output only (no intermediate tensor).
+///
+/// Uses 64×64 cache-friendly blocking for optimal L1 cache utilization.
 class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
   /// The target height.
   final int height;
