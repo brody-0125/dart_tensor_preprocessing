@@ -568,4 +568,241 @@ void main() {
       expect(result[[0, 1, 1]], closeTo(1.5, 1e-10)); // (60-45)/10 = 1.5
     });
   });
+
+  group('NaN and Infinity edge cases', () {
+    group('Float32 NaN handling', () {
+      test('clip handles NaN values', () {
+        final data = Float32List.fromList([double.nan, 5, -3, double.nan]);
+        SimdOps.clip(data, 0, 10);
+        // NaN compared with anything returns false, so NaN remains NaN
+        expect(data[0].isNaN, isTrue);
+        expect(data[1], equals(5));
+        expect(data[2], equals(0));
+        expect(data[3].isNaN, isTrue);
+      });
+
+      test('abs handles NaN values', () {
+        final data = Float32List.fromList([double.nan, -5, double.nan, 3]);
+        SimdOps.abs(data);
+        expect(data[0].isNaN, isTrue);
+        expect(data[1], equals(5));
+        expect(data[2].isNaN, isTrue);
+        expect(data[3], equals(3));
+      });
+
+      test('sqrt handles NaN and negative values', () {
+        final data = Float32List.fromList([double.nan, -1, 4, double.nan]);
+        SimdOps.sqrt(data);
+        expect(data[0].isNaN, isTrue);
+        expect(data[1].isNaN, isTrue); // sqrt(-1) = NaN
+        expect(data[2], equals(2));
+        expect(data[3].isNaN, isTrue);
+      });
+
+      test('normalize handles NaN values', () {
+        final data = Float32List.fromList([double.nan, 20, 30, double.nan]);
+        SimdOps.normalize(data, 25.0, 10.0);
+        expect(data[0].isNaN, isTrue);
+        expect(data[1], closeTo(-0.5, 1e-6));
+        expect(data[2], closeTo(0.5, 1e-6));
+        expect(data[3].isNaN, isTrue);
+      });
+
+      test('relu handles NaN values', () {
+        final data = Float32List.fromList([double.nan, -5, double.nan, 3]);
+        SimdOps.relu(data);
+        // SIMD max(NaN, 0) returns 0 per IEEE 754 behavior
+        expect(data[0], equals(0));
+        expect(data[1], equals(0));
+        expect(data[2], equals(0));
+        expect(data[3], equals(3));
+      });
+
+      test('multiplyScalar handles NaN values', () {
+        final data = Float32List.fromList([double.nan, 5, double.nan, 10]);
+        SimdOps.multiplyScalar(data, 2.0);
+        expect(data[0].isNaN, isTrue);
+        expect(data[1], equals(10));
+        expect(data[2].isNaN, isTrue);
+        expect(data[3], equals(20));
+      });
+    });
+
+    group('Float32 Infinity handling', () {
+      test('clip handles infinity values', () {
+        final data = Float32List.fromList(
+            [double.infinity, -double.infinity, 5, -3]);
+        SimdOps.clip(data, 0, 10);
+        expect(data[0], equals(10)); // +inf clipped to max
+        expect(data[1], equals(0)); // -inf clipped to min
+        expect(data[2], equals(5));
+        expect(data[3], equals(0));
+      });
+
+      test('abs handles infinity values', () {
+        final data = Float32List.fromList(
+            [double.infinity, -double.infinity, -5, 3]);
+        SimdOps.abs(data);
+        expect(data[0], equals(double.infinity));
+        expect(data[1], equals(double.infinity));
+        expect(data[2], equals(5));
+        expect(data[3], equals(3));
+      });
+
+      test('sqrt handles infinity values', () {
+        final data = Float32List.fromList([double.infinity, 4, 9, 16]);
+        SimdOps.sqrt(data);
+        expect(data[0], equals(double.infinity));
+        expect(data[1], equals(2));
+        expect(data[2], equals(3));
+        expect(data[3], equals(4));
+      });
+
+      test('normalize handles infinity values', () {
+        final data = Float32List.fromList(
+            [double.infinity, -double.infinity, 30, 40]);
+        SimdOps.normalize(data, 25.0, 10.0);
+        expect(data[0], equals(double.infinity));
+        expect(data[1], equals(-double.infinity));
+        expect(data[2], closeTo(0.5, 1e-6));
+        expect(data[3], closeTo(1.5, 1e-6));
+      });
+
+      test('relu handles infinity values', () {
+        final data = Float32List.fromList(
+            [double.infinity, -double.infinity, -5, 3]);
+        SimdOps.relu(data);
+        expect(data[0], equals(double.infinity));
+        expect(data[1], equals(0));
+        expect(data[2], equals(0));
+        expect(data[3], equals(3));
+      });
+    });
+
+    group('Float64 NaN handling', () {
+      test('clipF64 handles NaN values', () {
+        final data = Float64List.fromList([double.nan, 5, -3, double.nan]);
+        SimdOps.clipF64(data, 0, 10);
+        expect(data[0].isNaN, isTrue);
+        expect(data[1], equals(5));
+        expect(data[2], equals(0));
+        expect(data[3].isNaN, isTrue);
+      });
+
+      test('absF64 handles NaN values', () {
+        final data = Float64List.fromList([double.nan, -5, double.nan, 3]);
+        SimdOps.absF64(data);
+        expect(data[0].isNaN, isTrue);
+        expect(data[1], equals(5));
+        expect(data[2].isNaN, isTrue);
+        expect(data[3], equals(3));
+      });
+
+      test('sqrtF64 handles NaN and negative values', () {
+        final data = Float64List.fromList([double.nan, -1, 4, double.nan]);
+        SimdOps.sqrtF64(data);
+        expect(data[0].isNaN, isTrue);
+        expect(data[1].isNaN, isTrue); // sqrt(-1) = NaN
+        expect(data[2], equals(2));
+        expect(data[3].isNaN, isTrue);
+      });
+
+      test('normalizeF64 handles NaN values', () {
+        final data = Float64List.fromList([double.nan, 20, 30, double.nan]);
+        SimdOps.normalizeF64(data, 25.0, 10.0);
+        expect(data[0].isNaN, isTrue);
+        expect(data[1], closeTo(-0.5, 1e-10));
+        expect(data[2], closeTo(0.5, 1e-10));
+        expect(data[3].isNaN, isTrue);
+      });
+    });
+
+    group('Float64 Infinity handling', () {
+      test('clipF64 handles infinity values', () {
+        final data = Float64List.fromList(
+            [double.infinity, -double.infinity, 5, -3]);
+        SimdOps.clipF64(data, 0, 10);
+        expect(data[0], equals(10)); // +inf clipped to max
+        expect(data[1], equals(0)); // -inf clipped to min
+        expect(data[2], equals(5));
+        expect(data[3], equals(0));
+      });
+
+      test('absF64 handles infinity values', () {
+        final data = Float64List.fromList(
+            [double.infinity, -double.infinity, -5, 3]);
+        SimdOps.absF64(data);
+        expect(data[0], equals(double.infinity));
+        expect(data[1], equals(double.infinity));
+        expect(data[2], equals(5));
+        expect(data[3], equals(3));
+      });
+
+      test('sqrtF64 handles infinity values', () {
+        final data = Float64List.fromList([double.infinity, 4, 9, 16]);
+        SimdOps.sqrtF64(data);
+        expect(data[0], equals(double.infinity));
+        expect(data[1], equals(2));
+        expect(data[2], equals(3));
+        expect(data[3], equals(4));
+      });
+
+      test('normalizeF64 handles infinity values', () {
+        final data = Float64List.fromList(
+            [double.infinity, -double.infinity, 30, 40]);
+        SimdOps.normalizeF64(data, 25.0, 10.0);
+        expect(data[0], equals(double.infinity));
+        expect(data[1], equals(-double.infinity));
+        expect(data[2], closeTo(0.5, 1e-10));
+        expect(data[3], closeTo(1.5, 1e-10));
+      });
+    });
+
+    group('Op-level NaN/Inf handling', () {
+      test('ClipOp handles NaN/Inf in Float32 tensor', () {
+        final data = Float32List.fromList(
+            [double.nan, double.infinity, -double.infinity, 5]);
+        final tensor = TensorBuffer.fromFloat32List(data, [2, 2]);
+        final result = ClipOp(min: 0, max: 10).apply(tensor);
+        expect(result[[0, 0]].isNaN, isTrue);
+        expect(result[[0, 1]], equals(10));
+        expect(result[[1, 0]], equals(0));
+        expect(result[[1, 1]], equals(5));
+      });
+
+      test('AbsOp handles NaN/Inf in Float32 tensor', () {
+        final data = Float32List.fromList(
+            [double.nan, double.infinity, -double.infinity, -5]);
+        final tensor = TensorBuffer.fromFloat32List(data, [2, 2]);
+        final result = AbsOp().apply(tensor);
+        expect(result[[0, 0]].isNaN, isTrue);
+        expect(result[[0, 1]], equals(double.infinity));
+        expect(result[[1, 0]], equals(double.infinity));
+        expect(result[[1, 1]], equals(5));
+      });
+
+      test('SqrtOp handles NaN/Inf in Float32 tensor', () {
+        final data = Float32List.fromList(
+            [double.nan, double.infinity, -1, 4]);
+        final tensor = TensorBuffer.fromFloat32List(data, [2, 2]);
+        final result = SqrtOp().apply(tensor);
+        expect(result[[0, 0]].isNaN, isTrue);
+        expect(result[[0, 1]], equals(double.infinity));
+        expect(result[[1, 0]].isNaN, isTrue); // sqrt(-1) = NaN
+        expect(result[[1, 1]], equals(2));
+      });
+
+      test('ReLUOp handles NaN/Inf in Float32 tensor', () {
+        final data = Float32List.fromList(
+            [double.nan, double.infinity, -double.infinity, -5]);
+        final tensor = TensorBuffer.fromFloat32List(data, [2, 2]);
+        final result = ReLUOp().apply(tensor);
+        // SIMD max(NaN, 0) returns 0 per IEEE 754 behavior
+        expect(result[[0, 0]], equals(0));
+        expect(result[[0, 1]], equals(double.infinity));
+        expect(result[[1, 0]], equals(0));
+        expect(result[[1, 1]], equals(0));
+      });
+    });
+  });
 }

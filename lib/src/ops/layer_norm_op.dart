@@ -16,6 +16,13 @@ import 'transform_op.dart';
 ///
 /// Equivalent to `torch.nn.LayerNorm` in PyTorch.
 ///
+/// ## Complexity
+///
+/// Let `n` = total elements, `k` = normalizedShape product (e.g., 768 for BERT).
+///
+/// - **Time**: O(n) with 3 passes per normalized slice: mean, variance (Welford's), normalize.
+/// - **Space**: O(n) for output tensor (or O(1) with in-place mode).
+///
 /// ## Example
 ///
 /// ```dart
@@ -161,17 +168,15 @@ class LayerNormOp extends TransformOp
   String get name => 'LayerNorm(shape=$normalizedShape, eps=$eps)';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
     _validateShape(input.shape);
-
-    // Single-copy pattern
-    final TensorBuffer output;
-    if (input.isContiguous) {
-      output = input.clone();
-    } else {
-      output = input.contiguous();
-    }
-
+    final output = cloneForModification(input);
     _layerNorm(output);
     return output;
   }

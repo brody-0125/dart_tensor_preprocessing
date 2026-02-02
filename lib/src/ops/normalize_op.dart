@@ -10,6 +10,11 @@ import 'transform_op.dart';
 /// Normalizes tensor values per channel using mean and standard deviation.
 ///
 /// Applies the formula: `(value - mean) / std` for each channel.
+///
+/// ## Complexity
+///
+/// - **Time**: O(n) where n = total elements. Uses SIMD acceleration for Float32/Float64.
+/// - **Space**: O(n) for output tensor (or O(1) with in-place mode).
 class NormalizeOp extends TransformOp
     with InPlaceTransform, RequiresContiguous {
   /// Per-channel mean values to subtract.
@@ -71,6 +76,12 @@ class NormalizeOp extends TransformOp
 
   @override
   String get name => 'Normalize(mean=$mean, std=$std)';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -246,6 +257,12 @@ class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   String get name => 'Scale(scale=$scale, offset=$offset)';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        supportsInPlace: true,
+        requiresContiguous: true,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

@@ -33,6 +33,12 @@ class TypeCastOp extends TransformOp with RequiresContiguous {
   String get name => 'TypeCast($targetDtype)';
 
   @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        requiresContiguous: true,
+        modifiesDType: true,
+      );
+
+  @override
   TensorBuffer apply(TensorBuffer input) {
     if (input.dtype == targetDtype) {
       return input;
@@ -95,6 +101,13 @@ class ToTensorOp extends TransformOp with RequiresContiguous {
 
   @override
   String get name => 'ToTensor(normalize=$normalize)';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        requiresContiguous: true,
+        preservesShape: false,
+        modifiesDType: true,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -202,6 +215,13 @@ class ToImageOp extends TransformOp with RequiresContiguous {
 
   @override
   String get name => 'ToImage(denormalize=$denormalize)';
+
+  @override
+  OperationCapabilities get capabilities => const OperationCapabilities(
+        requiresContiguous: true,
+        preservesShape: false,
+        modifiesDType: true,
+      );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
