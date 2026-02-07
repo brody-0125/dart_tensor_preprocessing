@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-02-02
+
+### Added
+
+- **New Activation Functions** (PyTorch compatible):
+  - `GELUOp` - Gaussian Error Linear Unit, standard in Transformers (BERT, GPT, ViT)
+    - Supports exact computation and `tanh` approximation modes
+  - `SiLUOp` (Swish) - Sigmoid Linear Unit, used in EfficientNet and YOLOv5
+  - `SwishOp` - Alias for `SiLUOp`
+  - `HardsigmoidOp` - Hardware-efficient sigmoid approximation for MobileNetV3
+  - `HardswishOp` - Hardware-efficient swish approximation for MobileNetV3
+  - `MishOp` - Self-regularizing activation used in YOLOv4+
+  - `ELUOp` - Exponential Linear Unit with configurable alpha
+
+- **`stack()` Function** - Stack tensors along a new dimension (torch.stack equivalent)
+  - Supports arbitrary dimension insertion with negative indexing
+  - All input tensors must have identical shapes
+  - Dtype-specialized for Float32/Float64 performance
+
+- **New Normalization Operations** (PyTorch compatible):
+  - `InstanceNormOp` - Instance normalization for style transfer and GANs
+    - Normalizes per sample per channel (each spatial region independently)
+    - Supports 3D `[C,H,W]` and 4D `[N,C,H,W]` tensors
+    - `InstanceNormOp.fromStateDict()` factory for loading PyTorch weights
+    - Equivalent to `torch.nn.InstanceNorm2d`
+  - `RMSNormOp` - Root Mean Square normalization for modern LLMs
+    - More efficient than LayerNorm (no mean subtraction)
+    - Used in LLaMA, Gemma, and other modern transformers
+    - Factory presets: `llama7B`, `llama13B`, `llama70B`, `gemma2B`
+    - `RMSNormOp.fromStateDict()` factory for loading weights
+    - Equivalent to `torch.nn.RMSNorm` (PyTorch 2.4+)
+
+### Documentation
+
+- Updated PyTorch compatibility table in README.md
+- Added new activation functions to Available Operations list
+
 ## [0.6.5] - 2026-02-02
 
 ### Added

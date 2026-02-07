@@ -20,7 +20,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.6.5
+  dart_tensor_preprocessing: ^0.7.0
 ```
 
 ## Quick Start
@@ -86,6 +86,8 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 - `BatchNormOp` - Batch normalization for CNN inference (PyTorch compatible)
 - `LayerNormOp` - Layer normalization for Transformer inference (presets: BERT, BERT-Large)
 - `GroupNormOp` - Group normalization for modern CNNs (PyTorch compatible)
+- `InstanceNormOp` - Instance normalization for style transfer and GANs (PyTorch compatible)
+- `RMSNormOp` - Root Mean Square normalization for LLMs (LLaMA, Gemma)
 
 ### Layout
 - `PermuteOp` - Axis reordering (e.g., HWC to CHW)
@@ -102,6 +104,12 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 ### Activation Functions
 - `ReLUOp` - Rectified Linear Unit (SIMD accelerated)
 - `LeakyReLUOp` - Leaky ReLU with configurable slope (SIMD accelerated)
+- `GELUOp` - Gaussian Error Linear Unit (Transformers: BERT, GPT, ViT)
+- `SiLUOp` / `SwishOp` - Sigmoid Linear Unit (EfficientNet, YOLOv5)
+- `HardsigmoidOp` - Hardware-efficient sigmoid (MobileNetV3)
+- `HardswishOp` - Hardware-efficient swish (MobileNetV3)
+- `MishOp` - Self-regularizing activation (YOLOv4+)
+- `ELUOp` - Exponential Linear Unit
 - `SigmoidOp` - Sigmoid activation
 - `TanhOp` - Hyperbolic tangent activation
 - `SoftmaxOp` - Softmax along specified axis
@@ -120,6 +128,7 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 
 ### Utility
 - `concat()` - Concatenates tensors along specified axis
+- `stack()` - Stacks tensors along a new dimension
 
 ### Shape
 - `UnsqueezeOp` - Add dimension
@@ -226,7 +235,7 @@ print(op.capabilities.requiresContiguous); // true
 print(op.capabilities.preservesShape);     // true
 ```
 
-Operations supporting in-place: `ReLUOp`, `LeakyReLUOp`, `SigmoidOp`, `TanhOp`, `AbsOp`, `NegOp`, `SqrtOp`, `ExpOp`, `LogOp`, `PowOp`, `AddOp`, `SubOp`, `MulOp`, `DivOp`, `ClipOp`, `NormalizeOp`, `ScaleOp`, `BatchNormOp`, `LayerNormOp`, `GroupNormOp`.
+Operations supporting in-place: `ReLUOp`, `LeakyReLUOp`, `SigmoidOp`, `TanhOp`, `AbsOp`, `NegOp`, `SqrtOp`, `ExpOp`, `LogOp`, `PowOp`, `AddOp`, `SubOp`, `MulOp`, `DivOp`, `ClipOp`, `NormalizeOp`, `ScaleOp`, `BatchNormOp`, `LayerNormOp`, `GroupNormOp`, `InstanceNormOp`, `RMSNormOp`.
 
 ## Memory Formats
 
@@ -263,6 +272,7 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `PadOp(mode: reflect)` | `F.pad(mode='reflect')` |
 | `SliceOp([(start, end, step)])` | `tensor[start:end:step]` |
 | `concat(tensors, axis)` | `torch.cat(tensors, dim)` |
+| `stack(tensors, dim)` | `torch.stack(tensors, dim)` |
 | `RandomCropOp` | `transforms.RandomCrop()` |
 | `GaussianBlurOp` | `transforms.GaussianBlur()` |
 | `AddOp` / `SubOp` | `torch.add()` / `torch.sub()` |
@@ -271,11 +281,19 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `AbsOp` / `NegOp` | `torch.abs()` / `torch.neg()` |
 | `SqrtOp` / `ExpOp` / `LogOp` | `torch.sqrt()` / `exp()` / `log()` |
 | `ReLUOp` / `LeakyReLUOp` | `F.relu()` / `F.leaky_relu()` |
+| `GELUOp` | `F.gelu()` |
+| `SiLUOp` / `SwishOp` | `F.silu()` |
+| `HardsigmoidOp` | `F.hardsigmoid()` |
+| `HardswishOp` | `F.hardswish()` |
+| `MishOp` | `F.mish()` |
+| `ELUOp` | `F.elu()` |
 | `SigmoidOp` / `TanhOp` | `torch.sigmoid()` / `torch.tanh()` |
 | `SoftmaxOp` | `F.softmax()` |
 | `BatchNormOp` | `torch.nn.BatchNorm2d` (inference) |
 | `LayerNormOp` | `torch.nn.LayerNorm` |
 | `GroupNormOp` | `torch.nn.GroupNorm` |
+| `InstanceNormOp` | `torch.nn.InstanceNorm2d` |
+| `RMSNormOp` | `torch.nn.RMSNorm` (PyTorch 2.4+) |
 | `TensorBuffer.full()` | `torch.full()` |
 | `TensorBuffer.random()` | `torch.rand()` |
 | `TensorBuffer.randn()` | `torch.randn()` |
