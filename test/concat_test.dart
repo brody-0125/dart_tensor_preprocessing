@@ -362,4 +362,208 @@ void main() {
       });
     });
   });
+
+  group('stack', () {
+    group('parameter validation', () {
+      test('throws for empty tensor list', () {
+        expect(
+          () => stack([]),
+          throwsA(isA<InvalidParameterException>()),
+        );
+      });
+
+      test('returns unsqueezed tensor for single tensor list', () {
+        final data = Float32List.fromList([1, 2, 3]);
+        final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+        final result = stack([tensor], dim: 0);
+        expect(result.shape, equals([1, 3]));
+        expect(result[[0, 0]], equals(1.0));
+        expect(result[[0, 1]], equals(2.0));
+        expect(result[[0, 2]], equals(3.0));
+      });
+    });
+
+    group('dim validation', () {
+      test('throws for dim out of bounds', () {
+        final data = Float32List.fromList([1, 2, 3]);
+        final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+        // For 1D tensor, valid dims for stack are 0, 1, -1, -2
+        expect(
+          () => stack([tensor, tensor], dim: 2),
+          throwsA(isA<InvalidParameterException>()),
+        );
+        expect(
+          () => stack([tensor, tensor], dim: -3),
+          throwsA(isA<InvalidParameterException>()),
+        );
+      });
+    });
+
+    group('shape compatibility validation', () {
+      test('throws for different shapes', () {
+        final data1 = Float32List.fromList([1, 2, 3]);
+        final data2 = Float32List.fromList([4, 5]);
+
+        final tensor1 = TensorBuffer.fromFloat32List(data1, [3]);
+        final tensor2 = TensorBuffer.fromFloat32List(data2, [2]);
+
+        expect(
+          () => stack([tensor1, tensor2]),
+          throwsA(isA<ShapeMismatchException>()),
+        );
+      });
+
+      test('throws for different dtypes', () {
+        final data1 = Float32List.fromList([1, 2]);
+        final tensor1 = TensorBuffer.fromFloat32List(data1, [2]);
+
+        final data2 = Int32List.fromList([3, 4]);
+        final storage2 = TensorStorage(data2, DType.int32);
+        final tensor2 = TensorBuffer(storage: storage2, shape: [2]);
+
+        expect(
+          () => stack([tensor1, tensor2]),
+          throwsA(isA<InvalidParameterException>()),
+        );
+      });
+    });
+
+    group('basic stacking', () {
+      test('stacks 1D tensors along dim 0', () {
+        final data1 = Float32List.fromList([1, 2, 3]);
+        final data2 = Float32List.fromList([4, 5, 6]);
+        final data3 = Float32List.fromList([7, 8, 9]);
+
+        final tensor1 = TensorBuffer.fromFloat32List(data1, [3]);
+        final tensor2 = TensorBuffer.fromFloat32List(data2, [3]);
+        final tensor3 = TensorBuffer.fromFloat32List(data3, [3]);
+
+        // Stack 3 tensors of shape [3] along dim 0 -> [3, 3]
+        final result = stack([tensor1, tensor2, tensor3], dim: 0);
+
+        expect(result.shape, equals([3, 3]));
+        expect(result.dtype, equals(DType.float32));
+
+        // Row 0 is tensor1
+        expect(result[[0, 0]], equals(1.0));
+        expect(result[[0, 1]], equals(2.0));
+        expect(result[[0, 2]], equals(3.0));
+        // Row 1 is tensor2
+        expect(result[[1, 0]], equals(4.0));
+        expect(result[[1, 1]], equals(5.0));
+        expect(result[[1, 2]], equals(6.0));
+        // Row 2 is tensor3
+        expect(result[[2, 0]], equals(7.0));
+        expect(result[[2, 1]], equals(8.0));
+        expect(result[[2, 2]], equals(9.0));
+      });
+
+      test('stacks 1D tensors along dim 1', () {
+        final data1 = Float32List.fromList([1, 2, 3]);
+        final data2 = Float32List.fromList([4, 5, 6]);
+
+        final tensor1 = TensorBuffer.fromFloat32List(data1, [3]);
+        final tensor2 = TensorBuffer.fromFloat32List(data2, [3]);
+
+        // Stack 2 tensors of shape [3] along dim 1 -> [3, 2]
+        final result = stack([tensor1, tensor2], dim: 1);
+
+        expect(result.shape, equals([3, 2]));
+        expect(result[[0, 0]], equals(1.0));
+        expect(result[[0, 1]], equals(4.0));
+        expect(result[[1, 0]], equals(2.0));
+        expect(result[[1, 1]], equals(5.0));
+        expect(result[[2, 0]], equals(3.0));
+        expect(result[[2, 1]], equals(6.0));
+      });
+
+      test('stacks 2D tensors along dim 0', () {
+        final data1 = Float32List.fromList([1, 2, 3, 4]);
+        final data2 = Float32List.fromList([5, 6, 7, 8]);
+
+        final tensor1 = TensorBuffer.fromFloat32List(data1, [2, 2]);
+        final tensor2 = TensorBuffer.fromFloat32List(data2, [2, 2]);
+
+        // Stack 2 tensors of shape [2, 2] along dim 0 -> [2, 2, 2]
+        final result = stack([tensor1, tensor2], dim: 0);
+
+        expect(result.shape, equals([2, 2, 2]));
+        // result[0] is tensor1
+        expect(result[[0, 0, 0]], equals(1.0));
+        expect(result[[0, 0, 1]], equals(2.0));
+        expect(result[[0, 1, 0]], equals(3.0));
+        expect(result[[0, 1, 1]], equals(4.0));
+        // result[1] is tensor2
+        expect(result[[1, 0, 0]], equals(5.0));
+        expect(result[[1, 0, 1]], equals(6.0));
+        expect(result[[1, 1, 0]], equals(7.0));
+        expect(result[[1, 1, 1]], equals(8.0));
+      });
+
+      test('stacks 2D tensors along dim 1', () {
+        final data1 = Float32List.fromList([1, 2, 3, 4]);
+        final data2 = Float32List.fromList([5, 6, 7, 8]);
+
+        final tensor1 = TensorBuffer.fromFloat32List(data1, [2, 2]);
+        final tensor2 = TensorBuffer.fromFloat32List(data2, [2, 2]);
+
+        // Stack 2 tensors of shape [2, 2] along dim 1 -> [2, 2, 2]
+        final result = stack([tensor1, tensor2], dim: 1);
+
+        expect(result.shape, equals([2, 2, 2]));
+        // result[:,0,:] is tensor1
+        expect(result[[0, 0, 0]], equals(1.0));
+        expect(result[[0, 0, 1]], equals(2.0));
+        expect(result[[1, 0, 0]], equals(3.0));
+        expect(result[[1, 0, 1]], equals(4.0));
+        // result[:,1,:] is tensor2
+        expect(result[[0, 1, 0]], equals(5.0));
+        expect(result[[0, 1, 1]], equals(6.0));
+        expect(result[[1, 1, 0]], equals(7.0));
+        expect(result[[1, 1, 1]], equals(8.0));
+      });
+
+      test('stacks 2D tensors along dim 2 (last)', () {
+        final data1 = Float32List.fromList([1, 2, 3, 4]);
+        final data2 = Float32List.fromList([5, 6, 7, 8]);
+
+        final tensor1 = TensorBuffer.fromFloat32List(data1, [2, 2]);
+        final tensor2 = TensorBuffer.fromFloat32List(data2, [2, 2]);
+
+        // Stack 2 tensors of shape [2, 2] along dim 2 -> [2, 2, 2]
+        final result = stack([tensor1, tensor2], dim: 2);
+
+        expect(result.shape, equals([2, 2, 2]));
+        // result[:,:,0] is tensor1
+        expect(result[[0, 0, 0]], equals(1.0));
+        expect(result[[0, 1, 0]], equals(2.0));
+        expect(result[[1, 0, 0]], equals(3.0));
+        expect(result[[1, 1, 0]], equals(4.0));
+        // result[:,:,1] is tensor2
+        expect(result[[0, 0, 1]], equals(5.0));
+        expect(result[[0, 1, 1]], equals(6.0));
+        expect(result[[1, 0, 1]], equals(7.0));
+        expect(result[[1, 1, 1]], equals(8.0));
+      });
+    });
+
+    group('negative dim handling', () {
+      test('handles negative dim (-1)', () {
+        final data1 = Float32List.fromList([1, 2, 3]);
+        final data2 = Float32List.fromList([4, 5, 6]);
+
+        final tensor1 = TensorBuffer.fromFloat32List(data1, [3]);
+        final tensor2 = TensorBuffer.fromFloat32List(data2, [3]);
+
+        // dim=-1 for input [3] means output [3, 2]
+        final result = stack([tensor1, tensor2], dim: -1);
+
+        expect(result.shape, equals([3, 2]));
+        expect(result[[0, 0]], equals(1.0));
+        expect(result[[0, 1]], equals(4.0));
+      });
+    });
+  });
 }

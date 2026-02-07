@@ -297,4 +297,230 @@ void main() {
       expect(SoftmaxOp(axis: 1).name, equals('Softmax(axis=1)'));
     });
   });
+
+  group('GELUOp', () {
+    test('GELU(0) = 0', () {
+      final data = Float32List.fromList([0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final gelu = GELUOp();
+      final result = gelu(tensor);
+
+      expect(result[[0]], closeTo(0.0, 1e-5));
+    });
+
+    test('GELU is monotonically increasing for x > -0.5', () {
+      final data = Float32List.fromList([0.0, 1.0, 2.0, 3.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [4]);
+
+      final gelu = GELUOp();
+      final result = gelu(tensor);
+
+      for (int i = 1; i < 4; i++) {
+        expect(result[[i]], greaterThan(result[[i - 1]]));
+      }
+    });
+
+    test('exact and tanh approximation give similar results', () {
+      final data = Float32List.fromList([-2.0, -1.0, 0.0, 1.0, 2.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [5]);
+
+      final geluExact = GELUOp(approximate: 'none');
+      final geluTanh = GELUOp(approximate: 'tanh');
+
+      final exactResult = geluExact(tensor);
+      final tanhResult = geluTanh(tensor);
+
+      for (int i = 0; i < 5; i++) {
+        expect(exactResult[[i]], closeTo(tanhResult[[i]], 0.01));
+      }
+    });
+
+    test('preserves shape', () {
+      expect(GELUOp().computeOutputShape([2, 3, 4]), equals([2, 3, 4]));
+    });
+
+    test('throws for invalid approximate parameter', () {
+      expect(
+        () => GELUOp(approximate: 'invalid'),
+        throwsA(isA<InvalidParameterException>()),
+      );
+    });
+
+    test('name reflects approximation mode', () {
+      expect(GELUOp().name, equals('GELU'));
+      expect(GELUOp(approximate: 'tanh').name, equals('GELU(approximate=tanh)'));
+    });
+  });
+
+  group('SiLUOp', () {
+    test('SiLU(0) = 0', () {
+      final data = Float32List.fromList([0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final silu = SiLUOp();
+      final result = silu(tensor);
+
+      expect(result[[0]], closeTo(0.0, 1e-6));
+    });
+
+    test('SiLU(x) = x * sigmoid(x)', () {
+      final data = Float32List.fromList([-2.0, -1.0, 0.0, 1.0, 2.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [5]);
+
+      final silu = SiLUOp();
+      final result = silu(tensor);
+
+      // x / (1 + exp(-x))
+      expect(result[[0]], closeTo(-2.0 / (1 + 7.389), 0.01)); // e^2 ≈ 7.389
+      expect(result[[2]], closeTo(0.0, 1e-6));
+      expect(result[[3]], closeTo(1.0 / (1 + 0.368), 0.01)); // e^-1 ≈ 0.368
+    });
+
+    test('large positive values approach x', () {
+      final data = Float32List.fromList([10.0, 20.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [2]);
+
+      final silu = SiLUOp();
+      final result = silu(tensor);
+
+      expect(result[[0]], closeTo(10.0, 0.1));
+      expect(result[[1]], closeTo(20.0, 0.1));
+    });
+
+    test('name is SiLU', () {
+      expect(SiLUOp().name, equals('SiLU'));
+    });
+  });
+
+  group('HardsigmoidOp', () {
+    test('hardsigmoid(0) = 0.5', () {
+      final data = Float32List.fromList([0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final op = HardsigmoidOp();
+      final result = op(tensor);
+
+      expect(result[[0]], closeTo(0.5, 1e-6)); // (0+3)/6 = 0.5
+    });
+
+    test('hardsigmoid clamps to [0, 1]', () {
+      final data = Float32List.fromList([-10.0, -3.0, 3.0, 10.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [4]);
+
+      final op = HardsigmoidOp();
+      final result = op(tensor);
+
+      expect(result[[0]], closeTo(0.0, 1e-6)); // clamped
+      expect(result[[1]], closeTo(0.0, 1e-6)); // (-3+3)/6 = 0
+      expect(result[[2]], closeTo(1.0, 1e-6)); // (3+3)/6 = 1
+      expect(result[[3]], closeTo(1.0, 1e-6)); // clamped
+    });
+
+    test('name is Hardsigmoid', () {
+      expect(HardsigmoidOp().name, equals('Hardsigmoid'));
+    });
+  });
+
+  group('HardswishOp', () {
+    test('hardswish(0) = 0', () {
+      final data = Float32List.fromList([0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final op = HardswishOp();
+      final result = op(tensor);
+
+      expect(result[[0]], closeTo(0.0, 1e-6)); // 0 * 0.5 = 0
+    });
+
+    test('hardswish(x) = x * hardsigmoid(x)', () {
+      final data = Float32List.fromList([-3.0, 0.0, 3.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final op = HardswishOp();
+      final result = op(tensor);
+
+      expect(result[[0]], closeTo(0.0, 1e-6)); // -3 * 0 = 0
+      expect(result[[1]], closeTo(0.0, 1e-6)); // 0 * 0.5 = 0
+      expect(result[[2]], closeTo(3.0, 1e-6)); // 3 * 1 = 3
+    });
+
+    test('name is Hardswish', () {
+      expect(HardswishOp().name, equals('Hardswish'));
+    });
+  });
+
+  group('MishOp', () {
+    test('Mish(0) ≈ 0', () {
+      final data = Float32List.fromList([0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final op = MishOp();
+      final result = op(tensor);
+
+      // mish(0) = 0 * tanh(ln(2)) ≈ 0
+      expect(result[[0]], closeTo(0.0, 1e-5));
+    });
+
+    test('Mish is continuous and smooth', () {
+      final data = Float32List.fromList([-2.0, -1.0, 0.0, 1.0, 2.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [5]);
+
+      final op = MishOp();
+      final result = op(tensor);
+
+      // Just verify no NaN/Inf
+      for (int i = 0; i < 5; i++) {
+        expect(result[[i]].isNaN, isFalse);
+        expect(result[[i]].isInfinite, isFalse);
+      }
+    });
+
+    test('name is Mish', () {
+      expect(MishOp().name, equals('Mish'));
+    });
+  });
+
+  group('ELUOp', () {
+    test('ELU(x) = x for x > 0', () {
+      final data = Float32List.fromList([1.0, 2.0, 3.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final op = ELUOp();
+      final result = op(tensor);
+
+      expect(result[[0]], closeTo(1.0, 1e-6));
+      expect(result[[1]], closeTo(2.0, 1e-6));
+      expect(result[[2]], closeTo(3.0, 1e-6));
+    });
+
+    test('ELU(x) = alpha * (exp(x) - 1) for x < 0', () {
+      final data = Float32List.fromList([-1.0, -2.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [2]);
+
+      final op = ELUOp(alpha: 1.0);
+      final result = op(tensor);
+
+      // e^-1 - 1 ≈ -0.632
+      expect(result[[0]], closeTo(-0.632, 0.01));
+      // e^-2 - 1 ≈ -0.865
+      expect(result[[1]], closeTo(-0.865, 0.01));
+    });
+
+    test('custom alpha', () {
+      final data = Float32List.fromList([-1.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final op = ELUOp(alpha: 2.0);
+      final result = op(tensor);
+
+      // 2 * (e^-1 - 1) ≈ -1.264
+      expect(result[[0]], closeTo(-1.264, 0.01));
+    });
+
+    test('name reflects alpha', () {
+      expect(ELUOp().name, equals('ELU'));
+      expect(ELUOp(alpha: 2.0).name, equals('ELU(alpha=2.0)'));
+    });
+  });
 }
