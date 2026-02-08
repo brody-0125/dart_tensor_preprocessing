@@ -3,6 +3,9 @@
 ![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2.svg?logo=dart)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-Compatible-EE4C2C.svg?logo=pytorch)
+![Pub Likes](https://img.shields.io/pub/likes/dart_tensor_preprocessing)
+![Pub Monthly Downloads](https://img.shields.io/pub/dm/dart_tensor_preprocessing)
+![Pub Points](https://img.shields.io/pub/points/dart_tensor_preprocessing)
 
 Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline for ONNX Runtime, TFLite, and other AI inference engines.
 
