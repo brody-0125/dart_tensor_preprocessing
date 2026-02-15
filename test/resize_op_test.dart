@@ -307,5 +307,126 @@ void main() {
             op.computeOutputShape([1, 3, 480, 640]), equals([1, 3, 224, 224]));
       });
     });
+
+    group('CoordinateTransformMode', () {
+      test('enum has all expected values', () {
+        expect(CoordinateTransformMode.values, hasLength(4));
+        expect(CoordinateTransformMode.halfPixel, isNotNull);
+        expect(CoordinateTransformMode.alignCorners, isNotNull);
+        expect(CoordinateTransformMode.asymmetric, isNotNull);
+        expect(CoordinateTransformMode.pytorchHalfPixel, isNotNull);
+      });
+
+      test('default coordinateMode preserves existing behavior', () {
+        // Create input: 1-channel 4x4 with sequential values
+        final data = Float32List.fromList(
+            List.generate(16, (i) => i.toDouble()));
+        final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
+
+        // Existing behavior (no coordinateMode specified)
+        final opOld = ResizeOp(
+          height: 2,
+          width: 2,
+          mode: InterpolationMode.bilinear,
+        );
+        final resultOld = opOld.apply(tensor);
+
+        // New behavior with explicit halfPixel (should match)
+        final opNew = ResizeOp(
+          height: 2,
+          width: 2,
+          mode: InterpolationMode.bilinear,
+          coordinateMode: CoordinateTransformMode.halfPixel,
+        );
+        final resultNew = opNew.apply(tensor);
+
+        // Results must be identical
+        for (int i = 0; i < resultOld.numel; i++) {
+          expect(
+            resultNew.storage.getAsDouble(i),
+            closeTo(resultOld.storage.getAsDouble(i), 1e-6),
+            reason: 'Mismatch at index $i',
+          );
+        }
+      });
+
+      test('asymmetric mode uses x * inSize / outSize mapping', () {
+        // 1-channel 4x4 tensor: row0=[0,1,2,3], row1=[4,5,6,7], ...
+        final data = Float32List.fromList(
+            List.generate(16, (i) => i.toDouble()));
+        final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
+
+        final op = ResizeOp(
+          height: 2,
+          width: 2,
+          mode: InterpolationMode.nearest,
+          coordinateMode: CoordinateTransformMode.asymmetric,
+        );
+        final result = op.apply(tensor);
+
+        expect(result.shape, equals([1, 2, 2]));
+        // asymmetric: srcCoord = outCoord * inSize / outSize
+        // (0,0) -> src(0,0) = 0.0
+        // (0,1) -> src(0,2) = 2.0
+        // (1,0) -> src(2,0) = 8.0
+        // (1,1) -> src(2,2) = 10.0
+        expect(result[[0, 0, 0]], equals(0.0));
+        expect(result[[0, 0, 1]], equals(2.0));
+        expect(result[[0, 1, 0]], equals(8.0));
+        expect(result[[0, 1, 1]], equals(10.0));
+      });
+
+      test('pytorchHalfPixel returns 0 when outSize is 1', () {
+        // 1-channel 4x4 tensor
+        final data = Float32List.fromList(
+            List.generate(16, (i) => i.toDouble()));
+        final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
+
+        final op = ResizeOp(
+          height: 1,
+          width: 1,
+          mode: InterpolationMode.nearest,
+          coordinateMode: CoordinateTransformMode.pytorchHalfPixel,
+        );
+        final result = op.apply(tensor);
+
+        expect(result.shape, equals([1, 1, 1]));
+        // When outSize=1, pytorchHalfPixel maps to src(0,0) = value 0.0
+        expect(result[[0, 0, 0]], equals(0.0));
+      });
+
+      test('alignCorners mode via coordinateMode matches alignCorners bool',
+          () {
+        final data = Float32List.fromList(
+            List.generate(16, (i) => i.toDouble()));
+        final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
+
+        // Using old alignCorners: true
+        final opBool = ResizeOp(
+          height: 3,
+          width: 3,
+          mode: InterpolationMode.bilinear,
+          alignCorners: true,
+        );
+        final resultBool = opBool.apply(tensor);
+
+        // Using new coordinateMode
+        final opEnum = ResizeOp(
+          height: 3,
+          width: 3,
+          mode: InterpolationMode.bilinear,
+          coordinateMode: CoordinateTransformMode.alignCorners,
+        );
+        final resultEnum = opEnum.apply(tensor);
+
+        for (int i = 0; i < resultBool.numel; i++) {
+          expect(
+            resultEnum.storage.getAsDouble(i),
+            closeTo(resultBool.storage.getAsDouble(i), 1e-6),
+            reason: 'Mismatch at index $i',
+          );
+        }
+      });
+    });
   });
 }

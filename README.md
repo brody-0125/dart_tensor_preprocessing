@@ -23,7 +23,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.7.0
+  dart_tensor_preprocessing: ^0.8.0
 ```
 
 ## Quick Start
@@ -76,7 +76,7 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 ## Available Operations
 
 ### Resize & Crop
-- `ResizeOp` - Resize to fixed dimensions (nearest, bilinear, bicubic, area, lanczos)
+- `ResizeOp` - Resize to fixed dimensions (nearest, bilinear, bicubic, area, lanczos) with ONNX-compatible coordinate transform modes
 - `ResizeShortestOp` - Resize preserving aspect ratio
 - `CenterCropOp` - Center crop to fixed dimensions
 - `ClipOp` - Element-wise value clamping (presets: unit, symmetric, uint8)
@@ -270,6 +270,9 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `ResizeOp(mode: bilinear)` | `F.interpolate(mode='bilinear')` |
 | `ResizeOp(mode: area)` | `F.interpolate(mode='area')` |
 | `ResizeOp(mode: lanczos)` | Lanczos3 interpolation |
+| `ResizeOp(coordinateMode: halfPixel)` | ONNX Resize `half_pixel` |
+| `ResizeOp(coordinateMode: asymmetric)` | ONNX Resize `asymmetric` (TF default) |
+| `ResizeOp(coordinateMode: pytorchHalfPixel)` | ONNX Resize `pytorch_half_pixel` |
 | `ToTensorOp()` | `transforms.ToTensor()` |
 | `ClipOp(min, max)` | `torch.clamp(min, max)` |
 | `PadOp(mode: reflect)` | `F.pad(mode='reflect')` |

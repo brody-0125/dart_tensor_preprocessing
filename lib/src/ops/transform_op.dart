@@ -1,3 +1,4 @@
+import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 
 // ============================================================================
@@ -11,6 +12,7 @@ import '../core/tensor_buffer.dart';
 /// - In-place operation chaining
 /// - Memory allocation planning
 /// - Pipeline fusion opportunities
+/// - Framework compatibility checks
 ///
 /// Example:
 /// ```dart
@@ -19,6 +21,8 @@ import '../core/tensor_buffer.dart';
 ///   OperationCapabilities get capabilities => const OperationCapabilities(
 ///     supportsInPlace: true,
 ///     preservesShape: true,
+///     pytorchEquivalent: 'torch.nn.ReLU',
+///     onnxOpType: 'Relu',
 ///   );
 /// }
 /// ```
@@ -47,21 +51,58 @@ class OperationCapabilities {
   /// `false` for most operations that preserve dtype
   final bool modifiesDType;
 
+  /// Whether the operation supports broadcasting of input tensors.
+  ///
+  /// `true` for operations like arithmetic that can broadcast shapes.
+  final bool supportsBroadcast;
+
+  /// The set of data types supported by this operation.
+  ///
+  /// Defaults to `{DType.float32, DType.float64}` for most operations.
+  final Set<DType> supportedDTypes;
+
+  /// The equivalent PyTorch operation name, if applicable.
+  ///
+  /// Example: `'torch.nn.ReLU'`, `'F.normalize'`
+  final String? pytorchEquivalent;
+
+  /// The equivalent ONNX operator type, if applicable.
+  ///
+  /// Example: `'Relu'`, `'Resize'`
+  final String? onnxOpType;
+
+  /// The minimum ONNX opset version required for this operation.
+  final int? onnxOpsetVersion;
+
   /// Creates operation capabilities with the specified characteristics.
   const OperationCapabilities({
     this.supportsInPlace = false,
     this.requiresContiguous = false,
     this.preservesShape = true,
     this.modifiesDType = false,
+    this.supportsBroadcast = false,
+    this.supportedDTypes = const {DType.float32, DType.float64},
+    this.pytorchEquivalent,
+    this.onnxOpType,
+    this.onnxOpsetVersion,
   });
 
   /// Default capabilities for operations that don't specify their own.
   static const defaultCapabilities = OperationCapabilities();
 
   @override
-  String toString() =>
-      'OperationCapabilities(inPlace: $supportsInPlace, contiguous: $requiresContiguous, '
-      'preservesShape: $preservesShape, modifiesDType: $modifiesDType)';
+  String toString() {
+    final parts = [
+      'inPlace: $supportsInPlace',
+      'contiguous: $requiresContiguous',
+      'preservesShape: $preservesShape',
+      'modifiesDType: $modifiesDType',
+    ];
+    if (supportsBroadcast) parts.add('broadcast: true');
+    if (pytorchEquivalent != null) parts.add('pytorch: $pytorchEquivalent');
+    if (onnxOpType != null) parts.add('onnx: $onnxOpType');
+    return 'OperationCapabilities(${parts.join(', ')})';
+  }
 }
 
 // ============================================================================
