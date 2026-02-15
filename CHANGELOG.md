@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-02-15
+
+### Added
+
+- **`CoordinateTransformMode` enum** - ONNX-compatible coordinate transformation modes for `ResizeOp`:
+  - `halfPixel` - PyTorch default (`(x + 0.5) * scale - 0.5`)
+  - `alignCorners` - PyTorch `align_corners=True`
+  - `asymmetric` - TensorFlow default (`x * inSize / outSize`)
+  - `pytorchHalfPixel` - Same as halfPixel but maps to 0 when outSize == 1
+  - New `coordinateMode` parameter on `ResizeOp` (backward compatible with existing `alignCorners` bool)
+
+- **`OperationCapabilities` expanded** - 5 new metadata fields for framework compatibility:
+  - `supportsBroadcast` - Whether the operation supports tensor broadcasting
+  - `supportedDTypes` - Set of supported data types (default: `{float32, float64}`)
+  - `pytorchEquivalent` - Equivalent PyTorch operation name
+  - `onnxOpType` - Equivalent ONNX operator type
+  - `onnxOpsetVersion` - Minimum ONNX opset version required
+
+### Changed
+
+- **File decomposition** - Large operation files split into focused modules:
+  - `activation_op.dart` (1067 lines) → `activation/` subdirectory with 7 focused files:
+    - `relu_ops.dart` (ReLUOp, LeakyReLUOp)
+    - `sigmoid_ops.dart` (SigmoidOp, HardsigmoidOp, TanhOp)
+    - `softmax_op.dart` (SoftmaxOp)
+    - `gelu_op.dart` (GELUOp)
+    - `swish_ops.dart` (SiLUOp, SwishOp, HardswishOp)
+    - `mish_op.dart` (MishOp)
+    - `elu_op.dart` (ELUOp)
+  - `CenterCropOp` extracted from `resize_op.dart` to `crop_op.dart`
+  - Barrel re-exports maintain backward compatibility for existing imports
+
+### Migration Notes
+
+- `ResizeOp`: The new `coordinateMode` parameter defaults to `null`, preserving existing behavior via `alignCorners` bool. No code changes needed for existing users.
+- `OperationCapabilities`: All new fields have default values. Existing `const OperationCapabilities(...)` calls remain valid.
+- File split: `activation_op.dart` and `resize_op.dart` re-export all symbols. Existing `import` statements continue to work.
+
 ## [0.7.0] - 2026-02-02
 
 ### Added

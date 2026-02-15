@@ -6,6 +6,9 @@ import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
 
+// Re-export CenterCropOp for backward compatibility.
+export 'crop_op.dart';
+
 /// Interpolation algorithm used for image resizing.
 enum InterpolationMode {
   /// Nearest-neighbor interpolation (fastest, lowest quality).
@@ -30,6 +33,36 @@ enum InterpolationMode {
   /// Best for high-quality upscaling and downscaling.
   /// Equivalent to `InterpolationMode.LANCZOS` in torchvision.
   lanczos,
+}
+
+/// ONNX-compatible coordinate transformation modes for resize operations.
+///
+/// Controls how output pixel coordinates are mapped to input pixel coordinates.
+/// Different frameworks use different conventions:
+/// - PyTorch default: [halfPixel]
+/// - TensorFlow default: [asymmetric]
+/// - PyTorch `align_corners=True`: [alignCorners]
+enum CoordinateTransformMode {
+  /// Half-pixel offset: `srcCoord = (dstCoord + 0.5) * scale - 0.5`
+  ///
+  /// PyTorch default when `align_corners=False`.
+  /// Centers pixels within their cells for consistent interpolation.
+  halfPixel,
+
+  /// Align corners: `srcCoord = dstCoord * (inSize - 1) / (outSize - 1)`
+  ///
+  /// Maps corner pixels exactly. PyTorch `align_corners=True`.
+  alignCorners,
+
+  /// Asymmetric: `srcCoord = dstCoord * inSize / outSize`
+  ///
+  /// TensorFlow default. Simple ratio mapping without offset.
+  asymmetric,
+
+  /// PyTorch half-pixel: same as [halfPixel] but maps to 0 when `outSize == 1`.
+  ///
+  /// Handles the edge case where output has single pixel.
+  pytorchHalfPixel,
 }
 
 /// Resizes a tensor to a fixed [height] and [width].
@@ -60,7 +93,20 @@ class ResizeOp extends TransformOp with RequiresContiguous {
   final InterpolationMode mode;
 
   /// Whether to align corners during interpolation.
+  ///
+  /// When [coordinateMode] is explicitly set, this parameter is ignored.
+  /// Kept for backward compatibility.
   final bool alignCorners;
+
+  /// The coordinate transformation mode.
+  ///
+  /// When `null`, behavior is determined by [alignCorners]:
+  /// - `alignCorners == false` → [CoordinateTransformMode.halfPixel]
+  /// - `alignCorners == true` → [CoordinateTransformMode.alignCorners]
+  final CoordinateTransformMode? coordinateMode;
+
+  /// The effective coordinate mode resolved from [coordinateMode] and [alignCorners].
+  late final CoordinateTransformMode _effectiveMode;
 
   /// Creates a resize operation with the specified dimensions.
   ResizeOp({
@@ -68,6 +114,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     required this.width,
     this.mode = InterpolationMode.bilinear,
     this.alignCorners = false,
+    this.coordinateMode,
   }) {
     if (height <= 0 || width <= 0) {
       throw InvalidParameterException(
@@ -76,6 +123,10 @@ class ResizeOp extends TransformOp with RequiresContiguous {
         'Must be positive',
       );
     }
+    _effectiveMode = coordinateMode ??
+        (alignCorners
+            ? CoordinateTransformMode.alignCorners
+            : CoordinateTransformMode.halfPixel);
   }
 
   @override
@@ -229,6 +280,35 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     }
   }
 
+  /// Computes scale factor for coordinate transformation.
+  double _computeScale(int inSize, int outSize) {
+    switch (_effectiveMode) {
+      case CoordinateTransformMode.alignCorners:
+        return outSize > 1 ? (inSize - 1) / (outSize - 1) : 0.0;
+      case CoordinateTransformMode.halfPixel:
+      case CoordinateTransformMode.pytorchHalfPixel:
+      case CoordinateTransformMode.asymmetric:
+        return inSize / outSize;
+    }
+  }
+
+  /// Maps output coordinate to source coordinate.
+  double _mapCoordinate(int outCoord, int inSize, int outSize, double scale) {
+    switch (_effectiveMode) {
+      case CoordinateTransformMode.halfPixel:
+        return (outCoord + 0.5) * scale - 0.5;
+      case CoordinateTransformMode.alignCorners:
+        return outCoord * scale;
+      case CoordinateTransformMode.asymmetric:
+        return outCoord * scale;
+      case CoordinateTransformMode.pytorchHalfPixel:
+        if (outSize > 1) {
+          return (outCoord + 0.5) * scale - 0.5;
+        }
+        return 0.0;
+    }
+  }
+
   void _resizeNearest({
     required TensorBuffer input,
     required TensorBuffer output,
@@ -237,8 +317,8 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     required int srcOffset,
     required int dstOffset,
   }) {
-    final scaleY = srcH / height;
-    final scaleX = srcW / width;
+    final scaleY = _computeScale(srcH, height);
+    final scaleX = _computeScale(srcW, width);
 
     // Dtype-specialized for hot path optimization
     switch (input.dtype) {
@@ -246,20 +326,24 @@ class ResizeOp extends TransformOp with RequiresContiguous {
         final inList = input.storage.data as Float32List;
         final outList = output.storage.data as Float32List;
         for (int y = 0; y < height; y++) {
-          final srcY = (y * scaleY).floor().clamp(0, srcH - 1);
+          final srcY =
+              _mapCoordinate(y, srcH, height, scaleY).floor().clamp(0, srcH - 1);
           final srcRowOffset = srcOffset + srcY * srcW;
           final dstRowOffset = dstOffset + y * width;
           for (int x = 0; x < width; x++) {
-            final srcX = (x * scaleX).floor().clamp(0, srcW - 1);
+            final srcX =
+                _mapCoordinate(x, srcW, width, scaleX).floor().clamp(0, srcW - 1);
             outList[dstRowOffset + x] = inList[srcRowOffset + srcX];
           }
         }
       default:
         // Generic fallback
         for (int y = 0; y < height; y++) {
-          final srcY = (y * scaleY).floor().clamp(0, srcH - 1);
+          final srcY =
+              _mapCoordinate(y, srcH, height, scaleY).floor().clamp(0, srcH - 1);
           for (int x = 0; x < width; x++) {
-            final srcX = (x * scaleX).floor().clamp(0, srcW - 1);
+            final srcX =
+                _mapCoordinate(x, srcW, width, scaleX).floor().clamp(0, srcW - 1);
             final value =
                 input.storage.getAsDouble(srcOffset + srcY * srcW + srcX);
             output.storage.setFromDouble(dstOffset + y * width + x, value);
@@ -276,10 +360,8 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     required int srcOffset,
     required int dstOffset,
   }) {
-    final scaleY =
-        alignCorners && height > 1 ? (srcH - 1) / (height - 1) : srcH / height;
-    final scaleX =
-        alignCorners && width > 1 ? (srcW - 1) / (width - 1) : srcW / width;
+    final scaleY = _computeScale(srcH, height);
+    final scaleX = _computeScale(srcW, width);
 
     // Dtype-specialized for hot path optimization
     switch (input.dtype) {
@@ -299,8 +381,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
 
             // Process block
             for (int y = by; y < endY; y++) {
-              final rawSrcY =
-                  alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+              final rawSrcY = _mapCoordinate(y, srcH, height, scaleY);
               final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
               final y0 = srcY.floor().clamp(0, srcH - 1);
               final y1 = (y0 + 1).clamp(0, srcH - 1);
@@ -308,8 +389,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
               final oneMinusFy = 1 - fy;
 
               for (int x = bx; x < endX; x++) {
-                final rawSrcX =
-                    alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+                final rawSrcX = _mapCoordinate(x, srcW, width, scaleX);
                 final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
                 final x0 = srcX.floor().clamp(0, srcW - 1);
                 final x1 = (x0 + 1).clamp(0, srcW - 1);
@@ -342,16 +422,14 @@ class ResizeOp extends TransformOp with RequiresContiguous {
             final endX = math.min(bx + blockSize, width);
 
             for (int y = by; y < endY; y++) {
-              final rawSrcY =
-                  alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+              final rawSrcY = _mapCoordinate(y, srcH, height, scaleY);
               final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
               final y0 = srcY.floor().clamp(0, srcH - 1);
               final y1 = (y0 + 1).clamp(0, srcH - 1);
               final fy = srcY - y0;
 
               for (int x = bx; x < endX; x++) {
-                final rawSrcX =
-                    alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+                final rawSrcX = _mapCoordinate(x, srcW, width, scaleX);
                 final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
                 final x0 = srcX.floor().clamp(0, srcW - 1);
                 final x1 = (x0 + 1).clamp(0, srcW - 1);
@@ -387,10 +465,8 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     required int srcOffset,
     required int dstOffset,
   }) {
-    final scaleY =
-        alignCorners && height > 1 ? (srcH - 1) / (height - 1) : srcH / height;
-    final scaleX =
-        alignCorners && width > 1 ? (srcW - 1) / (width - 1) : srcW / width;
+    final scaleY = _computeScale(srcH, height);
+    final scaleX = _computeScale(srcW, width);
 
     // Dtype-specialized for hot path optimization
     switch (input.dtype) {
@@ -410,8 +486,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
 
             // Process block
             for (int y = by; y < endY; y++) {
-              final rawSrcY =
-                  alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+              final rawSrcY = _mapCoordinate(y, srcH, height, scaleY);
               final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
               final y0 = srcY.floor();
               final fy = srcY - y0;
@@ -429,8 +504,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
               final yj3 = (y0 + 2).clamp(0, srcH - 1);
 
               for (int x = bx; x < endX; x++) {
-                final rawSrcX =
-                    alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+                final rawSrcX = _mapCoordinate(x, srcW, width, scaleX);
                 final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
                 final x0 = srcX.floor();
                 final fx = srcX - x0;
@@ -477,14 +551,13 @@ class ResizeOp extends TransformOp with RequiresContiguous {
       default:
         // Generic fallback
         for (int y = 0; y < height; y++) {
-          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+          final rawSrcY = _mapCoordinate(y, srcH, height, scaleY);
           final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
           final y0 = srcY.floor();
           final fy = srcY - y0;
 
           for (int x = 0; x < width; x++) {
-            final rawSrcX =
-                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final rawSrcX = _mapCoordinate(x, srcW, width, scaleX);
             final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
             final x0 = srcX.floor();
             final fx = srcX - x0;
@@ -662,10 +735,8 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     required int srcOffset,
     required int dstOffset,
   }) {
-    final scaleY =
-        alignCorners && height > 1 ? (srcH - 1) / (height - 1) : srcH / height;
-    final scaleX =
-        alignCorners && width > 1 ? (srcW - 1) / (width - 1) : srcW / width;
+    final scaleY = _computeScale(srcH, height);
+    final scaleX = _computeScale(srcW, width);
 
     // Lanczos window size (a=3 means 6x6 kernel)
     const a = 3;
@@ -676,14 +747,13 @@ class ResizeOp extends TransformOp with RequiresContiguous {
         final inList = input.storage.data as Float32List;
         final outList = output.storage.data as Float32List;
         for (int y = 0; y < height; y++) {
-          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+          final rawSrcY = _mapCoordinate(y, srcH, height, scaleY);
           final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
           final y0 = srcY.floor();
           final fy = srcY - y0;
 
           for (int x = 0; x < width; x++) {
-            final rawSrcX =
-                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final rawSrcX = _mapCoordinate(x, srcW, width, scaleX);
             final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
             final x0 = srcX.floor();
             final fx = srcX - x0;
@@ -714,14 +784,13 @@ class ResizeOp extends TransformOp with RequiresContiguous {
       default:
         // Generic fallback
         for (int y = 0; y < height; y++) {
-          final rawSrcY = alignCorners ? y * scaleY : (y + 0.5) * scaleY - 0.5;
+          final rawSrcY = _mapCoordinate(y, srcH, height, scaleY);
           final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
           final y0 = srcY.floor();
           final fy = srcY - y0;
 
           for (int x = 0; x < width; x++) {
-            final rawSrcX =
-                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final rawSrcX = _mapCoordinate(x, srcW, width, scaleX);
             final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
             final x0 = srcX.floor();
             final fx = srcX - x0;
@@ -847,184 +916,5 @@ class ResizeShortestOp extends TransformOp {
       return [inputShape[0], newH, newW];
     }
     return [inputShape[0], inputShape[1], newH, newW];
-  }
-}
-
-/// Crops a tensor from the center to the specified dimensions.
-class CenterCropOp extends TransformOp with RequiresContiguous {
-  /// The target crop height.
-  final int height;
-
-  /// The target crop width.
-  final int width;
-
-  /// Creates a center crop operation with the specified dimensions.
-  CenterCropOp({required this.height, required this.width}) {
-    if (height <= 0 || width <= 0) {
-      throw InvalidParameterException(
-        'height/width',
-        '$height x $width',
-        'Must be positive',
-      );
-    }
-  }
-
-  @override
-  String get name => 'CenterCrop(${height}x$width)';
-
-  @override
-  OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: false,
-      );
-
-  @override
-  TensorBuffer apply(TensorBuffer input) {
-    final contiguous = ensureContiguous(input);
-    final shape = contiguous.shape;
-    final rank = shape.length;
-
-    if (rank != 3 && rank != 4) {
-      throw ShapeMismatchException(
-        actual: shape,
-        message: 'CenterCropOp requires 3D or 4D tensor',
-      );
-    }
-
-    final srcH = rank == 3 ? shape[1] : shape[2];
-    final srcW = rank == 3 ? shape[2] : shape[3];
-
-    if (height > srcH || width > srcW) {
-      throw InvalidParameterException(
-        'crop size',
-        '$height x $width',
-        'Cannot be larger than input size $srcH x $srcW',
-      );
-    }
-
-    final startY = (srcH - height) ~/ 2;
-    final startX = (srcW - width) ~/ 2;
-
-    return rank == 3
-        ? _crop3D(contiguous, startY, startX)
-        : _crop4D(contiguous, startY, startX);
-  }
-
-  TensorBuffer _crop3D(TensorBuffer input, int startY, int startX) {
-    final c = input.shape[0];
-    final srcH = input.shape[1];
-    final srcW = input.shape[2];
-
-    final output =
-        TensorBuffer.uninitialized([c, height, width], dtype: input.dtype);
-
-    // Dtype-specialized for hot path optimization
-    switch (input.dtype) {
-      case DType.float32:
-        final inList = input.storage.data as Float32List;
-        final outList = output.storage.data as Float32List;
-        final srcChannelStride = srcH * srcW;
-        final dstChannelStride = height * width;
-        for (int ch = 0; ch < c; ch++) {
-          final srcChOffset = ch * srcChannelStride;
-          final dstChOffset = ch * dstChannelStride;
-          for (int y = 0; y < height; y++) {
-            final srcRowOffset = srcChOffset + (startY + y) * srcW + startX;
-            final dstRowOffset = dstChOffset + y * width;
-            // Row-wise copy for better cache performance
-            for (int x = 0; x < width; x++) {
-              outList[dstRowOffset + x] = inList[srcRowOffset + x];
-            }
-          }
-        }
-      default:
-        // Generic fallback
-        for (int ch = 0; ch < c; ch++) {
-          for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-              final srcIdx =
-                  ch * srcH * srcW + (startY + y) * srcW + (startX + x);
-              final dstIdx = ch * height * width + y * width + x;
-              final value = input.storage.getAsDouble(srcIdx);
-              output.storage.setFromDouble(dstIdx, value);
-            }
-          }
-        }
-    }
-
-    return output;
-  }
-
-  TensorBuffer _crop4D(TensorBuffer input, int startY, int startX) {
-    final n = input.shape[0];
-    final c = input.shape[1];
-    final srcH = input.shape[2];
-    final srcW = input.shape[3];
-
-    final output =
-        TensorBuffer.uninitialized([n, c, height, width], dtype: input.dtype);
-
-    final srcBatchStride = c * srcH * srcW;
-    final dstBatchStride = c * height * width;
-    final srcChannelStride = srcH * srcW;
-    final dstChannelStride = height * width;
-
-    // Dtype-specialized for hot path optimization
-    switch (input.dtype) {
-      case DType.float32:
-        final inList = input.storage.data as Float32List;
-        final outList = output.storage.data as Float32List;
-        for (int batch = 0; batch < n; batch++) {
-          final srcBatchOffset = batch * srcBatchStride;
-          final dstBatchOffset = batch * dstBatchStride;
-          for (int ch = 0; ch < c; ch++) {
-            final srcChOffset = srcBatchOffset + ch * srcChannelStride;
-            final dstChOffset = dstBatchOffset + ch * dstChannelStride;
-            for (int y = 0; y < height; y++) {
-              final srcRowOffset = srcChOffset + (startY + y) * srcW + startX;
-              final dstRowOffset = dstChOffset + y * width;
-              // Row-wise copy for better cache performance
-              for (int x = 0; x < width; x++) {
-                outList[dstRowOffset + x] = inList[srcRowOffset + x];
-              }
-            }
-          }
-        }
-      default:
-        // Generic fallback
-        for (int batch = 0; batch < n; batch++) {
-          for (int ch = 0; ch < c; ch++) {
-            for (int y = 0; y < height; y++) {
-              for (int x = 0; x < width; x++) {
-                final srcIdx = batch * srcBatchStride +
-                    ch * srcChannelStride +
-                    (startY + y) * srcW +
-                    (startX + x);
-                final dstIdx = batch * dstBatchStride +
-                    ch * dstChannelStride +
-                    y * width +
-                    x;
-                final value = input.storage.getAsDouble(srcIdx);
-                output.storage.setFromDouble(dstIdx, value);
-              }
-            }
-          }
-        }
-    }
-
-    return output;
-  }
-
-  @override
-  List<int> computeOutputShape(List<int> inputShape) {
-    if (inputShape.length == 3) {
-      return [inputShape[0], height, width];
-    } else if (inputShape.length == 4) {
-      return [inputShape[0], inputShape[1], height, width];
-    }
-    throw ShapeMismatchException(
-      actual: inputShape,
-      message: 'CenterCropOp requires 3D or 4D tensor',
-    );
   }
 }
