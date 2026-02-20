@@ -18,11 +18,11 @@ jobs:
         include:
           - os: darwin
             arch: amd64
-            runner: macos-latest
+            runner: macos-13
             dart_arch: x64
           - os: darwin
             arch: arm64
-            runner: macos-latest
+            runner: macos-14
             dart_arch: arm64
           - os: linux
             arch: amd64
