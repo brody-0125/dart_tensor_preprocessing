@@ -215,9 +215,11 @@ class CeilOp extends UnaryMathOp {
   double operation(double value) => value.ceilToDouble();
 }
 
-/// Rounds each element to the nearest integer (half-to-even rounding).
+/// Rounds each element to the nearest integer (half away from zero).
 ///
-/// Equivalent to `torch.round()` in PyTorch.
+/// Similar to `torch.round()` in PyTorch, but note that Dart's
+/// `roundToDouble()` uses half-away-from-zero rounding, whereas
+/// PyTorch uses half-to-even (banker's rounding) for tie-breaking.
 ///
 /// ```dart
 /// final result = RoundOp()(tensor);  // round(tensor)

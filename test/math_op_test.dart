@@ -239,9 +239,9 @@ void main() {
       final round = RoundOp();
       final result = round(tensor);
 
-      // Dart's roundToDouble uses half-to-even (banker's rounding)
-      // 0.5 -> 1.0 (rounds up), 1.5 -> 2.0 (rounds up)
-      // -0.5 -> -1.0 (rounds down), -1.5 -> -2.0 (rounds down)
+      // Dart's roundToDouble uses half-away-from-zero rounding
+      // 0.5 -> 1.0, 1.5 -> 2.0 (rounds away from zero)
+      // -0.5 -> -1.0, -1.5 -> -2.0 (rounds away from zero)
       expect(result[[0]], closeTo(1.0, 1e-6));
       expect(result[[1]], closeTo(2.0, 1e-6));
       expect(result[[2]], closeTo(-1.0, 1e-6));
