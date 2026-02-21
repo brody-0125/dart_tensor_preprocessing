@@ -50,6 +50,8 @@ export 'src/ops/augmentation_op.dart';
 export 'src/ops/concat_op.dart';
 export 'src/ops/arithmetic_op.dart';
 export 'src/ops/math_op.dart';
+export 'src/ops/trig_op.dart';
+export 'src/ops/positional_encoding_op.dart';
 export 'src/ops/activation_op.dart';
 export 'src/ops/fused_ops.dart';
 export 'src/ops/batch_norm_op.dart';
