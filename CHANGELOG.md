@@ -5,6 +5,97 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.2] - 2026-02-20
+
+### Added
+
+- **`ErrorMessages` helper class** - Static string formatting methods for consistent error messages:
+  - `rankMismatch`, `rankRange`, `channelMismatch`, `shapeMismatch`, `axisBounds`, `dtypeMismatch`, `parameterRange`, `broadcastIncompatible`
+
+- **`OpValidator` extensions** - 3 new validation methods:
+  - `validateImageTensor()` - Validates 3D/4D image tensors with optional channel check
+  - `validateBroadcast()` - Validates and computes broadcast output shape (NumPy rules)
+  - `validateFloatDType()` - Validates float32/float64 data types
+
+- **`SELUOp`** - Scaled Exponential Linear Unit activation (PyTorch `F.selu`, ONNX `Selu`)
+  - Fixed constants: alpha=1.6732632423543772, scale=1.0507009873554805
+  - In-place support, dtype-specialized
+
+- **`GLUOp`** - Gated Linear Unit activation (PyTorch `F.glu`, ONNX `Split+Sigmoid+Mul`)
+  - Splits input along specified dimension and applies `a * sigmoid(b)`
+  - Output dimension halved along split axis
+
+- **`LpNormalizeOp`** - Lp normalization along a specified dimension (PyTorch `F.normalize`, ONNX `LpNormalization`)
+  - Factory constructors: `.l1()`, `.l2()`, `.linf()`
+  - Supports arbitrary p-norm values
+  - In-place support, dtype-specialized
+
+- **`tensorWhere()` / `WhereOp`** - Element-wise conditional selection (PyTorch `torch.where`, ONNX `Where`)
+  - Top-level function: `tensorWhere(condition, x, y)`
+  - TransformOp form: `WhereOp(condition:, y:)` where input acts as x
+
+- **`MaskedFillOp`** - Fill tensor positions where mask is true (PyTorch `Tensor.masked_fill_`)
+  - Factory: `.attentionMask(mask)` fills masked positions with negative infinity
+  - In-place support
+
+- **`GatherOp`** - Gather elements along a dimension by index (PyTorch `torch.gather`, ONNX `GatherElements`)
+  - PyTorch-compatible indexing semantics
+
+- **`split()` / `chunk()`** - Tensor splitting utilities:
+  - `split(tensor, splitSizes, {dim})` - Split into specified sizes
+  - `chunk(tensor, chunks, {dim})` - Split into equal-sized chunks
+
+- **`TileOp`** - Tile/repeat tensor contents (ONNX `Tile`, PyTorch `Tensor.repeat`)
+
+- **`RepeatOp`** - Repeat tensor (PyTorch `.repeat()` semantics, delegates to TileOp)
+
+- **`RollOp`** - Circular shift along dimensions (PyTorch `torch.roll`)
+  - Supports per-dimension shifts and flat roll without dims
+
+## [0.8.1] - 2026-02-20ÏÏ
+
+### Added
+
+- **`FloorOp`, `CeilOp`, `RoundOp`** - Element-wise rounding operations:
+  - `FloorOp` - Rounds down using `floorToDouble()` (PyTorch `torch.floor`)
+  - `CeilOp` - Rounds up using `ceilToDouble()` (PyTorch `torch.ceil`)
+  - `RoundOp` - Rounds to nearest using `roundToDouble()` (PyTorch `torch.round`)
+  - Useful for coordinate calculations, index computation, and quantization preprocessing
+
+- **`RandomHorizontalFlipOp` / `RandomVerticalFlipOp`** - Random flip augmentation operations:
+  - `HorizontalFlipOp` - Deterministic left-to-right flip
+  - `VerticalFlipOp` - Deterministic top-to-bottom flip
+  - `RandomHorizontalFlipOp` - Probabilistic horizontal flip (default p=0.5)
+  - `RandomVerticalFlipOp` - Probabilistic vertical flip (default p=0.5)
+  - Supports 3D `[C,H,W]` and 4D `[N,C,H,W]` tensors with dtype-specialized paths
+  - Optional seed parameter for reproducibility
+
+- **`RandomErasingOp`** - Random erasing (cutout) augmentation (PyTorch `torchvision.transforms.RandomErasing`):
+  - Configurable probability, scale range, and aspect ratio range
+  - Constant or random fill value for erased regions
+  - Supports 3D `[C,H,W]` and 4D `[N,C,H,W]` tensors
+  - In-place support, optional seeding for reproducibility
+
+- **`ColorJitterOp`** - Color jitter data augmentation with sub-operations:
+  - `AdjustBrightnessOp` - Additive brightness adjustment with clamping
+  - `AdjustContrastOp` - Per-channel mean-based contrast adjustment
+  - `AdjustSaturationOp` - HSV-based saturation adjustment
+  - `AdjustHueOp` - HSV-based hue rotation with wrapping
+  - `ColorJitterOp` - Combined PyTorch-style random color jitter with seed support
+  - RGB/HSV color space conversion utilities
+  - Supports 3D `[C,H,W]` and 4D `[N,C,H,W]` tensors with 3-channel RGB validation
+
+- **Trigonometric operations** - Element-wise trig functions:
+  - `SinOp`, `CosOp`, `TanOp`, `AsinOp`, `AcosOp`, `AtanOp`, `Atan2Op`
+  - Follows existing `UnaryMathOp` pattern with `OperationCapabilities` metadata
+  - ONNX op types (opset 7+) and PyTorch equivalents
+
+- **`PositionalEncodingOp`** - Transformer positional encoding support
+
+### Fixed
+
+- **`RoundOp` docstring** - Corrected documentation: Dart uses half-away-from-zero rounding, not half-to-even (banker's rounding) like PyTorch
+
 ## [0.8.0] - 2026-02-15
 
 ### Added

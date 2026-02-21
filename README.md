@@ -23,7 +23,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.8.0
+  dart_tensor_preprocessing: ^0.8.2
 ```
 
 ## Quick Start
@@ -100,6 +100,11 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 ### Data Augmentation
 - `RandomCropOp` - Random cropping with deterministic seed support
 - `GaussianBlurOp` - Gaussian blur using separable convolution
+- `RandomHorizontalFlipOp` / `RandomVerticalFlipOp` - Probabilistic flip augmentation
+- `HorizontalFlipOp` / `VerticalFlipOp` - Deterministic flip operations
+- `RandomErasingOp` - Random erasing (cutout) augmentation
+- `ColorJitterOp` - Random brightness, contrast, saturation, and hue jitter
+- `AdjustBrightnessOp` / `AdjustContrastOp` / `AdjustSaturationOp` / `AdjustHueOp` - Individual color adjustments
 
 ### Fused Operations
 - `ResizeNormalizeFusedOp` - Combines resize + normalize in single pass (eliminates intermediate tensor)
@@ -113,6 +118,8 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 - `HardswishOp` - Hardware-efficient swish (MobileNetV3)
 - `MishOp` - Self-regularizing activation (YOLOv4+)
 - `ELUOp` - Exponential Linear Unit
+- `SELUOp` - Scaled Exponential Linear Unit
+- `GLUOp` - Gated Linear Unit
 - `SigmoidOp` - Sigmoid activation
 - `TanhOp` - Hyperbolic tangent activation
 - `SoftmaxOp` - Softmax along specified axis
@@ -124,14 +131,30 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 - `ExpOp` - Exponential (e^x)
 - `LogOp` - Natural logarithm
 - `PowOp` - Power operation
+- `FloorOp` / `CeilOp` / `RoundOp` - Element-wise rounding operations
+- `SinOp` / `CosOp` / `TanOp` - Trigonometric functions
+- `AsinOp` / `AcosOp` / `AtanOp` / `Atan2Op` - Inverse trigonometric functions
 
 ### Arithmetic Operations
 - `AddOp` / `SubOp` - Element-wise addition/subtraction (SIMD accelerated)
 - `MulOp` / `DivOp` - Element-wise multiplication/division (SIMD accelerated)
 
+### Normalization (continued)
+- `LpNormalizeOp` - Lp normalization (L1, L2, Linf) along a dimension
+
+### Tensor Manipulation
+- `tensorWhere()` / `WhereOp` - Element-wise conditional selection
+- `MaskedFillOp` - Fill tensor positions where mask is true
+- `GatherOp` - Gather elements along a dimension by index
+- `TileOp` - Tile/repeat tensor contents
+- `RepeatOp` - Repeat tensor (PyTorch `.repeat()` semantics)
+- `RollOp` - Circular shift along dimensions
+- `PositionalEncodingOp` - Transformer positional encoding
+
 ### Utility
 - `concat()` - Concatenates tensors along specified axis
 - `stack()` - Stacks tensors along a new dimension
+- `split()` / `chunk()` - Split tensor into parts along a dimension
 
 ### Shape
 - `UnsqueezeOp` - Add dimension
@@ -238,7 +261,7 @@ print(op.capabilities.requiresContiguous); // true
 print(op.capabilities.preservesShape);     // true
 ```
 
-Operations supporting in-place: `ReLUOp`, `LeakyReLUOp`, `SigmoidOp`, `TanhOp`, `AbsOp`, `NegOp`, `SqrtOp`, `ExpOp`, `LogOp`, `PowOp`, `AddOp`, `SubOp`, `MulOp`, `DivOp`, `ClipOp`, `NormalizeOp`, `ScaleOp`, `BatchNormOp`, `LayerNormOp`, `GroupNormOp`, `InstanceNormOp`, `RMSNormOp`.
+Operations supporting in-place: `ReLUOp`, `LeakyReLUOp`, `SigmoidOp`, `TanhOp`, `AbsOp`, `NegOp`, `SqrtOp`, `ExpOp`, `LogOp`, `PowOp`, `AddOp`, `SubOp`, `MulOp`, `DivOp`, `ClipOp`, `NormalizeOp`, `ScaleOp`, `BatchNormOp`, `LayerNormOp`, `GroupNormOp`, `InstanceNormOp`, `RMSNormOp`, `SELUOp`, `LpNormalizeOp`, `MaskedFillOp`, `RandomErasingOp`.
 
 ## Memory Formats
 
@@ -286,6 +309,10 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `PowOp` | `torch.pow()` |
 | `AbsOp` / `NegOp` | `torch.abs()` / `torch.neg()` |
 | `SqrtOp` / `ExpOp` / `LogOp` | `torch.sqrt()` / `exp()` / `log()` |
+| `FloorOp` / `CeilOp` / `RoundOp` | `torch.floor()` / `ceil()` / `round()` |
+| `SinOp` / `CosOp` / `TanOp` | `torch.sin()` / `cos()` / `tan()` |
+| `AsinOp` / `AcosOp` / `AtanOp` | `torch.asin()` / `acos()` / `atan()` |
+| `Atan2Op` | `torch.atan2()` |
 | `ReLUOp` / `LeakyReLUOp` | `F.relu()` / `F.leaky_relu()` |
 | `GELUOp` | `F.gelu()` |
 | `SiLUOp` / `SwishOp` | `F.silu()` |
@@ -295,6 +322,8 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `ELUOp` | `F.elu()` |
 | `SigmoidOp` / `TanhOp` | `torch.sigmoid()` / `torch.tanh()` |
 | `SoftmaxOp` | `F.softmax()` |
+| `SELUOp` | `F.selu()` |
+| `GLUOp` | `F.glu()` |
 | `BatchNormOp` | `torch.nn.BatchNorm2d` (inference) |
 | `LayerNormOp` | `torch.nn.LayerNorm` |
 | `GroupNormOp` | `torch.nn.GroupNorm` |
@@ -310,6 +339,19 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `tensor.narrow(dim, start, len)` | `tensor.narrow(dim, start, len)` |
 | `tensor.unbind(dim)` | `tensor.unbind(dim)` |
 | `tensor.flatten()` | `tensor.flatten()` |
+| `LpNormalizeOp` | `F.normalize()` |
+| `tensorWhere()` / `WhereOp` | `torch.where()` |
+| `MaskedFillOp` | `Tensor.masked_fill_()` |
+| `GatherOp` | `torch.gather()` |
+| `split()` / `chunk()` | `torch.split()` / `torch.chunk()` |
+| `TileOp` | `Tensor.repeat()` / ONNX `Tile` |
+| `RepeatOp` | `Tensor.repeat()` |
+| `RollOp` | `torch.roll()` |
+| `RandomHorizontalFlipOp` | `transforms.RandomHorizontalFlip()` |
+| `RandomVerticalFlipOp` | `transforms.RandomVerticalFlip()` |
+| `RandomErasingOp` | `transforms.RandomErasing()` |
+| `ColorJitterOp` | `transforms.ColorJitter()` |
+| `PositionalEncodingOp` | Transformer positional encoding |
 | `ResizeNormalizeFusedOp` | `F.interpolate()` + `transforms.Normalize()` (fused) |
 
 ## Performance Benchmarks

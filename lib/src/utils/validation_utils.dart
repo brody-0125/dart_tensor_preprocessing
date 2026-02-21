@@ -4,6 +4,7 @@
 /// tensor operations.
 library;
 
+import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 
@@ -210,6 +211,96 @@ class OpValidator {
         paramName,
         list.length,
         '$operationName: $paramName must have length $expectedLength, got ${list.length}',
+      );
+    }
+  }
+
+  /// Validates that a tensor is a 3D [C,H,W] or 4D [N,C,H,W] image tensor.
+  ///
+  /// Optionally validates that the channel dimension matches [expectedChannels].
+  /// For 3D tensors, channel is dim 0. For 4D tensors, channel is dim 1.
+  ///
+  /// Throws [ShapeMismatchException] if validation fails.
+  static void validateImageTensor(
+    TensorBuffer tensor, {
+    required String operationName,
+    int? expectedChannels,
+  }) {
+    final rank = tensor.rank;
+    if (rank != 3 && rank != 4) {
+      throw ShapeMismatchException(
+        actual: tensor.shape,
+        message:
+            '$operationName requires 3D [C,H,W] or 4D [N,C,H,W] tensor, got ${rank}D',
+      );
+    }
+    if (expectedChannels != null) {
+      final channelDim = rank == 3 ? 0 : 1;
+      final actualChannels = tensor.shape[channelDim];
+      if (actualChannels != expectedChannels) {
+        throw ShapeMismatchException(
+          actual: tensor.shape,
+          message:
+              '$operationName: expected $expectedChannels channels, got $actualChannels',
+        );
+      }
+    }
+  }
+
+  /// Validates that two shapes are broadcast-compatible and returns the
+  /// broadcast output shape.
+  ///
+  /// Broadcasting follows NumPy/PyTorch rules:
+  /// - Shapes are compared from trailing dimensions
+  /// - Dimensions are compatible if equal or one of them is 1
+  /// - Missing dimensions are treated as 1
+  ///
+  /// Throws [ShapeMismatchException] if shapes are not broadcast-compatible.
+  static List<int> validateBroadcast(
+    List<int> shape1,
+    List<int> shape2, {
+    required String operationName,
+  }) {
+    final maxRank =
+        shape1.length > shape2.length ? shape1.length : shape2.length;
+    final result = List<int>.filled(maxRank, 0);
+
+    for (int i = 0; i < maxRank; i++) {
+      final d1 =
+          i < shape1.length ? shape1[shape1.length - 1 - i] : 1;
+      final d2 =
+          i < shape2.length ? shape2[shape2.length - 1 - i] : 1;
+
+      if (d1 == d2) {
+        result[maxRank - 1 - i] = d1;
+      } else if (d1 == 1) {
+        result[maxRank - 1 - i] = d2;
+      } else if (d2 == 1) {
+        result[maxRank - 1 - i] = d1;
+      } else {
+        throw ShapeMismatchException(
+          actual: shape2,
+          expected: shape1,
+          message:
+              '$operationName: shapes $shape1 and $shape2 are not broadcast-compatible',
+        );
+      }
+    }
+
+    return result;
+  }
+
+  /// Validates that a dtype is a floating-point type (float32 or float64).
+  ///
+  /// Throws [DTypeMismatchException] if dtype is not floating-point.
+  static void validateFloatDType(
+    DType dtype, {
+    required String operationName,
+  }) {
+    if (!dtype.isFloatingPoint) {
+      throw DTypeMismatchException(
+        expected: DType.float32,
+        actual: dtype,
       );
     }
   }
