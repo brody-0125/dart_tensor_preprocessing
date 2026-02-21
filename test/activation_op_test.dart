@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
@@ -521,6 +522,242 @@ void main() {
     test('name reflects alpha', () {
       expect(ELUOp().name, equals('ELU'));
       expect(ELUOp(alpha: 2.0).name, equals('ELU(alpha=2.0)'));
+    });
+  });
+
+  group('SELUOp', () {
+    const alpha = 1.6732632423543772;
+    const scale = 1.0507009873554805;
+
+    test('applies SELU formula for positive values', () {
+      final data = Float32List.fromList([1.0, 2.0, 3.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final selu = SELUOp();
+      final result = selu(tensor);
+
+      // For x > 0: selu(x) = scale * x
+      expect(result[[0]], closeTo(scale * 1.0, 1e-5));
+      expect(result[[1]], closeTo(scale * 2.0, 1e-5));
+      expect(result[[2]], closeTo(scale * 3.0, 1e-5));
+    });
+
+    test('applies SELU formula for negative values', () {
+      final data = Float32List.fromList([-1.0, -2.0, -0.5]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final selu = SELUOp();
+      final result = selu(tensor);
+
+      // For x < 0: selu(x) = scale * alpha * (exp(x) - 1)
+      for (int i = 0; i < 3; i++) {
+        final x = data[i];
+        final expected = scale * alpha * (math.exp(x) - 1);
+        expect(result[[i]], closeTo(expected, 1e-5));
+      }
+    });
+
+    test('selu(0) equals 0', () {
+      final data = Float32List.fromList([0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [1]);
+
+      final result = SELUOp()(tensor);
+      expect(result[[0]], closeTo(0.0, 1e-6));
+    });
+
+    test('preserves shape', () {
+      expect(SELUOp().computeOutputShape([2, 3, 4]), equals([2, 3, 4]));
+    });
+
+    test('does not modify input tensor', () {
+      final data = Float32List.fromList([-1.0, 0.0, 1.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      SELUOp()(tensor);
+
+      expect(tensor[[0]], closeTo(-1.0, 1e-6));
+      expect(tensor[[1]], closeTo(0.0, 1e-6));
+      expect(tensor[[2]], closeTo(1.0, 1e-6));
+    });
+
+    test('applyInPlace modifies tensor', () {
+      final data = Float32List.fromList([-1.0, 0.0, 1.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      SELUOp().applyInPlace(tensor);
+
+      expect(tensor[[0]], closeTo(scale * alpha * (math.exp(-1.0) - 1), 1e-5));
+      expect(tensor[[1]], closeTo(0.0, 1e-6));
+      expect(tensor[[2]], closeTo(scale * 1.0, 1e-5));
+    });
+
+    test('applyInPlace throws for non-contiguous tensor', () {
+      final tensor = TensorBuffer.zeros([4, 4]);
+      final transposed = tensor.transpose([1, 0]);
+
+      expect(
+        () => SELUOp().applyInPlace(transposed),
+        throwsA(isA<NonContiguousException>()),
+      );
+    });
+
+    test('works with float64', () {
+      final data = Float64List.fromList([-1.0, 0.0, 1.0]);
+      final tensor = TensorBuffer.fromFloat64List(data, [3]);
+
+      final result = SELUOp()(tensor);
+
+      expect(result[[0]], closeTo(scale * alpha * (math.exp(-1.0) - 1), 1e-10));
+      expect(result[[1]], closeTo(0.0, 1e-10));
+      expect(result[[2]], closeTo(scale * 1.0, 1e-10));
+    });
+
+    test('name is SELU', () {
+      expect(SELUOp().name, equals('SELU'));
+    });
+
+    test('capabilities indicate in-place and contiguous', () {
+      final caps = SELUOp().capabilities;
+      expect(caps.supportsInPlace, isTrue);
+      expect(caps.requiresContiguous, isTrue);
+      expect(caps.pytorchEquivalent, equals('F.selu'));
+      expect(caps.onnxOpType, equals('Selu'));
+    });
+  });
+
+  group('GLUOp', () {
+    double sigmoid(double x) => 1.0 / (1.0 + math.exp(-x));
+
+    test('splits and applies GLU along last dim', () {
+      // [a1, a2, b1, b2] -> GLU -> [a1*sigmoid(b1), a2*sigmoid(b2)]
+      final data = Float32List.fromList([1.0, 2.0, 0.5, -0.5]);
+      final tensor = TensorBuffer.fromFloat32List(data, [4]);
+
+      final result = GLUOp()(tensor);
+
+      expect(result.shape, equals([2]));
+      expect(result[[0]], closeTo(1.0 * sigmoid(0.5), 1e-5));
+      expect(result[[1]], closeTo(2.0 * sigmoid(-0.5), 1e-5));
+    });
+
+    test('splits along specified dim for 2D tensor', () {
+      // Shape [2, 4] with dim=1 -> split along dim 1 -> [2, 2]
+      final data = Float32List.fromList([
+        1.0, 2.0, 0.5, -0.5, // row 0
+        3.0, 4.0, 1.0, -1.0, // row 1
+      ]);
+      final tensor = TensorBuffer.fromFloat32List(data, [2, 4]);
+
+      final result = GLUOp(dim: 1)(tensor);
+
+      expect(result.shape, equals([2, 2]));
+      expect(result[[0, 0]], closeTo(1.0 * sigmoid(0.5), 1e-5));
+      expect(result[[0, 1]], closeTo(2.0 * sigmoid(-0.5), 1e-5));
+      expect(result[[1, 0]], closeTo(3.0 * sigmoid(1.0), 1e-5));
+      expect(result[[1, 1]], closeTo(4.0 * sigmoid(-1.0), 1e-5));
+    });
+
+    test('splits along dim=0 for 2D tensor', () {
+      // Shape [4, 2] with dim=0 -> split along dim 0 -> [2, 2]
+      final data = Float32List.fromList([
+        1.0, 2.0, // row 0 -> a
+        3.0, 4.0, // row 1 -> a
+        0.5, -0.5, // row 2 -> b
+        1.0, -1.0, // row 3 -> b
+      ]);
+      final tensor = TensorBuffer.fromFloat32List(data, [4, 2]);
+
+      final result = GLUOp(dim: 0)(tensor);
+
+      expect(result.shape, equals([2, 2]));
+      expect(result[[0, 0]], closeTo(1.0 * sigmoid(0.5), 1e-5));
+      expect(result[[0, 1]], closeTo(2.0 * sigmoid(-0.5), 1e-5));
+      expect(result[[1, 0]], closeTo(3.0 * sigmoid(1.0), 1e-5));
+      expect(result[[1, 1]], closeTo(4.0 * sigmoid(-1.0), 1e-5));
+    });
+
+    test('negative dim indexes from end', () {
+      final data = Float32List.fromList([1.0, 2.0, 0.5, -0.5]);
+      final tensor = TensorBuffer.fromFloat32List(data, [4]);
+
+      final result = GLUOp(dim: -1)(tensor);
+
+      expect(result.shape, equals([2]));
+      expect(result[[0]], closeTo(1.0 * sigmoid(0.5), 1e-5));
+    });
+
+    test('throws for odd-sized dimension', () {
+      final tensor = TensorBuffer.zeros([3]);
+
+      expect(
+        () => GLUOp()(tensor),
+        throwsA(isA<InvalidParameterException>()),
+      );
+    });
+
+    test('throws for out-of-bounds dim', () {
+      final tensor = TensorBuffer.zeros([4]);
+
+      expect(
+        () => GLUOp(dim: 2)(tensor),
+        throwsA(isA<IndexOutOfBoundsException>()),
+      );
+    });
+
+    test('computeOutputShape halves the dim', () {
+      final glu = GLUOp(dim: 1);
+      expect(glu.computeOutputShape([2, 6, 4]), equals([2, 3, 4]));
+    });
+
+    test('does not modify input tensor', () {
+      final data = Float32List.fromList([1.0, 2.0, 0.5, -0.5]);
+      final tensor = TensorBuffer.fromFloat32List(data, [4]);
+
+      GLUOp()(tensor);
+
+      expect(tensor[[0]], closeTo(1.0, 1e-6));
+      expect(tensor[[3]], closeTo(-0.5, 1e-6));
+    });
+
+    test('works with float64', () {
+      final data = Float64List.fromList([1.0, 2.0, 0.5, -0.5]);
+      final tensor = TensorBuffer.fromFloat64List(data, [4]);
+
+      final result = GLUOp()(tensor);
+
+      expect(result.shape, equals([2]));
+      expect(result[[0]], closeTo(1.0 * sigmoid(0.5), 1e-10));
+    });
+
+    test('name is GLU', () {
+      expect(GLUOp().name, equals('GLU'));
+      expect(GLUOp(dim: 1).name, equals('GLU(dim=1)'));
+    });
+
+    test('capabilities indicate shape change', () {
+      final caps = GLUOp().capabilities;
+      expect(caps.preservesShape, isFalse);
+      expect(caps.requiresContiguous, isTrue);
+      expect(caps.supportsInPlace, isFalse);
+      expect(caps.pytorchEquivalent, equals('F.glu'));
+      expect(caps.onnxOpType, equals('Split+Sigmoid+Mul'));
+    });
+
+    test('works with 3D tensor', () {
+      // Shape [2, 2, 4], dim=-1 -> [2, 2, 2]
+      final data = Float32List.fromList([
+        1.0, 2.0, 0.5, -0.5,
+        3.0, 4.0, 1.0, -1.0,
+        5.0, 6.0, 0.0, 0.0,
+        7.0, 8.0, 2.0, -2.0,
+      ]);
+      final tensor = TensorBuffer.fromFloat32List(data, [2, 2, 4]);
+
+      final result = GLUOp(dim: -1)(tensor);
+
+      expect(result.shape, equals([2, 2, 2]));
+      expect(result[[0, 0, 0]], closeTo(1.0 * sigmoid(0.5), 1e-5));
+      expect(result[[0, 0, 1]], closeTo(2.0 * sigmoid(-0.5), 1e-5));
     });
   });
 }

@@ -212,4 +212,179 @@ void main() {
       );
     });
   });
+
+  group('OpValidator', () {
+    group('validateImageTensor', () {
+      test('passes for 3D tensor', () {
+        final tensor = TensorBuffer.zeros([3, 224, 224]);
+        expect(
+          () => OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
+          returnsNormally,
+        );
+      });
+
+      test('passes for 4D tensor', () {
+        final tensor = TensorBuffer.zeros([1, 3, 224, 224]);
+        expect(
+          () => OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
+          returnsNormally,
+        );
+      });
+
+      test('throws for 2D tensor', () {
+        final tensor = TensorBuffer.zeros([224, 224]);
+        expect(
+          () => OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
+          throwsA(isA<ShapeMismatchException>()),
+        );
+      });
+
+      test('throws for 5D tensor', () {
+        final tensor = TensorBuffer.zeros([1, 2, 3, 4, 5]);
+        expect(
+          () => OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
+          throwsA(isA<ShapeMismatchException>()),
+        );
+      });
+
+      test('validates expected channels for 3D tensor', () {
+        final tensor = TensorBuffer.zeros([3, 224, 224]);
+        expect(
+          () => OpValidator.validateImageTensor(
+            tensor,
+            operationName: 'TestOp',
+            expectedChannels: 3,
+          ),
+          returnsNormally,
+        );
+      });
+
+      test('throws on channel mismatch for 3D tensor', () {
+        final tensor = TensorBuffer.zeros([1, 224, 224]);
+        expect(
+          () => OpValidator.validateImageTensor(
+            tensor,
+            operationName: 'TestOp',
+            expectedChannels: 3,
+          ),
+          throwsA(isA<ShapeMismatchException>()),
+        );
+      });
+
+      test('validates expected channels for 4D tensor', () {
+        final tensor = TensorBuffer.zeros([2, 3, 224, 224]);
+        expect(
+          () => OpValidator.validateImageTensor(
+            tensor,
+            operationName: 'TestOp',
+            expectedChannels: 3,
+          ),
+          returnsNormally,
+        );
+      });
+
+      test('throws on channel mismatch for 4D tensor', () {
+        final tensor = TensorBuffer.zeros([2, 1, 224, 224]);
+        expect(
+          () => OpValidator.validateImageTensor(
+            tensor,
+            operationName: 'TestOp',
+            expectedChannels: 3,
+          ),
+          throwsA(isA<ShapeMismatchException>()),
+        );
+      });
+    });
+
+    group('validateBroadcast', () {
+      test('returns same shape for identical shapes', () {
+        final result = OpValidator.validateBroadcast(
+          [2, 3],
+          [2, 3],
+          operationName: 'TestOp',
+        );
+        expect(result, equals([2, 3]));
+      });
+
+      test('broadcasts scalar-like dimension', () {
+        final result = OpValidator.validateBroadcast(
+          [2, 1],
+          [2, 3],
+          operationName: 'TestOp',
+        );
+        expect(result, equals([2, 3]));
+      });
+
+      test('broadcasts with different ranks', () {
+        final result = OpValidator.validateBroadcast(
+          [3],
+          [2, 3],
+          operationName: 'TestOp',
+        );
+        expect(result, equals([2, 3]));
+      });
+
+      test('throws for incompatible shapes', () {
+        expect(
+          () => OpValidator.validateBroadcast(
+            [2, 3],
+            [2, 4],
+            operationName: 'TestOp',
+          ),
+          throwsA(isA<ShapeMismatchException>()),
+        );
+      });
+
+      test('handles empty shapes', () {
+        final result = OpValidator.validateBroadcast(
+          [],
+          [2, 3],
+          operationName: 'TestOp',
+        );
+        expect(result, equals([2, 3]));
+      });
+    });
+
+    group('validateFloatDType', () {
+      test('passes for float32', () {
+        expect(
+          () => OpValidator.validateFloatDType(
+            DType.float32,
+            operationName: 'TestOp',
+          ),
+          returnsNormally,
+        );
+      });
+
+      test('passes for float64', () {
+        expect(
+          () => OpValidator.validateFloatDType(
+            DType.float64,
+            operationName: 'TestOp',
+          ),
+          returnsNormally,
+        );
+      });
+
+      test('throws for int32', () {
+        expect(
+          () => OpValidator.validateFloatDType(
+            DType.int32,
+            operationName: 'TestOp',
+          ),
+          throwsA(isA<DTypeMismatchException>()),
+        );
+      });
+
+      test('throws for uint8', () {
+        expect(
+          () => OpValidator.validateFloatDType(
+            DType.uint8,
+            operationName: 'TestOp',
+          ),
+          throwsA(isA<DTypeMismatchException>()),
+        );
+      });
+    });
+  });
 }
