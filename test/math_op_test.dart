@@ -151,6 +151,138 @@ void main() {
     });
   });
 
+  group('FloorOp', () {
+    test('rounds all elements down', () {
+      final data = Float32List.fromList([1.7, 2.3, -1.2, -2.8, 0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [5]);
+
+      final floor = FloorOp();
+      final result = floor(tensor);
+
+      expect(result[[0]], closeTo(1.0, 1e-6));
+      expect(result[[1]], closeTo(2.0, 1e-6));
+      expect(result[[2]], closeTo(-2.0, 1e-6));
+      expect(result[[3]], closeTo(-3.0, 1e-6));
+      expect(result[[4]], closeTo(0.0, 1e-6));
+    });
+
+    test('handles already integer values', () {
+      final data = Float32List.fromList([1.0, -2.0, 0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final floor = FloorOp();
+      final result = floor(tensor);
+
+      expect(result[[0]], closeTo(1.0, 1e-6));
+      expect(result[[1]], closeTo(-2.0, 1e-6));
+      expect(result[[2]], closeTo(0.0, 1e-6));
+    });
+
+    test('preserves shape', () {
+      final floor = FloorOp();
+      expect(floor.computeOutputShape([2, 3, 4]), equals([2, 3, 4]));
+    });
+  });
+
+  group('CeilOp', () {
+    test('rounds all elements up', () {
+      final data = Float32List.fromList([1.2, 2.8, -1.7, -2.3, 0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [5]);
+
+      final ceil = CeilOp();
+      final result = ceil(tensor);
+
+      expect(result[[0]], closeTo(2.0, 1e-6));
+      expect(result[[1]], closeTo(3.0, 1e-6));
+      expect(result[[2]], closeTo(-1.0, 1e-6));
+      expect(result[[3]], closeTo(-2.0, 1e-6));
+      expect(result[[4]], closeTo(0.0, 1e-6));
+    });
+
+    test('handles already integer values', () {
+      final data = Float32List.fromList([1.0, -2.0, 0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final ceil = CeilOp();
+      final result = ceil(tensor);
+
+      expect(result[[0]], closeTo(1.0, 1e-6));
+      expect(result[[1]], closeTo(-2.0, 1e-6));
+      expect(result[[2]], closeTo(0.0, 1e-6));
+    });
+
+    test('preserves shape', () {
+      final ceil = CeilOp();
+      expect(ceil.computeOutputShape([2, 3, 4]), equals([2, 3, 4]));
+    });
+  });
+
+  group('RoundOp', () {
+    test('rounds all elements to nearest integer', () {
+      final data = Float32List.fromList([1.3, 2.7, -1.3, -2.7, 0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [5]);
+
+      final round = RoundOp();
+      final result = round(tensor);
+
+      expect(result[[0]], closeTo(1.0, 1e-6));
+      expect(result[[1]], closeTo(3.0, 1e-6));
+      expect(result[[2]], closeTo(-1.0, 1e-6));
+      expect(result[[3]], closeTo(-3.0, 1e-6));
+      expect(result[[4]], closeTo(0.0, 1e-6));
+    });
+
+    test('handles half values', () {
+      final data = Float32List.fromList([0.5, 1.5, -0.5, -1.5]);
+      final tensor = TensorBuffer.fromFloat32List(data, [4]);
+
+      final round = RoundOp();
+      final result = round(tensor);
+
+      // Dart's roundToDouble uses half-away-from-zero rounding
+      // 0.5 -> 1.0, 1.5 -> 2.0 (rounds away from zero)
+      // -0.5 -> -1.0, -1.5 -> -2.0 (rounds away from zero)
+      expect(result[[0]], closeTo(1.0, 1e-6));
+      expect(result[[1]], closeTo(2.0, 1e-6));
+      expect(result[[2]], closeTo(-1.0, 1e-6));
+      expect(result[[3]], closeTo(-2.0, 1e-6));
+    });
+
+    test('handles already integer values', () {
+      final data = Float32List.fromList([1.0, -2.0, 0.0]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final round = RoundOp();
+      final result = round(tensor);
+
+      expect(result[[0]], closeTo(1.0, 1e-6));
+      expect(result[[1]], closeTo(-2.0, 1e-6));
+      expect(result[[2]], closeTo(0.0, 1e-6));
+    });
+
+    test('preserves shape', () {
+      final round = RoundOp();
+      expect(round.computeOutputShape([2, 3, 4]), equals([2, 3, 4]));
+    });
+  });
+
+  group('floor and ceil relationship', () {
+    test('floor(x) <= x <= ceil(x)', () {
+      final data = Float32List.fromList([1.5, -1.5, 2.3, -2.7]);
+      final tensor = TensorBuffer.fromFloat32List(data, [4]);
+
+      final floor = FloorOp();
+      final ceil = CeilOp();
+      final floorResult = floor(tensor);
+      final ceilResult = ceil(tensor);
+
+      for (int i = 0; i < 4; i++) {
+        expect(floorResult[[i]], lessThanOrEqualTo(data[i]));
+        expect(ceilResult[[i]], greaterThanOrEqualTo(data[i]));
+      }
+    });
+  });
+
   group('exp and log are inverses', () {
     test('log(exp(x)) = x', () {
       final data = Float32List.fromList([0.0, 1.0, 2.0, -1.0]);
@@ -178,6 +310,42 @@ void main() {
       expect(tensor[[0]], closeTo(3.0, 1e-6));
       expect(tensor[[1]], closeTo(1.0, 1e-6));
       expect(tensor[[2]], closeTo(2.0, 1e-6));
+    });
+
+    test('FloorOp applyInPlace modifies tensor', () {
+      final data = Float32List.fromList([1.7, -2.3, 3.9]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final floor = FloorOp();
+      floor.applyInPlace(tensor);
+
+      expect(tensor[[0]], closeTo(1.0, 1e-6));
+      expect(tensor[[1]], closeTo(-3.0, 1e-6));
+      expect(tensor[[2]], closeTo(3.0, 1e-6));
+    });
+
+    test('CeilOp applyInPlace modifies tensor', () {
+      final data = Float32List.fromList([1.2, -2.8, 3.1]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final ceil = CeilOp();
+      ceil.applyInPlace(tensor);
+
+      expect(tensor[[0]], closeTo(2.0, 1e-6));
+      expect(tensor[[1]], closeTo(-2.0, 1e-6));
+      expect(tensor[[2]], closeTo(4.0, 1e-6));
+    });
+
+    test('RoundOp applyInPlace modifies tensor', () {
+      final data = Float32List.fromList([1.3, -2.7, 3.5]);
+      final tensor = TensorBuffer.fromFloat32List(data, [3]);
+
+      final round = RoundOp();
+      round.applyInPlace(tensor);
+
+      expect(tensor[[0]], closeTo(1.0, 1e-6));
+      expect(tensor[[1]], closeTo(-3.0, 1e-6));
+      expect(tensor[[2]], closeTo(4.0, 1e-6));
     });
 
     test('SqrtOp applyInPlace modifies tensor', () {
@@ -212,6 +380,18 @@ void main() {
 
     test('LogOp name', () {
       expect(LogOp().name, equals('Log'));
+    });
+
+    test('FloorOp name', () {
+      expect(FloorOp().name, equals('Floor'));
+    });
+
+    test('CeilOp name', () {
+      expect(CeilOp().name, equals('Ceil'));
+    });
+
+    test('RoundOp name', () {
+      expect(RoundOp().name, equals('Round'));
     });
   });
 }

@@ -178,3 +178,59 @@ class LogOp extends UnaryMathOp {
   @override
   double operation(double value) => math.log(value);
 }
+
+/// Rounds each element down to the nearest integer (towards negative infinity).
+///
+/// Equivalent to `torch.floor()` in PyTorch.
+///
+/// ```dart
+/// final result = FloorOp()(tensor);  // floor(tensor)
+/// ```
+class FloorOp extends UnaryMathOp {
+  /// Creates a floor operation.
+  FloorOp();
+
+  @override
+  String get name => 'Floor';
+
+  @override
+  double operation(double value) => value.floorToDouble();
+}
+
+/// Rounds each element up to the nearest integer (towards positive infinity).
+///
+/// Equivalent to `torch.ceil()` in PyTorch.
+///
+/// ```dart
+/// final result = CeilOp()(tensor);  // ceil(tensor)
+/// ```
+class CeilOp extends UnaryMathOp {
+  /// Creates a ceil operation.
+  CeilOp();
+
+  @override
+  String get name => 'Ceil';
+
+  @override
+  double operation(double value) => value.ceilToDouble();
+}
+
+/// Rounds each element to the nearest integer (half away from zero).
+///
+/// Similar to `torch.round()` in PyTorch, but note that Dart's
+/// `roundToDouble()` uses half-away-from-zero rounding, whereas
+/// PyTorch uses half-to-even (banker's rounding) for tie-breaking.
+///
+/// ```dart
+/// final result = RoundOp()(tensor);  // round(tensor)
+/// ```
+class RoundOp extends UnaryMathOp {
+  /// Creates a round operation.
+  RoundOp();
+
+  @override
+  String get name => 'Round';
+
+  @override
+  double operation(double value) => value.roundToDouble();
+}
