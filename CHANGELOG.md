@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.3] - 2026-03-21
+
+### Added
+
+- **Color Space Conversion Operations** - Standalone ops for color space conversion (Issue #33):
+  - `RgbToGrayscaleOp` - RGB to grayscale using ITU-R BT.601 weighted coefficients (0.2989R + 0.5870G + 0.1140B)
+    - Output shape changes: `[3,H,W]` → `[1,H,W]`, `[N,3,H,W]` → `[N,1,H,W]`
+    - Equivalent to `torchvision.transforms.Grayscale(num_output_channels=1)` / `tf.image.rgb_to_grayscale`
+  - `RgbToHsvOp` - RGB to HSV color space conversion with H,S,V all in [0,1] range
+    - Equivalent to `tf.image.rgb_to_hsv`
+  - `HsvToRgbOp` - HSV to RGB color space conversion
+    - Equivalent to `tf.image.hsv_to_rgb`
+  - All ops support 3D `[C,H,W]` and 4D `[N,C,H,W]` tensors with dtype-specialized paths (Float32/Float64)
+  - Reuses existing `rgbToHsv`/`hsvToRgb` utility functions from `color_jitter_op.dart`
+
 ## [0.8.2] - 2026-02-20
 
 ### Added
