@@ -55,10 +55,7 @@ class RgbToGrayscaleOp extends TransformOp with RequiresContiguous {
       expectedChannels: 3,
     );
 
-    final shape = contiguous.shape;
-    final rank = shape.length;
-
-    if (rank == 3) {
+    if (contiguous.shape.length == 3) {
       return _convert3D(contiguous);
     } else {
       return _convert4D(contiguous);
@@ -209,10 +206,7 @@ class RgbToHsvOp extends TransformOp with RequiresContiguous {
       expectedChannels: 3,
     );
 
-    final shape = contiguous.shape;
-    final rank = shape.length;
-
-    if (rank == 3) {
+    if (contiguous.shape.length == 3) {
       return _convert3D(contiguous);
     } else {
       return _convert4D(contiguous);
@@ -359,10 +353,7 @@ class HsvToRgbOp extends TransformOp with RequiresContiguous {
       expectedChannels: 3,
     );
 
-    final shape = contiguous.shape;
-    final rank = shape.length;
-
-    if (rank == 3) {
+    if (contiguous.shape.length == 3) {
       return _convert3D(contiguous);
     } else {
       return _convert4D(contiguous);

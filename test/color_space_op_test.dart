@@ -4,8 +4,7 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 /// Creates a 3D RGB tensor [3, H, W] with known pixel values in [0, 1].
-TensorBuffer _createRgbTensor3D(int h, int w,
-    {DType dtype = DType.float32}) {
+TensorBuffer _createRgbTensor3D(int h, int w) {
   final size = 3 * h * w;
   final data = Float32List(size);
   for (int ch = 0; ch < 3; ch++) {
@@ -20,8 +19,7 @@ TensorBuffer _createRgbTensor3D(int h, int w,
 }
 
 /// Creates a 4D RGB tensor [N, 3, H, W] with known pixel values.
-TensorBuffer _createRgbTensor4D(int n, int h, int w,
-    {DType dtype = DType.float32}) {
+TensorBuffer _createRgbTensor4D(int n, int h, int w) {
   final size = n * 3 * h * w;
   final data = Float32List(size);
   for (int i = 0; i < size; i++) {
