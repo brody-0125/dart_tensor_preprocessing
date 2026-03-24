@@ -49,6 +49,7 @@ export 'src/ops/permute_op.dart';
 export 'src/ops/type_cast_op.dart';
 export 'src/ops/augmentation_op.dart';
 export 'src/ops/color_jitter_op.dart';
+export 'src/ops/color_space_op.dart';
 export 'src/ops/random_erasing_op.dart';
 export 'src/ops/concat_op.dart';
 export 'src/ops/arithmetic_op.dart';
