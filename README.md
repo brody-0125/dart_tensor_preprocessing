@@ -23,7 +23,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.8.2
+  dart_tensor_preprocessing: ^0.8.3
 ```
 
 ## Quick Start
@@ -105,6 +105,11 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 - `RandomErasingOp` - Random erasing (cutout) augmentation
 - `ColorJitterOp` - Random brightness, contrast, saturation, and hue jitter
 - `AdjustBrightnessOp` / `AdjustContrastOp` / `AdjustSaturationOp` / `AdjustHueOp` - Individual color adjustments
+
+### Color Space Conversion
+- `RgbToGrayscaleOp` - RGB to grayscale using ITU-R BT.601 coefficients (torchvision `Grayscale`, `tf.image.rgb_to_grayscale`)
+- `RgbToHsvOp` - RGB to HSV color space conversion (`tf.image.rgb_to_hsv`)
+- `HsvToRgbOp` - HSV to RGB color space conversion (`tf.image.hsv_to_rgb`)
 
 ### Fused Operations
 - `ResizeNormalizeFusedOp` - Combines resize + normalize in single pass (eliminates intermediate tensor)
@@ -352,6 +357,9 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `RandomErasingOp` | `transforms.RandomErasing()` |
 | `ColorJitterOp` | `transforms.ColorJitter()` |
 | `PositionalEncodingOp` | Transformer positional encoding |
+| `RgbToGrayscaleOp` | `torchvision.transforms.Grayscale()` / `tf.image.rgb_to_grayscale` |
+| `RgbToHsvOp` | `tf.image.rgb_to_hsv` |
+| `HsvToRgbOp` | `tf.image.hsv_to_rgb` |
 | `ResizeNormalizeFusedOp` | `F.interpolate()` + `transforms.Normalize()` (fused) |
 
 ## Performance Benchmarks
