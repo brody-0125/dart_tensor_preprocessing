@@ -1,6 +1,7 @@
 # dart_tensor_preprocessing
 
-![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2.svg?logo=dart)
+![CI](https://github.com/brody-0125/dart_tensor_preprocessing/actions/workflows/ci.yml/badge.svg)
+![Dart](https://img.shields.io/badge/Dart-3.9+-0175C2.svg?logo=dart)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-Compatible-EE4C2C.svg?logo=pytorch)
 ![Pub Likes](https://img.shields.io/pub/likes/dart_tensor_preprocessing)
@@ -23,7 +24,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.8.3
+  dart_tensor_preprocessing: ^0.8.4
 ```
 
 ## Quick Start
@@ -422,9 +423,19 @@ Operations with Float32x4/Float64x2 SIMD vectorization:
 
 > **Note**: Use `runAsync()` for large tensors or when UI responsiveness is critical.
 
+## CI
+
+This project uses GitHub Actions for continuous integration:
+
+| Job | Description | Dart SDK |
+|-----|-------------|----------|
+| Static Analysis | `dart analyze --fatal-infos` | stable |
+| Format Check | `dart format --set-exit-if-changed` | stable |
+| Tests | `dart test` | 3.9.0, stable |
+
 ## Requirements
 
-- Dart SDK ^3.0.0
+- Dart SDK ^3.9.0
 
 ## License
 
