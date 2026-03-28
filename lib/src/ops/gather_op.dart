@@ -57,8 +57,7 @@ class GatherOp extends TransformOp {
     if (index.rank != rank) {
       throw ShapeMismatchException(
         actual: index.shape,
-        message:
-            'Gather: index rank ${index.rank} must match input rank $rank',
+        message: 'Gather: index rank ${index.rank} must match input rank $rank',
       );
     }
 
@@ -66,8 +65,7 @@ class GatherOp extends TransformOp {
     final indexContiguous = index.isContiguous ? index : index.contiguous();
 
     final outputShape = List<int>.from(indexContiguous.shape);
-    final output =
-        TensorBuffer.uninitialized(outputShape, dtype: input.dtype);
+    final output = TensorBuffer.uninitialized(outputShape, dtype: input.dtype);
     final numel = output.numel;
 
     final inputShape = inputContiguous.shape;

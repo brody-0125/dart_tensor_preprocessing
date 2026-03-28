@@ -213,9 +213,12 @@ void main() {
     test('rolls 2D tensor along dim=0', () {
       final tensor = TensorBuffer.fromFloat32List(
         Float32List.fromList([
-          1.0, 2.0,
-          3.0, 4.0,
-          5.0, 6.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
         ]),
         [3, 2],
       );
@@ -233,8 +236,12 @@ void main() {
     test('rolls 2D tensor along dim=1', () {
       final tensor = TensorBuffer.fromFloat32List(
         Float32List.fromList([
-          1.0, 2.0, 3.0,
-          4.0, 5.0, 6.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
         ]),
         [2, 3],
       );

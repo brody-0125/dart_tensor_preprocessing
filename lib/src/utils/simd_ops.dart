@@ -588,36 +588,16 @@ class SimdOps {
     final length = data.length;
     if (length == 0) return;
 
-    final min4 = Float32x4.splat(min);
-    final max4 = Float32x4.splat(max);
-    final simdLength = length ~/ 4 * 4;
-
-    if (data.offsetInBytes % 16 == 0) {
-      final simdView = Float32x4List.view(
-        data.buffer,
-        data.offsetInBytes,
-        simdLength ~/ 4,
-      );
-      for (var i = 0; i < simdView.length; i++) {
-        simdView[i] = simdView[i].clamp(min4, max4);
-      }
-    } else {
-      for (var i = 0; i < simdLength; i += 4) {
-        final v = Float32x4(data[i], data[i + 1], data[i + 2], data[i + 3]);
-        final result = v.clamp(min4, max4);
-        data[i] = result.x;
-        data[i + 1] = result.y;
-        data[i + 2] = result.z;
-        data[i + 3] = result.w;
-      }
-    }
-
-    for (var i = simdLength; i < length; i++) {
-      if (data[i] < min) {
+    // Use scalar loop to correctly preserve NaN values.
+    // SIMD clamp does not preserve NaN (converts to min), so we avoid it here.
+    for (var i = 0; i < length; i++) {
+      final v = data[i];
+      if (v < min) {
         data[i] = min;
-      } else if (data[i] > max) {
+      } else if (v > max) {
         data[i] = max;
       }
+      // NaN comparisons are false, so NaN passes through unchanged.
     }
   }
 
@@ -643,31 +623,16 @@ class SimdOps {
     final length = data.length;
     if (length == 0) return;
 
-    final simdLength = length ~/ 2 * 2;
-
-    // Check alignment: 16 bytes = 2 × 8-byte doubles
-    // Only use SIMD for aligned data with sufficient length
-    if (data.offsetInBytes % 16 == 0 && length >= _minF64SimdLength) {
-      final minVec = Float64x2.splat(min);
-      final maxVec = Float64x2.splat(max);
-      final simdView = Float64x2List.view(
-        data.buffer,
-        data.offsetInBytes,
-        simdLength ~/ 2,
-      );
-      for (var i = 0; i < simdView.length; i++) {
-        simdView[i] = simdView[i].clamp(minVec, maxVec);
+    // Use scalar loop to correctly preserve NaN values.
+    // SIMD clamp does not preserve NaN (converts to min), so we avoid it here.
+    for (var i = 0; i < length; i++) {
+      final v = data[i];
+      if (v < min) {
+        data[i] = min;
+      } else if (v > max) {
+        data[i] = max;
       }
-    } else {
-      // Scalar fallback for unaligned or small data
-      for (var i = 0; i < simdLength; i++) {
-        data[i] = data[i].clamp(min, max);
-      }
-    }
-
-    // Remaining elements
-    for (var i = simdLength; i < length; i++) {
-      data[i] = data[i].clamp(min, max);
+      // NaN comparisons are false, so NaN passes through unchanged.
     }
   }
 

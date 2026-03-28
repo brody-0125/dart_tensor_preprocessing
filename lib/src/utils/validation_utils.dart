@@ -266,10 +266,8 @@ class OpValidator {
     final result = List<int>.filled(maxRank, 0);
 
     for (int i = 0; i < maxRank; i++) {
-      final d1 =
-          i < shape1.length ? shape1[shape1.length - 1 - i] : 1;
-      final d2 =
-          i < shape2.length ? shape2[shape2.length - 1 - i] : 1;
+      final d1 = i < shape1.length ? shape1[shape1.length - 1 - i] : 1;
+      final d2 = i < shape2.length ? shape2[shape2.length - 1 - i] : 1;
 
       if (d1 == d2) {
         result[maxRank - 1 - i] = d1;

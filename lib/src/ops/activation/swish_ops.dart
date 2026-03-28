@@ -92,7 +92,8 @@ typedef SwishOp = SiLUOp;
 /// ```dart
 /// final result = HardswishOp()(tensor);
 /// ```
-class HardswishOp extends TransformOp with InPlaceTransform, RequiresContiguous {
+class HardswishOp extends TransformOp
+    with InPlaceTransform, RequiresContiguous {
   /// Creates a Hard Swish operation.
   HardswishOp();
 

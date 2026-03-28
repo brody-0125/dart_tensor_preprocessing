@@ -494,8 +494,8 @@ void main() {
     group('string representation', () {
       test('toString without seed', () {
         final op = RandomHorizontalFlipOp(probability: 0.5);
-        expect(op.toString(),
-            equals('TransformOp(RandomHorizontalFlip(p=0.5))'));
+        expect(
+            op.toString(), equals('TransformOp(RandomHorizontalFlip(p=0.5))'));
       });
 
       test('toString with seed', () {
@@ -639,8 +639,7 @@ void main() {
     group('string representation', () {
       test('toString without seed', () {
         final op = RandomVerticalFlipOp(probability: 0.5);
-        expect(
-            op.toString(), equals('TransformOp(RandomVerticalFlip(p=0.5))'));
+        expect(op.toString(), equals('TransformOp(RandomVerticalFlip(p=0.5))'));
       });
 
       test('toString with seed', () {
@@ -686,7 +685,8 @@ void main() {
     });
 
     test('both flips are commutative', () {
-      final data = Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      final data =
+          Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
       final tensor = TensorBuffer.fromFloat32List(data, [1, 3, 4]);
 
       final hFlip = HorizontalFlipOp();

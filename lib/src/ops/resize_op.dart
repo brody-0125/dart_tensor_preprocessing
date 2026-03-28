@@ -326,24 +326,28 @@ class ResizeOp extends TransformOp with RequiresContiguous {
         final inList = input.storage.data as Float32List;
         final outList = output.storage.data as Float32List;
         for (int y = 0; y < height; y++) {
-          final srcY =
-              _mapCoordinate(y, srcH, height, scaleY).floor().clamp(0, srcH - 1);
+          final srcY = _mapCoordinate(y, srcH, height, scaleY)
+              .floor()
+              .clamp(0, srcH - 1);
           final srcRowOffset = srcOffset + srcY * srcW;
           final dstRowOffset = dstOffset + y * width;
           for (int x = 0; x < width; x++) {
-            final srcX =
-                _mapCoordinate(x, srcW, width, scaleX).floor().clamp(0, srcW - 1);
+            final srcX = _mapCoordinate(x, srcW, width, scaleX)
+                .floor()
+                .clamp(0, srcW - 1);
             outList[dstRowOffset + x] = inList[srcRowOffset + srcX];
           }
         }
       default:
         // Generic fallback
         for (int y = 0; y < height; y++) {
-          final srcY =
-              _mapCoordinate(y, srcH, height, scaleY).floor().clamp(0, srcH - 1);
+          final srcY = _mapCoordinate(y, srcH, height, scaleY)
+              .floor()
+              .clamp(0, srcH - 1);
           for (int x = 0; x < width; x++) {
-            final srcX =
-                _mapCoordinate(x, srcW, width, scaleX).floor().clamp(0, srcW - 1);
+            final srcX = _mapCoordinate(x, srcW, width, scaleX)
+                .floor()
+                .clamp(0, srcW - 1);
             final value =
                 input.storage.getAsDouble(srcOffset + srcY * srcW + srcX);
             output.storage.setFromDouble(dstOffset + y * width + x, value);

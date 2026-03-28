@@ -93,7 +93,8 @@ void _validateColorShape(List<int> shape, String opName) {
   if (channels != 3) {
     throw ShapeMismatchException(
       actual: shape,
-      message: '$opName requires 3-channel (RGB) tensor, got $channels channels',
+      message:
+          '$opName requires 3-channel (RGB) tensor, got $channels channels',
     );
   }
 }
@@ -131,7 +132,8 @@ class AdjustBrightnessOp extends TransformOp with RequiresContiguous {
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
         requiresContiguous: true,
-        pytorchEquivalent: 'torchvision.transforms.functional.adjust_brightness',
+        pytorchEquivalent:
+            'torchvision.transforms.functional.adjust_brightness',
       );
 
   @override
@@ -614,8 +616,7 @@ class ColorJitterOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  String get name =>
-      'ColorJitter(brightness=$brightness, contrast=$contrast, '
+  String get name => 'ColorJitter(brightness=$brightness, contrast=$contrast, '
       'saturation=$saturation, hue=$hue, seed=$seed)';
 
   @override
@@ -635,8 +636,7 @@ class ColorJitterOp extends TransformOp with RequiresContiguous {
     final transforms = <TransformOp>[];
 
     if (brightness != null) {
-      final bFactor =
-          -brightness! + random.nextDouble() * (2 * brightness!);
+      final bFactor = -brightness! + random.nextDouble() * (2 * brightness!);
       transforms.add(AdjustBrightnessOp(factor: bFactor));
     }
 

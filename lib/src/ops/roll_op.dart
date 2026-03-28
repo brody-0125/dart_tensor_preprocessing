@@ -59,8 +59,8 @@ class RollOp extends TransformOp with RequiresContiguous {
     final numel = input.numel;
     final shift = ((shifts[0] % numel) + numel) % numel;
 
-    final output =
-        TensorBuffer.uninitialized(List<int>.from(input.shape), dtype: input.dtype);
+    final output = TensorBuffer.uninitialized(List<int>.from(input.shape),
+        dtype: input.dtype);
 
     switch (input.dtype) {
       case DType.float32:
@@ -133,7 +133,8 @@ class RollOp extends TransformOp with RequiresContiguous {
             for (int s = 0; s < dims!.length; s++) {
               final rollDim = dims![s] < 0 ? rank + dims![s] : dims![s];
               if (d == rollDim) {
-                newCoord = ((coord + shifts[s]) % shape[d] + shape[d]) % shape[d];
+                newCoord =
+                    ((coord + shifts[s]) % shape[d] + shape[d]) % shape[d];
               }
             }
 
@@ -159,7 +160,8 @@ class RollOp extends TransformOp with RequiresContiguous {
             for (int s = 0; s < dims!.length; s++) {
               final rollDim = dims![s] < 0 ? rank + dims![s] : dims![s];
               if (d == rollDim) {
-                newCoord = ((coord + shifts[s]) % shape[d] + shape[d]) % shape[d];
+                newCoord =
+                    ((coord + shifts[s]) % shape[d] + shape[d]) % shape[d];
               }
             }
 
@@ -185,7 +187,8 @@ class RollOp extends TransformOp with RequiresContiguous {
             for (int s = 0; s < dims!.length; s++) {
               final rollDim = dims![s] < 0 ? rank + dims![s] : dims![s];
               if (d == rollDim) {
-                newCoord = ((coord + shifts[s]) % shape[d] + shape[d]) % shape[d];
+                newCoord =
+                    ((coord + shifts[s]) % shape[d] + shape[d]) % shape[d];
               }
             }
 

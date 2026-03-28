@@ -142,8 +142,7 @@ class RandomErasingOp extends TransformOp
     if (rank != 3 && rank != 4) {
       throw ShapeMismatchException(
         actual: shape,
-        message:
-            'RandomErasingOp requires 3D [C,H,W] or 4D [N,C,H,W] tensor',
+        message: 'RandomErasingOp requires 3D [C,H,W] or 4D [N,C,H,W] tensor',
       );
     }
 
@@ -240,8 +239,7 @@ class RandomErasingOp extends TransformOp
           for (int row = 0; row < eraseH; row++) {
             final rowOffset = chOffset + (startH + row) * w + startW;
             for (int col = 0; col < eraseW; col++) {
-              data[rowOffset + col] =
-                  fillValue ?? random.nextDouble();
+              data[rowOffset + col] = fillValue ?? random.nextDouble();
             }
           }
         }
@@ -252,8 +250,7 @@ class RandomErasingOp extends TransformOp
           for (int row = 0; row < eraseH; row++) {
             final rowOffset = chOffset + (startH + row) * w + startW;
             for (int col = 0; col < eraseW; col++) {
-              data[rowOffset + col] =
-                  fillValue ?? random.nextDouble();
+              data[rowOffset + col] = fillValue ?? random.nextDouble();
             }
           }
         }
