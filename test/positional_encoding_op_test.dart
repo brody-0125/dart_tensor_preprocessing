@@ -65,14 +65,14 @@ void main() {
 
       // Both batches should have the same positional encoding
       // Batch 0, pos 0
-      final b0_p0_d0 = result[[0, 0, 0]];
-      final b0_p0_d1 = result[[0, 0, 1]];
+      final batch0Pos0Dim0 = result[[0, 0, 0]];
+      final batch0Pos0Dim1 = result[[0, 0, 1]];
       // Batch 1, pos 0
-      final b1_p0_d0 = result[[1, 0, 0]];
-      final b1_p0_d1 = result[[1, 0, 1]];
+      final batch1Pos0Dim0 = result[[1, 0, 0]];
+      final batch1Pos0Dim1 = result[[1, 0, 1]];
 
-      expect(b0_p0_d0, closeTo(b1_p0_d0, 1e-10));
-      expect(b0_p0_d1, closeTo(b1_p0_d1, 1e-10));
+      expect(batch0Pos0Dim0, closeTo(batch1Pos0Dim0, 1e-10));
+      expect(batch0Pos0Dim1, closeTo(batch1Pos0Dim1, 1e-10));
     });
 
     test('preserves shape', () {
@@ -114,8 +114,7 @@ void main() {
       final data = Float64List.fromList([0.0, 0.0, 0.0, 0.0]);
       final tensor = TensorBuffer.fromFloat64List(data, [2, dModel]);
 
-      final result =
-          PositionalEncodingOp(dModel: dModel, maxLen: 10)(tensor);
+      final result = PositionalEncodingOp(dModel: dModel, maxLen: 10)(tensor);
 
       expect(result[[0, 0]], closeTo(0.0, 1e-10));
       expect(result[[0, 1]], closeTo(1.0, 1e-10));
@@ -129,8 +128,7 @@ void main() {
     });
 
     test('capabilities include PyTorch metadata', () {
-      final caps =
-          PositionalEncodingOp(dModel: 4, maxLen: 10).capabilities;
+      final caps = PositionalEncodingOp(dModel: 4, maxLen: 10).capabilities;
       expect(caps.supportsInPlace, isTrue);
       expect(caps.requiresContiguous, isTrue);
       expect(caps.pytorchEquivalent, isNotNull);
@@ -195,8 +193,7 @@ void main() {
       final data = Float32List(seqLen * dModel);
       final tensor = TensorBuffer.fromFloat32List(data, [seqLen, dModel]);
 
-      final result =
-          PositionalEncodingOp(dModel: dModel, maxLen: 200)(tensor);
+      final result = PositionalEncodingOp(dModel: dModel, maxLen: 200)(tensor);
 
       for (int pos = 0; pos < seqLen; pos++) {
         for (int d = 0; d < dModel; d++) {
@@ -212,8 +209,7 @@ void main() {
       final data = Float32List(2 * dModel);
       final tensor = TensorBuffer.fromFloat32List(data, [2, dModel]);
 
-      final result =
-          PositionalEncodingOp(dModel: dModel, maxLen: 100)(tensor);
+      final result = PositionalEncodingOp(dModel: dModel, maxLen: 100)(tensor);
 
       // pos=0 and pos=1 should differ
       bool anyDifferent = false;

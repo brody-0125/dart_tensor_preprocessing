@@ -4,12 +4,11 @@ import 'package:test/test.dart';
 
 import 'package:dart_tensor_preprocessing/src/core/dtype.dart';
 import 'package:dart_tensor_preprocessing/src/core/tensor_buffer.dart';
-import 'package:dart_tensor_preprocessing/src/core/tensor_storage.dart';
 import 'package:dart_tensor_preprocessing/src/exceptions/tensor_exceptions.dart';
 import 'package:dart_tensor_preprocessing/src/ops/color_jitter_op.dart';
 
 /// Creates a 3D RGB tensor [3, H, W] with known pixel values in [0, 1].
-TensorBuffer _createRgbTensor3D(int h, int w, {DType dtype = DType.float32}) {
+TensorBuffer _createRgbTensor3D(int h, int w) {
   final size = 3 * h * w;
   final data = Float32List(size);
   // Fill with gradient values in [0, 1]
@@ -25,8 +24,7 @@ TensorBuffer _createRgbTensor3D(int h, int w, {DType dtype = DType.float32}) {
 }
 
 /// Creates a 4D RGB tensor [N, 3, H, W] with known pixel values in [0, 1].
-TensorBuffer _createRgbTensor4D(int n, int h, int w,
-    {DType dtype = DType.float32}) {
+TensorBuffer _createRgbTensor4D(int n, int h, int w) {
   final size = n * 3 * h * w;
   final data = Float32List(size);
   for (int batch = 0; batch < n; batch++) {
@@ -117,8 +115,7 @@ void main() {
         final (h, s, v) = rgbToHsv(r, g, b);
         final (nr, ng, nb) = hsvToRgb(h, s, v);
         expect(nr, closeTo(r, 1e-6), reason: 'Red mismatch for ($r, $g, $b)');
-        expect(ng, closeTo(g, 1e-6),
-            reason: 'Green mismatch for ($r, $g, $b)');
+        expect(ng, closeTo(g, 1e-6), reason: 'Green mismatch for ($r, $g, $b)');
         expect(nb, closeTo(b, 1e-6), reason: 'Blue mismatch for ($r, $g, $b)');
       }
     });
@@ -139,8 +136,7 @@ void main() {
         expect(nh, closeTo(h, 1e-6), reason: 'Hue mismatch for ($h, $s, $v)');
         expect(ns, closeTo(s, 1e-6),
             reason: 'Saturation mismatch for ($h, $s, $v)');
-        expect(nv, closeTo(v, 1e-6),
-            reason: 'Value mismatch for ($h, $s, $v)');
+        expect(nv, closeTo(v, 1e-6), reason: 'Value mismatch for ($h, $s, $v)');
       }
     });
   });
@@ -296,10 +292,8 @@ void main() {
         final w = tensor.shape[2];
         for (int i = 0; i < h * w; i++) {
           expect(result.storage.getAsDouble(i), closeTo(0.2, 1e-5));
-          expect(
-              result.storage.getAsDouble(h * w + i), closeTo(0.6, 1e-5));
-          expect(
-              result.storage.getAsDouble(2 * h * w + i), closeTo(0.8, 1e-5));
+          expect(result.storage.getAsDouble(h * w + i), closeTo(0.6, 1e-5));
+          expect(result.storage.getAsDouble(2 * h * w + i), closeTo(0.8, 1e-5));
         }
       });
 
@@ -390,10 +384,8 @@ void main() {
         final w = tensor.shape[2];
         for (int i = 0; i < h * w; i++) {
           expect(result.storage.getAsDouble(i), closeTo(0.8, 1e-5));
-          expect(
-              result.storage.getAsDouble(h * w + i), closeTo(0.2, 1e-5));
-          expect(
-              result.storage.getAsDouble(2 * h * w + i), closeTo(0.4, 1e-5));
+          expect(result.storage.getAsDouble(h * w + i), closeTo(0.2, 1e-5));
+          expect(result.storage.getAsDouble(2 * h * w + i), closeTo(0.4, 1e-5));
         }
       });
 
@@ -498,10 +490,8 @@ void main() {
         final w = tensor.shape[2];
         for (int i = 0; i < h * w; i++) {
           expect(result.storage.getAsDouble(i), closeTo(0.8, 1e-5));
-          expect(
-              result.storage.getAsDouble(h * w + i), closeTo(0.2, 1e-5));
-          expect(
-              result.storage.getAsDouble(2 * h * w + i), closeTo(0.4, 1e-5));
+          expect(result.storage.getAsDouble(h * w + i), closeTo(0.2, 1e-5));
+          expect(result.storage.getAsDouble(2 * h * w + i), closeTo(0.4, 1e-5));
         }
       });
 
@@ -515,10 +505,8 @@ void main() {
         final w = tensor.shape[2];
         for (int i = 0; i < h * w; i++) {
           expect(result.storage.getAsDouble(i), closeTo(0.0, 1e-5));
-          expect(
-              result.storage.getAsDouble(h * w + i), closeTo(1.0, 1e-5));
-          expect(
-              result.storage.getAsDouble(2 * h * w + i), closeTo(0.0, 1e-5));
+          expect(result.storage.getAsDouble(h * w + i), closeTo(1.0, 1e-5));
+          expect(result.storage.getAsDouble(2 * h * w + i), closeTo(0.0, 1e-5));
         }
       });
 
@@ -531,10 +519,8 @@ void main() {
         final w = tensor.shape[2];
         for (int i = 0; i < h * w; i++) {
           expect(result.storage.getAsDouble(i), closeTo(0.0, 1e-5));
-          expect(
-              result.storage.getAsDouble(h * w + i), closeTo(0.0, 1e-5));
-          expect(
-              result.storage.getAsDouble(2 * h * w + i), closeTo(1.0, 1e-5));
+          expect(result.storage.getAsDouble(h * w + i), closeTo(0.0, 1e-5));
+          expect(result.storage.getAsDouble(2 * h * w + i), closeTo(1.0, 1e-5));
         }
       });
 
@@ -547,10 +533,8 @@ void main() {
         final w = tensor.shape[2];
         for (int i = 0; i < h * w; i++) {
           expect(result.storage.getAsDouble(i), closeTo(0.5, 1e-5));
-          expect(
-              result.storage.getAsDouble(h * w + i), closeTo(0.5, 1e-5));
-          expect(
-              result.storage.getAsDouble(2 * h * w + i), closeTo(0.5, 1e-5));
+          expect(result.storage.getAsDouble(h * w + i), closeTo(0.5, 1e-5));
+          expect(result.storage.getAsDouble(2 * h * w + i), closeTo(0.5, 1e-5));
         }
       });
 
@@ -768,8 +752,7 @@ void main() {
         // At least some values should differ
         bool anyDifferent = false;
         for (int i = 0; i < result1.numel; i++) {
-          if ((result1.storage.getAsDouble(i) -
-                      result2.storage.getAsDouble(i))
+          if ((result1.storage.getAsDouble(i) - result2.storage.getAsDouble(i))
                   .abs() >
               1e-6) {
             anyDifferent = true;

@@ -67,7 +67,8 @@ class PositionalEncodingOp extends TransformOp
       for (int i = 0; i < dModel; i++) {
         final dimIndex = i ~/ 2;
         final angle = pos / math.pow(base, 2 * dimIndex / dModel);
-        _peTable[pos * dModel + i] = i.isEven ? math.sin(angle) : math.cos(angle);
+        _peTable[pos * dModel + i] =
+            i.isEven ? math.sin(angle) : math.cos(angle);
       }
     }
   }
@@ -92,8 +93,7 @@ class PositionalEncodingOp extends TransformOp
   @override
   void applyInPlace(TensorBuffer input) {
     if (!input.isContiguous) {
-      throw const NonContiguousException(
-          'PositionalEncodingOp.applyInPlace');
+      throw const NonContiguousException('PositionalEncodingOp.applyInPlace');
     }
     _addEncoding(input);
   }
@@ -114,8 +114,7 @@ class PositionalEncodingOp extends TransformOp
     if (dim != dModel) {
       throw ShapeMismatchException(
         actual: tensor.shape,
-        message:
-            'Last dimension ($dim) must match dModel ($dModel)',
+        message: 'Last dimension ($dim) must match dModel ($dModel)',
       );
     }
 
@@ -129,9 +128,7 @@ class PositionalEncodingOp extends TransformOp
 
     // Compute number of batches (all dimensions except last two)
     final batchSize = tensor.rank > 2
-        ? tensor.shape
-            .sublist(0, tensor.rank - 2)
-            .fold(1, (a, b) => a * b)
+        ? tensor.shape.sublist(0, tensor.rank - 2).fold(1, (a, b) => a * b)
         : 1;
     final sliceSize = seqLen * dModel;
 

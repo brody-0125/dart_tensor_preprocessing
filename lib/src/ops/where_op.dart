@@ -15,19 +15,22 @@ import 'transform_op.dart';
 /// ```dart
 /// final result = tensorWhere(condition, x, y);
 /// ```
-TensorBuffer tensorWhere(TensorBuffer condition, TensorBuffer x, TensorBuffer y) {
+TensorBuffer tensorWhere(
+    TensorBuffer condition, TensorBuffer x, TensorBuffer y) {
   // Validate shapes match (v0.8.1: no broadcasting)
   if (condition.shape.length != x.shape.length) {
     throw ShapeMismatchException(
       actual: condition.shape,
-      message: 'Where: condition shape ${condition.shape} does not match x shape ${x.shape}',
+      message:
+          'Where: condition shape ${condition.shape} does not match x shape ${x.shape}',
     );
   }
   for (int i = 0; i < condition.shape.length; i++) {
     if (condition.shape[i] != x.shape[i]) {
       throw ShapeMismatchException(
         actual: condition.shape,
-        message: 'Where: condition shape ${condition.shape} does not match x shape ${x.shape}',
+        message:
+            'Where: condition shape ${condition.shape} does not match x shape ${x.shape}',
       );
     }
   }

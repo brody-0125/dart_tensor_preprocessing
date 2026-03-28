@@ -181,8 +181,7 @@ void main() {
             break;
           }
         }
-        expect(hasErased, isTrue,
-            reason: 'Expected some pixels to be erased');
+        expect(hasErased, isTrue, reason: 'Expected some pixels to be erased');
       });
     });
 

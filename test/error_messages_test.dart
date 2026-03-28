@@ -46,8 +46,7 @@ void main() {
     });
 
     test('parameterRange returns message with parameter info', () {
-      final msg =
-          ErrorMessages.parameterRange('ClipOp', 'min', -1.0, 0.0, 1.0);
+      final msg = ErrorMessages.parameterRange('ClipOp', 'min', -1.0, 0.0, 1.0);
       expect(msg, contains('ClipOp'));
       expect(msg, contains('min'));
       expect(msg, contains('-1.0'));
@@ -55,8 +54,7 @@ void main() {
     });
 
     test('broadcastIncompatible returns message with shapes', () {
-      final msg =
-          ErrorMessages.broadcastIncompatible('AddOp', [2, 3], [4, 5]);
+      final msg = ErrorMessages.broadcastIncompatible('AddOp', [2, 3], [4, 5]);
       expect(msg, contains('AddOp'));
       expect(msg, contains('[2, 3]'));
       expect(msg, contains('[4, 5]'));

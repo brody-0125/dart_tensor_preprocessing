@@ -41,10 +41,14 @@ void main() {
     test('splits 2D tensor along dim=0', () {
       final tensor = TensorBuffer.fromFloat32List(
         Float32List.fromList([
-          1.0, 2.0,
-          3.0, 4.0,
-          5.0, 6.0,
-          7.0, 8.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
         ]),
         [4, 2],
       );
@@ -63,8 +67,14 @@ void main() {
     test('splits 2D tensor along dim=1', () {
       final tensor = TensorBuffer.fromFloat32List(
         Float32List.fromList([
-          1.0, 2.0, 3.0, 4.0,
-          5.0, 6.0, 7.0, 8.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
         ]),
         [2, 4],
       );
@@ -168,9 +178,12 @@ void main() {
     test('chunks 2D tensor along dim=0', () {
       final tensor = TensorBuffer.fromFloat32List(
         Float32List.fromList([
-          1.0, 2.0,
-          3.0, 4.0,
-          5.0, 6.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
         ]),
         [3, 2],
       );

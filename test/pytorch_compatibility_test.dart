@@ -335,14 +335,14 @@ void main() {
     });
 
     group('Resize - Nearest', () {
-      /// Nearest neighbor interpolation using floor-based sampling.
-      /// Formula: srcIdx = floor(dstIdx * srcSize / dstSize)
+      /// Nearest neighbor interpolation using align_corners-style sampling.
+      /// Formula: srcIdx = floor(dstIdx * (srcSize-1) / (dstSize-1))
       ///
-      /// For 2x2 -> 4x4 upsample with scale=0.5:
-      /// dst[0] -> src[floor(0*0.5)] = src[0]
-      /// dst[1] -> src[floor(1*0.5)] = src[0]
-      /// dst[2] -> src[floor(2*0.5)] = src[1]
-      /// dst[3] -> src[floor(3*0.5)] = src[1]
+      /// For 2x2 -> 4x4 upsample:
+      /// dst[0] -> src[floor(0*1/3)] = src[0]
+      /// dst[1] -> src[floor(1*1/3)] = src[0]
+      /// dst[2] -> src[floor(2*1/3)] = src[0]
+      /// dst[3] -> src[floor(3*1/3)] = src[1]
       test('nearest upsample 2x produces correct pattern', () {
         final data = Float32List.fromList([0, 1, 2, 3]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
@@ -356,23 +356,20 @@ void main() {
 
         expect(result.shape, equals([1, 4, 4]));
 
-        // Each source pixel is replicated in a 2x2 block
-        // Source [0,0]=0 -> dst rows 0-1, cols 0-1
+        // With align_corners mapping: rows 0-2 -> src row 0, row 3 -> src row 1
+        // Cols 0-2 -> src col 0, col 3 -> src col 1
         expect(result[[0, 0, 0]], equals(0.0));
         expect(result[[0, 0, 1]], equals(0.0));
-        expect(result[[0, 1, 0]], equals(0.0));
-        expect(result[[0, 1, 1]], equals(0.0));
-
-        // Source [0,1]=1 -> dst rows 0-1, cols 2-3
-        expect(result[[0, 0, 2]], equals(1.0));
+        expect(result[[0, 0, 2]], equals(0.0));
         expect(result[[0, 0, 3]], equals(1.0));
 
-        // Source [1,0]=2 -> dst rows 2-3, cols 0-1
-        expect(result[[0, 2, 0]], equals(2.0));
-        expect(result[[0, 3, 0]], equals(2.0));
+        expect(result[[0, 1, 0]], equals(0.0));
+        expect(result[[0, 2, 0]], equals(0.0));
 
-        // Source [1,1]=3 -> dst rows 2-3, cols 2-3
-        expect(result[[0, 2, 2]], equals(3.0));
+        // Source [1,0]=2, [1,1]=3 -> dst row 3
+        expect(result[[0, 3, 0]], equals(2.0));
+        expect(result[[0, 3, 1]], equals(2.0));
+        expect(result[[0, 3, 2]], equals(2.0));
         expect(result[[0, 3, 3]], equals(3.0));
       });
 

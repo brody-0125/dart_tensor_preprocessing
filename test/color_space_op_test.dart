@@ -73,9 +73,9 @@ void main() {
         final op = RgbToGrayscaleOp();
         final result = op(tensor);
 
-        // Y = 0.2989 + 0.5870 + 0.1140 ≈ 1.0
+        // Y = 0.2989 + 0.5870 + 0.1140 = 0.9999 ≈ 1.0
         for (int i = 0; i < 4; i++) {
-          expect(result.storage.getAsDouble(i), closeTo(1.0, 1e-4));
+          expect(result.storage.getAsDouble(i), closeTo(1.0, 2e-4));
         }
       });
 
@@ -201,10 +201,8 @@ void main() {
         // Pure red: H=0, S=1, V=1
         for (int i = 0; i < 4; i++) {
           expect(result.storage.getAsDouble(i), closeTo(0.0, 1e-5)); // H
-          expect(
-              result.storage.getAsDouble(4 + i), closeTo(1.0, 1e-5)); // S
-          expect(
-              result.storage.getAsDouble(8 + i), closeTo(1.0, 1e-5)); // V
+          expect(result.storage.getAsDouble(4 + i), closeTo(1.0, 1e-5)); // S
+          expect(result.storage.getAsDouble(8 + i), closeTo(1.0, 1e-5)); // V
         }
       });
 
@@ -215,12 +213,9 @@ void main() {
 
         // Pure green: H=1/3, S=1, V=1
         for (int i = 0; i < 4; i++) {
-          expect(result.storage.getAsDouble(i),
-              closeTo(1.0 / 3.0, 1e-5)); // H
-          expect(
-              result.storage.getAsDouble(4 + i), closeTo(1.0, 1e-5)); // S
-          expect(
-              result.storage.getAsDouble(8 + i), closeTo(1.0, 1e-5)); // V
+          expect(result.storage.getAsDouble(i), closeTo(1.0 / 3.0, 1e-5)); // H
+          expect(result.storage.getAsDouble(4 + i), closeTo(1.0, 1e-5)); // S
+          expect(result.storage.getAsDouble(8 + i), closeTo(1.0, 1e-5)); // V
         }
       });
 
@@ -231,12 +226,9 @@ void main() {
 
         // Pure blue: H=2/3, S=1, V=1
         for (int i = 0; i < 4; i++) {
-          expect(result.storage.getAsDouble(i),
-              closeTo(2.0 / 3.0, 1e-5)); // H
-          expect(
-              result.storage.getAsDouble(4 + i), closeTo(1.0, 1e-5)); // S
-          expect(
-              result.storage.getAsDouble(8 + i), closeTo(1.0, 1e-5)); // V
+          expect(result.storage.getAsDouble(i), closeTo(2.0 / 3.0, 1e-5)); // H
+          expect(result.storage.getAsDouble(4 + i), closeTo(1.0, 1e-5)); // S
+          expect(result.storage.getAsDouble(8 + i), closeTo(1.0, 1e-5)); // V
         }
       });
 
@@ -261,10 +253,8 @@ void main() {
         // White: H=0, S=0, V=1
         for (int i = 0; i < 4; i++) {
           expect(result.storage.getAsDouble(i), closeTo(0.0, 1e-5)); // H
-          expect(
-              result.storage.getAsDouble(4 + i), closeTo(0.0, 1e-5)); // S
-          expect(
-              result.storage.getAsDouble(8 + i), closeTo(1.0, 1e-5)); // V
+          expect(result.storage.getAsDouble(4 + i), closeTo(0.0, 1e-5)); // S
+          expect(result.storage.getAsDouble(8 + i), closeTo(1.0, 1e-5)); // V
         }
       });
 
@@ -280,14 +270,14 @@ void main() {
     group('shape validation', () {
       test('rejects 2D tensor', () {
         final tensor = TensorBuffer.zeros([4, 4]);
-        expect(() => RgbToHsvOp()(tensor),
-            throwsA(isA<ShapeMismatchException>()));
+        expect(
+            () => RgbToHsvOp()(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('rejects non-3-channel tensor', () {
         final tensor = TensorBuffer.zeros([4, 3, 3]);
-        expect(() => RgbToHsvOp()(tensor),
-            throwsA(isA<ShapeMismatchException>()));
+        expect(
+            () => RgbToHsvOp()(tensor), throwsA(isA<ShapeMismatchException>()));
       });
     });
 
@@ -303,8 +293,7 @@ void main() {
       });
 
       test('computeOutputShape preserves shape', () {
-        expect(
-            RgbToHsvOp().computeOutputShape([3, 4, 4]), equals([3, 4, 4]));
+        expect(RgbToHsvOp().computeOutputShape([3, 4, 4]), equals([3, 4, 4]));
         expect(RgbToHsvOp().computeOutputShape([2, 3, 4, 4]),
             equals([2, 3, 4, 4]));
       });
@@ -319,7 +308,7 @@ void main() {
     group('basic functionality', () {
       test('converts pure red HSV to RGB', () {
         // H=0, S=1, V=1 -> R=1, G=0, B=0
-        final hw = 4;
+        const hw = 4;
         final data = Float32List(3 * hw);
         for (int i = 0; i < hw; i++) {
           data[i] = 0.0; // H
@@ -333,18 +322,17 @@ void main() {
         expect(result.shape, equals([3, 2, 2]));
         for (int i = 0; i < hw; i++) {
           expect(result.storage.getAsDouble(i), closeTo(1.0, 1e-5)); // R
+          expect(result.storage.getAsDouble(hw + i), closeTo(0.0, 1e-5)); // G
           expect(
-              result.storage.getAsDouble(hw + i), closeTo(0.0, 1e-5)); // G
-          expect(result.storage.getAsDouble(2 * hw + i),
-              closeTo(0.0, 1e-5)); // B
+              result.storage.getAsDouble(2 * hw + i), closeTo(0.0, 1e-5)); // B
         }
       });
 
       test('converts 4D tensor', () {
         // Create a 4D HSV tensor
-        final n = 2;
-        final h = 3;
-        final w = 3;
+        const n = 2;
+        const h = 3;
+        const w = 3;
         final data = Float32List(n * 3 * h * w);
         for (int i = 0; i < data.length; i++) {
           data[i] = 0.5; // All 0.5 as generic HSV values
@@ -360,14 +348,14 @@ void main() {
     group('shape validation', () {
       test('rejects 2D tensor', () {
         final tensor = TensorBuffer.zeros([4, 4]);
-        expect(() => HsvToRgbOp()(tensor),
-            throwsA(isA<ShapeMismatchException>()));
+        expect(
+            () => HsvToRgbOp()(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('rejects non-3-channel tensor', () {
         final tensor = TensorBuffer.zeros([1, 3, 3]);
-        expect(() => HsvToRgbOp()(tensor),
-            throwsA(isA<ShapeMismatchException>()));
+        expect(
+            () => HsvToRgbOp()(tensor), throwsA(isA<ShapeMismatchException>()));
       });
     });
 
@@ -383,8 +371,7 @@ void main() {
       });
 
       test('computeOutputShape preserves shape', () {
-        expect(
-            HsvToRgbOp().computeOutputShape([3, 4, 4]), equals([3, 4, 4]));
+        expect(HsvToRgbOp().computeOutputShape([3, 4, 4]), equals([3, 4, 4]));
         expect(HsvToRgbOp().computeOutputShape([2, 3, 4, 4]),
             equals([2, 3, 4, 4]));
       });
@@ -463,8 +450,7 @@ void main() {
         RgbToGrayscaleOp(),
       ]);
 
-      expect(pipeline.computeOutputShape([3, 224, 224]),
-          equals([1, 224, 224]));
+      expect(pipeline.computeOutputShape([3, 224, 224]), equals([1, 224, 224]));
     });
 
     test('RGB -> HSV -> RGB pipeline', () {
@@ -556,8 +542,7 @@ void main() {
       final result = op(tensor);
 
       expect(result.shape, equals([1, 1, 1]));
-      final expected =
-          0.5 * 0.2989 + 0.3 * 0.5870 + 0.7 * 0.1140;
+      const expected = 0.5 * 0.2989 + 0.3 * 0.5870 + 0.7 * 0.1140;
       expect(result.storage.getAsDouble(0), closeTo(expected, 1e-4));
     });
 
@@ -569,16 +554,14 @@ void main() {
       // Gray: H=0, S=0, V=0.5
       for (int i = 0; i < 4; i++) {
         expect(result.storage.getAsDouble(i), closeTo(0.0, 1e-5)); // H
-        expect(
-            result.storage.getAsDouble(4 + i), closeTo(0.0, 1e-5)); // S
-        expect(
-            result.storage.getAsDouble(8 + i), closeTo(0.5, 1e-5)); // V
+        expect(result.storage.getAsDouble(4 + i), closeTo(0.0, 1e-5)); // S
+        expect(result.storage.getAsDouble(8 + i), closeTo(0.5, 1e-5)); // V
       }
     });
 
     test('toString returns expected format', () {
-      expect(RgbToGrayscaleOp().toString(),
-          equals('TransformOp(RgbToGrayscale)'));
+      expect(
+          RgbToGrayscaleOp().toString(), equals('TransformOp(RgbToGrayscale)'));
       expect(RgbToHsvOp().toString(), equals('TransformOp(RgbToHsv)'));
       expect(HsvToRgbOp().toString(), equals('TransformOp(HsvToRgb)'));
     });

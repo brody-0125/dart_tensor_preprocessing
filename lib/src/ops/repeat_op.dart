@@ -31,8 +31,7 @@ class RepeatOp extends TransformOp {
       );
 
   @override
-  TensorBuffer apply(TensorBuffer input) =>
-      TileOp(reps: sizes).apply(input);
+  TensorBuffer apply(TensorBuffer input) => TileOp(reps: sizes).apply(input);
 
   @override
   List<int> computeOutputShape(List<int> inputShape) =>

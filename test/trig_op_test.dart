@@ -11,7 +11,8 @@ void main() {
   // =========================================================================
   group('SinOp', () {
     test('computes sine of all elements', () {
-      final data = Float32List.fromList([0.0, math.pi / 6, math.pi / 4, math.pi / 2, math.pi]);
+      final data = Float32List.fromList(
+          [0.0, math.pi / 6, math.pi / 4, math.pi / 2, math.pi]);
       final tensor = TensorBuffer.fromFloat32List(data, [5]);
 
       final sinOp = SinOp();
@@ -65,7 +66,8 @@ void main() {
   // =========================================================================
   group('CosOp', () {
     test('computes cosine of all elements', () {
-      final data = Float32List.fromList([0.0, math.pi / 3, math.pi / 2, math.pi]);
+      final data =
+          Float32List.fromList([0.0, math.pi / 3, math.pi / 2, math.pi]);
       final tensor = TensorBuffer.fromFloat32List(data, [4]);
 
       final cosOp = CosOp();
@@ -466,8 +468,10 @@ void main() {
   group('multi-dimensional tensors', () {
     test('SinOp works on 2D tensors', () {
       final data = Float32List.fromList([
-        0.0, math.pi / 2,
-        math.pi, 3 * math.pi / 2,
+        0.0,
+        math.pi / 2,
+        math.pi,
+        3 * math.pi / 2,
       ]);
       final tensor = TensorBuffer.fromFloat32List(data, [2, 2]);
 

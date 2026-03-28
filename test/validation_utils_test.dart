@@ -218,7 +218,8 @@ void main() {
       test('passes for 3D tensor', () {
         final tensor = TensorBuffer.zeros([3, 224, 224]);
         expect(
-          () => OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
+          () =>
+              OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
           returnsNormally,
         );
       });
@@ -226,7 +227,8 @@ void main() {
       test('passes for 4D tensor', () {
         final tensor = TensorBuffer.zeros([1, 3, 224, 224]);
         expect(
-          () => OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
+          () =>
+              OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
           returnsNormally,
         );
       });
@@ -234,7 +236,8 @@ void main() {
       test('throws for 2D tensor', () {
         final tensor = TensorBuffer.zeros([224, 224]);
         expect(
-          () => OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
+          () =>
+              OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
           throwsA(isA<ShapeMismatchException>()),
         );
       });
@@ -242,7 +245,8 @@ void main() {
       test('throws for 5D tensor', () {
         final tensor = TensorBuffer.zeros([1, 2, 3, 4, 5]);
         expect(
-          () => OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
+          () =>
+              OpValidator.validateImageTensor(tensor, operationName: 'TestOp'),
           throwsA(isA<ShapeMismatchException>()),
         );
       });

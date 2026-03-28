@@ -350,7 +350,8 @@ void main() {
 
     test('name reflects approximation mode', () {
       expect(GELUOp().name, equals('GELU'));
-      expect(GELUOp(approximate: 'tanh').name, equals('GELU(approximate=tanh)'));
+      expect(
+          GELUOp(approximate: 'tanh').name, equals('GELU(approximate=tanh)'));
     });
   });
 
@@ -746,10 +747,22 @@ void main() {
     test('works with 3D tensor', () {
       // Shape [2, 2, 4], dim=-1 -> [2, 2, 2]
       final data = Float32List.fromList([
-        1.0, 2.0, 0.5, -0.5,
-        3.0, 4.0, 1.0, -1.0,
-        5.0, 6.0, 0.0, 0.0,
-        7.0, 8.0, 2.0, -2.0,
+        1.0,
+        2.0,
+        0.5,
+        -0.5,
+        3.0,
+        4.0,
+        1.0,
+        -1.0,
+        5.0,
+        6.0,
+        0.0,
+        0.0,
+        7.0,
+        8.0,
+        2.0,
+        -2.0,
       ]);
       final tensor = TensorBuffer.fromFloat32List(data, [2, 2, 4]);
 

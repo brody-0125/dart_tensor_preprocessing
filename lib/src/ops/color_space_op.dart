@@ -143,8 +143,7 @@ class RgbToGrayscaleOp extends TransformOp with RequiresContiguous {
             final r = input.storage.getAsDouble(srcOffset + i);
             final g = input.storage.getAsDouble(srcOffset + hw + i);
             final b = input.storage.getAsDouble(srcOffset + 2 * hw + i);
-            dst[dstOffset + i] =
-                (r * _rWeight + g * _gWeight + b * _bWeight);
+            dst[dstOffset + i] = (r * _rWeight + g * _gWeight + b * _bWeight);
           }
         }
         return TensorBuffer.fromFloat32List(dst, outputShape);
@@ -268,8 +267,8 @@ class RgbToHsvOp extends TransformOp with RequiresContiguous {
         for (int batch = 0; batch < n; batch++) {
           final off = batch * chw;
           for (int i = 0; i < hw; i++) {
-            final (hv, s, v) =
-                rgbToHsv(src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
+            final (hv, s, v) = rgbToHsv(
+                src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
             dst[off + i] = hv;
             dst[off + hw + i] = s;
             dst[off + 2 * hw + i] = v;
@@ -282,8 +281,8 @@ class RgbToHsvOp extends TransformOp with RequiresContiguous {
         for (int batch = 0; batch < n; batch++) {
           final off = batch * chw;
           for (int i = 0; i < hw; i++) {
-            final (hv, s, v) =
-                rgbToHsv(src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
+            final (hv, s, v) = rgbToHsv(
+                src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
             dst[off + i] = hv;
             dst[off + hw + i] = s;
             dst[off + 2 * hw + i] = v;
@@ -415,8 +414,8 @@ class HsvToRgbOp extends TransformOp with RequiresContiguous {
         for (int batch = 0; batch < n; batch++) {
           final off = batch * chw;
           for (int i = 0; i < hw; i++) {
-            final (r, g, b) =
-                hsvToRgb(src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
+            final (r, g, b) = hsvToRgb(
+                src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
             dst[off + i] = r;
             dst[off + hw + i] = g;
             dst[off + 2 * hw + i] = b;
@@ -429,8 +428,8 @@ class HsvToRgbOp extends TransformOp with RequiresContiguous {
         for (int batch = 0; batch < n; batch++) {
           final off = batch * chw;
           for (int i = 0; i < hw; i++) {
-            final (r, g, b) =
-                hsvToRgb(src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
+            final (r, g, b) = hsvToRgb(
+                src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
             dst[off + i] = r;
             dst[off + hw + i] = g;
             dst[off + 2 * hw + i] = b;

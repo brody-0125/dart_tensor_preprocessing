@@ -319,8 +319,8 @@ void main() {
 
       test('default coordinateMode preserves existing behavior', () {
         // Create input: 1-channel 4x4 with sequential values
-        final data = Float32List.fromList(
-            List.generate(16, (i) => i.toDouble()));
+        final data =
+            Float32List.fromList(List.generate(16, (i) => i.toDouble()));
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
 
         // Existing behavior (no coordinateMode specified)
@@ -352,8 +352,8 @@ void main() {
 
       test('asymmetric mode uses x * inSize / outSize mapping', () {
         // 1-channel 4x4 tensor: row0=[0,1,2,3], row1=[4,5,6,7], ...
-        final data = Float32List.fromList(
-            List.generate(16, (i) => i.toDouble()));
+        final data =
+            Float32List.fromList(List.generate(16, (i) => i.toDouble()));
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
 
         final op = ResizeOp(
@@ -378,8 +378,8 @@ void main() {
 
       test('pytorchHalfPixel returns 0 when outSize is 1', () {
         // 1-channel 4x4 tensor
-        final data = Float32List.fromList(
-            List.generate(16, (i) => i.toDouble()));
+        final data =
+            Float32List.fromList(List.generate(16, (i) => i.toDouble()));
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
 
         final op = ResizeOp(
@@ -397,8 +397,8 @@ void main() {
 
       test('alignCorners mode via coordinateMode matches alignCorners bool',
           () {
-        final data = Float32List.fromList(
-            List.generate(16, (i) => i.toDouble()));
+        final data =
+            Float32List.fromList(List.generate(16, (i) => i.toDouble()));
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
 
         // Using old alignCorners: true

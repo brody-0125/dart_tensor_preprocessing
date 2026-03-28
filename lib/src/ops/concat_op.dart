@@ -86,8 +86,7 @@ TensorBuffer stack(List<TensorBuffer> tensors, {int dim = 0}) {
       if (shape[d] != firstShape[d]) {
         throw ShapeMismatchException(
           actual: shape,
-          message:
-              'Tensor $i has shape $shape, expected $firstShape for stack',
+          message: 'Tensor $i has shape $shape, expected $firstShape for stack',
         );
       }
     }

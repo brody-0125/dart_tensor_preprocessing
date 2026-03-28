@@ -735,10 +735,9 @@ TensorBuffer _flipHorizontal(TensorBuffer input) {
               for (int col = 0; col < w; col++) {
                 final srcIdx =
                     batch * c * h * w + ch * h * w + row * w + (w - 1 - col);
-                final dstIdx =
-                    batch * c * h * w + ch * h * w + row * w + col;
-                output.storage.setFromDouble(
-                    dstIdx, input.storage.getAsDouble(srcIdx));
+                final dstIdx = batch * c * h * w + ch * h * w + row * w + col;
+                output.storage
+                    .setFromDouble(dstIdx, input.storage.getAsDouble(srcIdx));
               }
             }
           }
@@ -843,10 +842,9 @@ TensorBuffer _flipVertical(TensorBuffer input) {
               for (int col = 0; col < w; col++) {
                 final srcIdx =
                     batch * c * h * w + ch * h * w + (h - 1 - row) * w + col;
-                final dstIdx =
-                    batch * c * h * w + ch * h * w + row * w + col;
-                output.storage.setFromDouble(
-                    dstIdx, input.storage.getAsDouble(srcIdx));
+                final dstIdx = batch * c * h * w + ch * h * w + row * w + col;
+                output.storage
+                    .setFromDouble(dstIdx, input.storage.getAsDouble(srcIdx));
               }
             }
           }

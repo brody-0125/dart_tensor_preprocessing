@@ -35,8 +35,10 @@ void main() {
 
       test('normalizes along dim=0 for 2D tensor', () {
         final data = Float32List.fromList([
-          3.0, 1.0,
-          4.0, 0.0,
+          3.0,
+          1.0,
+          4.0,
+          0.0,
         ]);
         final tensor = TensorBuffer.fromFloat32List(data, [2, 2]);
 
