@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.4] - 2026-03-28
+
+### Added
+
+- **CI Pipeline** - GitHub Actions CI workflow with three jobs (PR #59):
+  - **Static Analysis** (`dart analyze --fatal-infos`) on Dart stable
+  - **Format Check** (`dart format --set-exit-if-changed`) on Dart stable
+  - **Tests** (`dart test`) on Dart 3.9.0 and stable
+  - Triggers on push and pull request to `main`/`master` branches
+
+### Fixed
+
+- **SIMD NaN handling** - Fixed `clip` operation in `simd_ops.dart` to use scalar loop that correctly preserves NaN values instead of SIMD path that silently converted them
+- **Grayscale test tolerance** - Adjusted test tolerance to account for ITU-R BT.601 coefficients summing to 0.9999 instead of 1.0
+- **Nearest resize test** - Fixed expected values to match `align_corners`-style coordinate mapping implementation
+- **Code quality** - Fixed unused imports, unused parameters, `prefer_const_declarations`, and `non_constant_identifier_names` lint warnings across test files
+- **Code formatting** - Auto-formatted 31 files to comply with `dart format` standards
+
 ## [0.8.3] - 2026-03-22
 
 ### Added
