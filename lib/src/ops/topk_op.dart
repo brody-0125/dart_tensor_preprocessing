@@ -87,7 +87,6 @@ class TopKOp extends TransformOp {
   TopKResult applyTopK(TensorBuffer input) {
     final rank = input.rank;
 
-    // Normalize axis
     final normalizedAxis = axis < 0 ? rank + axis : axis;
     if (normalizedAxis < 0 || normalizedAxis >= rank) {
       throw IndexOutOfBoundsException(
@@ -100,7 +99,6 @@ class TopKOp extends TransformOp {
 
     final axisSize = input.shape[normalizedAxis];
 
-    // Validate k
     if (k <= 0) {
       throw InvalidParameterException('k', k, 'k must be positive');
     }
@@ -112,14 +110,11 @@ class TopKOp extends TransformOp {
       );
     }
 
-    // Ensure contiguous
     final src = input.isContiguous ? input : input.contiguous();
 
-    // Compute output shape
     final outputShape = List<int>.from(src.shape);
     outputShape[normalizedAxis] = k;
 
-    // Allocate output buffers
     final valuesOut =
         TensorBuffer.uninitialized(outputShape, dtype: src.dtype);
     final indicesOut =
@@ -128,15 +123,10 @@ class TopKOp extends TransformOp {
     final inStrides = TensorIndexer.computeStrides(src.shape);
     final outStrides = TensorIndexer.computeStrides(outputShape);
 
-    // Compute outer iteration count (all dims except the axis)
-    final outerNumel =
-        outputShape.fold(1, (a, b) => a * b) ~/ k;
-
-    // Working buffer for (value, originalIndex) pairs
     final workValues = Float64List(axisSize);
     final workIndices = Int32List(axisSize);
 
-    // Compute the "outer shape" — shape with the axis dimension removed
+    // Shape with the target axis removed, for iterating over orthogonal slices
     final outerShape = <int>[];
     for (int d = 0; d < rank; d++) {
       if (d != normalizedAxis) outerShape.add(src.shape[d]);
@@ -145,75 +135,44 @@ class TopKOp extends TransformOp {
 
     final idxData = indicesOut.storage.data as Int64List;
 
-    // Dispatch by dtype for value output
+    final double Function(int) inDataGet;
+    final void Function(int, double) outDataSet;
     switch (src.dtype) {
       case DType.float32:
         final inData = src.storage.data as Float32List;
         final outData = valuesOut.storage.data as Float32List;
-        _topkLoop(
-          inData: inData,
-          outDataSet: (int idx, double val) => outData[idx] = val,
-          inDataGet: (int idx) => inData[idx].toDouble(),
-          idxData: idxData,
-          inStrides: inStrides,
-          outStrides: outStrides,
-          outerShape: outerShape,
-          outerStrides: outerStrides,
-          outerNumel: outerNumel,
-          normalizedAxis: normalizedAxis,
-          axisSize: axisSize,
-          rank: rank,
-          workValues: workValues,
-          workIndices: workIndices,
-        );
-
+        inDataGet = (int idx) => inData[idx].toDouble();
+        outDataSet = (int idx, double val) => outData[idx] = val;
       case DType.float64:
         final inData = src.storage.data as Float64List;
         final outData = valuesOut.storage.data as Float64List;
-        _topkLoop(
-          inData: inData,
-          outDataSet: (int idx, double val) => outData[idx] = val,
-          inDataGet: (int idx) => inData[idx],
-          idxData: idxData,
-          inStrides: inStrides,
-          outStrides: outStrides,
-          outerShape: outerShape,
-          outerStrides: outerStrides,
-          outerNumel: outerNumel,
-          normalizedAxis: normalizedAxis,
-          axisSize: axisSize,
-          rank: rank,
-          workValues: workValues,
-          workIndices: workIndices,
-        );
-
+        inDataGet = (int idx) => inData[idx];
+        outDataSet = (int idx, double val) => outData[idx] = val;
       default:
         final inStorage = src.storage;
         final outStorage = valuesOut.storage;
-        _topkLoop(
-          inData: null,
-          outDataSet: (int idx, double val) =>
-              outStorage.setFromDouble(idx, val),
-          inDataGet: (int idx) => inStorage.getAsDouble(idx),
-          idxData: idxData,
-          inStrides: inStrides,
-          outStrides: outStrides,
-          outerShape: outerShape,
-          outerStrides: outerStrides,
-          outerNumel: outerNumel,
-          normalizedAxis: normalizedAxis,
-          axisSize: axisSize,
-          rank: rank,
-          workValues: workValues,
-          workIndices: workIndices,
-        );
+        inDataGet = (int idx) => inStorage.getAsDouble(idx);
+        outDataSet = (int idx, double val) =>
+            outStorage.setFromDouble(idx, val);
     }
+
+    _topkLoop(
+      outDataSet: outDataSet,
+      inDataGet: inDataGet,
+      idxData: idxData,
+      inStrides: inStrides,
+      outStrides: outStrides,
+      outerShape: outerShape,
+      outerStrides: outerStrides,
+      normalizedAxis: normalizedAxis,
+      workValues: workValues,
+      workIndices: workIndices,
+    );
 
     return (valuesOut, indicesOut);
   }
 
   void _topkLoop({
-    required Object? inData,
     required void Function(int idx, double val) outDataSet,
     required double Function(int idx) inDataGet,
     required Int64List idxData,
@@ -221,60 +180,50 @@ class TopKOp extends TransformOp {
     required List<int> outStrides,
     required List<int> outerShape,
     required List<int> outerStrides,
-    required int outerNumel,
     required int normalizedAxis,
-    required int axisSize,
-    required int rank,
     required Float64List workValues,
     required Int32List workIndices,
   }) {
     final outerRank = outerShape.length;
+    final rank = inStrides.length;
+    final axisSize = workValues.length;
+    final outerNumel =
+        outerShape.isEmpty ? 1 : outerShape.fold(1, (a, b) => a * b);
+    final axisInStride = inStrides[normalizedAxis];
+    final axisOutStride = outStrides[normalizedAxis];
+    final outerCoords = List<int>.filled(outerRank, 0);
 
     for (int outerIdx = 0; outerIdx < outerNumel; outerIdx++) {
       // Decompose outerIdx into coordinates for non-axis dimensions
       int remaining = outerIdx;
-      final outerCoords = List<int>.filled(outerRank, 0);
       for (int d = 0; d < outerRank; d++) {
         outerCoords[d] = remaining ~/ outerStrides[d];
         remaining = remaining % outerStrides[d];
       }
 
-      // Compute base input offset (with axis coordinate = 0)
       int baseInOffset = 0;
+      int baseOutOffset = 0;
       int outerDim = 0;
       for (int d = 0; d < rank; d++) {
         if (d == normalizedAxis) continue;
         baseInOffset += outerCoords[outerDim] * inStrides[d];
-        outerDim++;
-      }
-
-      // Collect all values along the axis
-      final axisStride = inStrides[normalizedAxis];
-      for (int a = 0; a < axisSize; a++) {
-        workValues[a] = inDataGet(baseInOffset + a * axisStride);
-        workIndices[a] = a;
-      }
-
-      // Select top-k using introselect
-      _introSelect(workValues, workIndices, 0, axisSize - 1, k, largest);
-
-      // Sort the selected k elements if requested
-      if (sorted && k > 1) {
-        _insertionSort(workValues, workIndices, 0, k - 1, largest);
-      }
-
-      // Write k results to output
-      int baseOutOffset = 0;
-      outerDim = 0;
-      for (int d = 0; d < rank; d++) {
-        if (d == normalizedAxis) continue;
         baseOutOffset += outerCoords[outerDim] * outStrides[d];
         outerDim++;
       }
 
-      final outAxisStride = outStrides[normalizedAxis];
+      for (int a = 0; a < axisSize; a++) {
+        workValues[a] = inDataGet(baseInOffset + a * axisInStride);
+        workIndices[a] = a;
+      }
+
+      _introSelect(workValues, workIndices, 0, axisSize - 1, k, largest);
+
+      if (sorted && k > 1) {
+        _insertionSort(workValues, workIndices, 0, k - 1, largest);
+      }
+
       for (int i = 0; i < k; i++) {
-        final outOffset = baseOutOffset + i * outAxisStride;
+        final outOffset = baseOutOffset + i * axisOutStride;
         outDataSet(outOffset, workValues[i]);
         idxData[outOffset] = workIndices[i];
       }
@@ -313,10 +262,9 @@ void _introSelect(
       return;
     }
 
-    // Median-of-three pivot
     final mid = left + (right - left) ~/ 2;
     _sortThree(values, indices, left, mid, right, largest);
-    // Pivot is now at mid; move it to right - 1
+    // Pivot at mid; move to right - 1 so left acts as sentinel
     _swap(values, indices, mid, right - 1);
     final pivot = values[right - 1];
 
@@ -335,10 +283,8 @@ void _introSelect(
       _swap(values, indices, i, j);
     }
 
-    // Restore pivot
     _swap(values, indices, i, right - 1);
 
-    // Recurse on the partition containing position k-1
     if (i >= k) {
       right = i - 1;
     } else {
@@ -378,7 +324,6 @@ void _insertionSort(
   }
 }
 
-/// Sorts three elements for median-of-three pivot selection.
 void _sortThree(
   Float64List values,
   Int32List indices,

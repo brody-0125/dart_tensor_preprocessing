@@ -24,7 +24,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.8.4
+  dart_tensor_preprocessing: ^0.8.5
 ```
 
 ## Quick Start
@@ -152,6 +152,7 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 - `tensorWhere()` / `WhereOp` - Element-wise conditional selection
 - `MaskedFillOp` - Fill tensor positions where mask is true
 - `GatherOp` - Gather elements along a dimension by index
+- `TopKOp` - Select k largest/smallest values and indices along an axis (quickselect)
 - `TileOp` - Tile/repeat tensor contents
 - `RepeatOp` - Repeat tensor (PyTorch `.repeat()` semantics)
 - `RollOp` - Circular shift along dimensions
@@ -349,6 +350,7 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `tensorWhere()` / `WhereOp` | `torch.where()` |
 | `MaskedFillOp` | `Tensor.masked_fill_()` |
 | `GatherOp` | `torch.gather()` |
+| `TopKOp` / `tensor.topk()` | `torch.topk()` |
 | `split()` / `chunk()` | `torch.split()` / `torch.chunk()` |
 | `TileOp` | `Tensor.repeat()` / ONNX `Tile` |
 | `RepeatOp` | `Tensor.repeat()` |
