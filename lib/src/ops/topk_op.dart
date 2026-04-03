@@ -65,11 +65,11 @@ class TopKOp extends TransformOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        preservesShape: false,
-        pytorchEquivalent: 'torch.topk',
-        onnxOpType: 'TopK',
-        onnxOpsetVersion: 1,
-      );
+    preservesShape: false,
+    pytorchEquivalent: 'torch.topk',
+    onnxOpType: 'TopK',
+    onnxOpsetVersion: 1,
+  );
 
   /// Applies the TopK operation and returns only the values tensor.
   ///
@@ -116,8 +116,10 @@ class TopKOp extends TransformOp {
     outputShape[normalizedAxis] = k;
 
     final valuesOut = TensorBuffer.uninitialized(outputShape, dtype: src.dtype);
-    final indicesOut =
-        TensorBuffer.uninitialized(outputShape, dtype: DType.int64);
+    final indicesOut = TensorBuffer.uninitialized(
+      outputShape,
+      dtype: DType.int64,
+    );
 
     final inStrides = TensorIndexer.computeStrides(src.shape);
     final outStrides = TensorIndexer.computeStrides(outputShape);
@@ -186,8 +188,9 @@ class TopKOp extends TransformOp {
     final outerRank = outerShape.length;
     final rank = inStrides.length;
     final axisSize = workValues.length;
-    final outerNumel =
-        outerShape.isEmpty ? 1 : outerShape.fold(1, (a, b) => a * b);
+    final outerNumel = outerShape.isEmpty
+        ? 1
+        : outerShape.fold(1, (a, b) => a * b);
     final axisInStride = inStrides[normalizedAxis];
     final axisOutStride = outStrides[normalizedAxis];
     final outerCoords = List<int>.filled(outerRank, 0);
@@ -370,7 +373,11 @@ extension TopKExtension on TensorBuffer {
     bool largest = true,
     bool sorted = true,
   }) {
-    return TopKOp(k: k, axis: axis, largest: largest, sorted: sorted)
-        .applyTopK(this);
+    return TopKOp(
+      k: k,
+      axis: axis,
+      largest: largest,
+      sorted: sorted,
+    ).applyTopK(this);
   }
 }

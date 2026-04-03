@@ -33,8 +33,10 @@ void main() {
           Float32List.fromList([3, 1, 4, 1, 5, 9, 2, 6]),
           [8],
         );
-        final (values, indices) =
-            TopKOp(k: 3, largest: false).applyTopK(tensor);
+        final (values, indices) = TopKOp(
+          k: 3,
+          largest: false,
+        ).applyTopK(tensor);
 
         expect(values.shape, equals([3]));
 
@@ -157,8 +159,11 @@ void main() {
           Float32List.fromList([5, 2, 8, 1, 9, 3]),
           [6],
         );
-        final (values, _) =
-            TopKOp(k: 4, largest: false, sorted: true).applyTopK(tensor);
+        final (values, _) = TopKOp(
+          k: 4,
+          largest: false,
+          sorted: true,
+        ).applyTopK(tensor);
 
         // Should be: 1, 2, 3, 5
         expect(values[[0]], closeTo(1.0, 1e-6));
@@ -225,8 +230,10 @@ void main() {
           Float32List.fromList([3, 1, 7, 2]),
           [4],
         );
-        final (values, indices) =
-            TopKOp(k: 1, largest: false).applyTopK(tensor);
+        final (values, indices) = TopKOp(
+          k: 1,
+          largest: false,
+        ).applyTopK(tensor);
 
         expect(values[[0]], closeTo(1.0, 1e-6));
         expect(indices[[0]], equals(1));
@@ -369,8 +376,12 @@ void main() {
           ]),
           [2, 3],
         );
-        final (values, indices) =
-            tensor.topk(2, axis: 1, largest: false, sorted: true);
+        final (values, indices) = tensor.topk(
+          2,
+          axis: 1,
+          largest: false,
+          sorted: true,
+        );
 
         expect(values.shape, equals([2, 2]));
         // Row 0 smallest 2: 1 (idx=1), 3 (idx=0)
@@ -404,9 +415,7 @@ void main() {
           ]),
           [2, 5],
         );
-        final pipeline = TensorPipeline([
-          TopKOp(k: 3, axis: 1),
-        ]);
+        final pipeline = TensorPipeline([TopKOp(k: 3, axis: 1)]);
         final result = pipeline.run(tensor);
 
         expect(result.shape, equals([2, 3]));
@@ -431,7 +440,8 @@ void main() {
             expect(
               tensor[[row, idx]],
               closeTo(values[[row, i]], 1e-6),
-              reason: 'Row $row, topk position $i: '
+              reason:
+                  'Row $row, topk position $i: '
                   'input[row][$idx] should equal values[row][$i]',
             );
           }
