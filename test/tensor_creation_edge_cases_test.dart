@@ -36,20 +36,24 @@ void main() {
       });
 
       test('creates with contiguous memory format', () {
-        final tensor = TensorBuffer.zeros(
-          [1, 3, 224, 224],
-          memoryFormat: MemoryFormat.contiguous,
-        );
+        final tensor = TensorBuffer.zeros([
+          1,
+          3,
+          224,
+          224,
+        ], memoryFormat: MemoryFormat.contiguous);
 
         expect(tensor.isContiguous, isTrue);
         expect(tensor.strides, equals([150528, 50176, 224, 1]));
       });
 
       test('creates with channels-last memory format', () {
-        final tensor = TensorBuffer.zeros(
-          [1, 3, 224, 224],
-          memoryFormat: MemoryFormat.channelsLast,
-        );
+        final tensor = TensorBuffer.zeros([
+          1,
+          3,
+          224,
+          224,
+        ], memoryFormat: MemoryFormat.channelsLast);
 
         // NHWC strides
         expect(tensor.strides, equals([150528, 1, 672, 3]));
@@ -295,23 +299,14 @@ void main() {
     test('negative indices throw', () {
       final tensor = TensorBuffer.zeros([3, 4]);
 
-      expect(
-        () => tensor[[-1, 0]],
-        throwsA(isA<IndexOutOfBoundsException>()),
-      );
-      expect(
-        () => tensor[[0, -1]],
-        throwsA(isA<IndexOutOfBoundsException>()),
-      );
+      expect(() => tensor[[-1, 0]], throwsA(isA<IndexOutOfBoundsException>()));
+      expect(() => tensor[[0, -1]], throwsA(isA<IndexOutOfBoundsException>()));
     });
 
     test('wrong number of indices throws', () {
       final tensor = TensorBuffer.zeros([3, 4, 5]);
 
-      expect(
-        () => tensor[[0, 0]],
-        throwsA(isA<ShapeMismatchException>()),
-      );
+      expect(() => tensor[[0, 0]], throwsA(isA<ShapeMismatchException>()));
       expect(
         () => tensor[[0, 0, 0, 0]],
         throwsA(isA<ShapeMismatchException>()),
@@ -357,10 +352,7 @@ void main() {
       expect(() => tensor.data, returnsNormally);
 
       final transposed = tensor.transpose([2, 0, 1]);
-      expect(
-        () => transposed.data,
-        throwsA(isA<NonContiguousException>()),
-      );
+      expect(() => transposed.data, throwsA(isA<NonContiguousException>()));
     });
 
     test('dataAsFloat32List requires float32 dtype', () {
@@ -382,18 +374,22 @@ void main() {
     });
 
     test('channels-last format for 4D', () {
-      final tensor = TensorBuffer.zeros(
-        [1, 3, 224, 224],
-        memoryFormat: MemoryFormat.channelsLast,
-      );
+      final tensor = TensorBuffer.zeros([
+        1,
+        3,
+        224,
+        224,
+      ], memoryFormat: MemoryFormat.channelsLast);
 
       expect(tensor.memoryFormat, equals(MemoryFormat.channelsLast));
     });
 
     test('channels-last throws for 2D', () {
       expect(
-        () => TensorBuffer.zeros([224, 224],
-            memoryFormat: MemoryFormat.channelsLast),
+        () => TensorBuffer.zeros([
+          224,
+          224,
+        ], memoryFormat: MemoryFormat.channelsLast),
         throwsUnsupportedError,
       );
     });

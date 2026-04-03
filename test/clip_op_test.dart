@@ -95,8 +95,10 @@ void main() {
 
     group('edge cases', () {
       test('handles single element', () {
-        final tensor =
-            TensorBuffer.fromFloat32List(Float32List.fromList([-5.0]), [1]);
+        final tensor = TensorBuffer.fromFloat32List(
+          Float32List.fromList([-5.0]),
+          [1],
+        );
         final clip = ClipOp(min: -1.0, max: 1.0);
         final result = clip(tensor);
 
@@ -158,8 +160,10 @@ void main() {
 
       test('works with int64', () {
         // Create int64 tensor manually since no fromInt64List method exists
-        final storage =
-            TensorStorage(Int64List.fromList([-5, 0, 5]), DType.int64);
+        final storage = TensorStorage(
+          Int64List.fromList([-5, 0, 5]),
+          DType.int64,
+        );
         final tensor = TensorBuffer(storage: storage, shape: [3]);
 
         final clip = ClipOp(min: -2.0, max: 2.0);

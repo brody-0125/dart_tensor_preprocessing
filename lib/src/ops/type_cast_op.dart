@@ -34,9 +34,9 @@ class TypeCastOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        modifiesDType: true,
-      );
+    requiresContiguous: true,
+    modifiesDType: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -104,10 +104,10 @@ class ToTensorOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: false,
-        modifiesDType: true,
-      );
+    requiresContiguous: true,
+    preservesShape: false,
+    modifiesDType: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -218,10 +218,10 @@ class ToImageOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: false,
-        modifiesDType: true,
-      );
+    requiresContiguous: true,
+    preservesShape: false,
+    modifiesDType: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

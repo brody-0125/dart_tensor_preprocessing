@@ -35,10 +35,10 @@ class MaskedFillOp extends TransformOp
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'Tensor.masked_fill_',
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'Tensor.masked_fill_',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

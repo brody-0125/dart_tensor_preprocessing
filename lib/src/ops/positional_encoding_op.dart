@@ -67,8 +67,9 @@ class PositionalEncodingOp extends TransformOp
       for (int i = 0; i < dModel; i++) {
         final dimIndex = i ~/ 2;
         final angle = pos / math.pow(base, 2 * dimIndex / dModel);
-        _peTable[pos * dModel + i] =
-            i.isEven ? math.sin(angle) : math.cos(angle);
+        _peTable[pos * dModel + i] = i.isEven
+            ? math.sin(angle)
+            : math.cos(angle);
       }
     }
   }
@@ -78,10 +79,10 @@ class PositionalEncodingOp extends TransformOp
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'torch.nn.Embedding (positional)',
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'torch.nn.Embedding (positional)',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

@@ -90,9 +90,9 @@ class DTypeDispatcher {
     TensorBuffer input,
     TensorBuffer output, {
     required R Function(Float32List inData, Float32List outData, int numel)
-        onFloat32,
+    onFloat32,
     required R Function(Float64List inData, Float64List outData, int numel)
-        onFloat64,
+    onFloat64,
     required R Function(TensorBuffer input, TensorBuffer output) fallback,
   }) {
     if (input.dtype != output.dtype) {

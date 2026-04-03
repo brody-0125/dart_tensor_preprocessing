@@ -29,9 +29,9 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: false,
-      );
+    requiresContiguous: true,
+    preservesShape: false,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -70,8 +70,11 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
     final srcH = input.shape[1];
     final srcW = input.shape[2];
 
-    final output =
-        TensorBuffer.uninitialized([c, height, width], dtype: input.dtype);
+    final output = TensorBuffer.uninitialized([
+      c,
+      height,
+      width,
+    ], dtype: input.dtype);
 
     // Dtype-specialized for hot path optimization
     switch (input.dtype) {
@@ -116,8 +119,12 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
     final srcH = input.shape[2];
     final srcW = input.shape[3];
 
-    final output =
-        TensorBuffer.uninitialized([n, c, height, width], dtype: input.dtype);
+    final output = TensorBuffer.uninitialized([
+      n,
+      c,
+      height,
+      width,
+    ], dtype: input.dtype);
 
     final srcBatchStride = c * srcH * srcW;
     final dstBatchStride = c * height * width;
@@ -151,11 +158,13 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
           for (int ch = 0; ch < c; ch++) {
             for (int y = 0; y < height; y++) {
               for (int x = 0; x < width; x++) {
-                final srcIdx = batch * srcBatchStride +
+                final srcIdx =
+                    batch * srcBatchStride +
                     ch * srcChannelStride +
                     (startY + y) * srcW +
                     (startX + x);
-                final dstIdx = batch * dstBatchStride +
+                final dstIdx =
+                    batch * dstBatchStride +
                     ch * dstChannelStride +
                     y * width +
                     x;

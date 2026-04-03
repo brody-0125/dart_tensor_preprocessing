@@ -163,9 +163,9 @@ class GroupNormOp extends TransformOp
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -241,7 +241,12 @@ class GroupNormOp extends TransformOp
         );
       default:
         _groupNorm3DGeneric(
-            tensor, c, spatialSize, channelsPerGroup, groupSize);
+          tensor,
+          c,
+          spatialSize,
+          channelsPerGroup,
+          groupSize,
+        );
     }
   }
 

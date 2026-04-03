@@ -123,10 +123,7 @@ void main() {
           for (int c = 0; c < 2; c++) {
             for (int h = 0; h < 3; h++) {
               for (int w = 0; w < 4; w++) {
-                expect(
-                  restored[[n, c, h, w]],
-                  equals(original[[n, c, h, w]]),
-                );
+                expect(restored[[n, c, h, w]], equals(original[[n, c, h, w]]));
               }
             }
           }
@@ -622,19 +619,23 @@ void main() {
       /// print(t_nhwc.stride())  # (48, 1, 12, 3)
       /// ```
       test('NCHW strides match PyTorch contiguous', () {
-        final tensor = TensorBuffer.zeros(
-          [1, 3, 4, 4],
-          memoryFormat: MemoryFormat.contiguous,
-        );
+        final tensor = TensorBuffer.zeros([
+          1,
+          3,
+          4,
+          4,
+        ], memoryFormat: MemoryFormat.contiguous);
 
         expect(tensor.strides, equals([48, 16, 4, 1]));
       });
 
       test('channelsLast strides match PyTorch channels_last', () {
-        final tensor = TensorBuffer.zeros(
-          [1, 3, 4, 4],
-          memoryFormat: MemoryFormat.channelsLast,
-        );
+        final tensor = TensorBuffer.zeros([
+          1,
+          3,
+          4,
+          4,
+        ], memoryFormat: MemoryFormat.channelsLast);
 
         expect(tensor.strides, equals([48, 1, 12, 3]));
       });
@@ -664,9 +665,7 @@ void main() {
       });
 
       test('chained operations accumulate error within acceptable range', () {
-        final data = Float32List.fromList(
-          List.generate(12, (i) => (i / 11.0)),
-        );
+        final data = Float32List.fromList(List.generate(12, (i) => (i / 11.0)));
         final tensor = TensorBuffer.fromFloat32List(data, [3, 2, 2]);
 
         // Apply multiple operations
@@ -944,10 +943,7 @@ void main() {
       /// ```
       test('LayerNormOp handles transformer-style input', () {
         // Simplified test with smaller dimensions
-        final op = LayerNormOp(
-          normalizedShape: [8],
-          eps: 1e-5,
-        );
+        final op = LayerNormOp(normalizedShape: [8], eps: 1e-5);
 
         final input = TensorBuffer.zeros([2, 4, 8]); // [batch, seq, features]
         final output = op.apply(input);
@@ -965,10 +961,7 @@ void main() {
       /// assert y.shape == x.shape
       /// ```
       test('LayerNormOp with multi-dim normalized shape', () {
-        final op = LayerNormOp(
-          normalizedShape: [2, 3],
-          eps: 1e-5,
-        );
+        final op = LayerNormOp(normalizedShape: [2, 3], eps: 1e-5);
 
         final input = TensorBuffer.fromFloat32List(
           Float32List.fromList([

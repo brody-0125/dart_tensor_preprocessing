@@ -88,7 +88,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
   );
   results.add(result);
   print(
-      '$result  [${_formatThroughput(alignmentTestSize, result.opsPerSecond)}]');
+    '$result  [${_formatThroughput(alignmentTestSize, result.opsPerSecond)}]',
+  );
 
   // Unaligned data (offset = 1 element = 4 bytes, not 16-byte aligned)
   final buffer = Float32List(alignmentTestSize + 1);
@@ -102,14 +103,19 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
   );
   results.add(result);
   print(
-      '$result  [${_formatThroughput(alignmentTestSize, result.opsPerSecond)}]');
+    '$result  [${_formatThroughput(alignmentTestSize, result.opsPerSecond)}]',
+  );
 
   // ===== Float32 SIMD vs Float64 SIMD Comparison =====
   printHeader('Float32 SIMD vs Float64 SIMD');
 
   // Float32 (SIMD path)
-  final float32Tensor =
-      TensorBuffer.random([1, 3, 147, 147], dtype: DType.float32);
+  final float32Tensor = TensorBuffer.random([
+    1,
+    3,
+    147,
+    147,
+  ], dtype: DType.float32);
 
   result = await benchmark(
     'ClipOp(Float32, SIMD)',
@@ -153,8 +159,12 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
   print('');
 
   // SqrtOp comparison
-  final float32Positive =
-      TensorBuffer.random([1, 3, 147, 147], dtype: DType.float32);
+  final float32Positive = TensorBuffer.random([
+    1,
+    3,
+    147,
+    147,
+  ], dtype: DType.float32);
   final float64Positive = _createFloat64Tensor([1, 3, 147, 147]);
 
   result = await benchmark(
@@ -211,7 +221,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
   );
   results.add(result);
   print(
-      '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
+    '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]',
+  );
 
   // Unaligned Float64 data (offset = 1 element = 8 bytes, not 16-byte aligned)
   final bufferF64 = Float64List(float64TestSize + 1);
@@ -225,7 +236,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
   );
   results.add(result);
   print(
-      '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
+    '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]',
+  );
 
   print('');
 
@@ -241,7 +253,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
   );
   results.add(result);
   print(
-      '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
+    '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]',
+  );
 
   final bufferClipF64 = Float64List(float64TestSize + 1);
   _fillDataF64(bufferClipF64, range: 2.0, signed: true);
@@ -255,7 +268,8 @@ Future<List<BenchmarkResult>> runSimdMicrobenchmarks() async {
   );
   results.add(result);
   print(
-      '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]');
+    '$result  [${_formatThroughput(float64TestSize, result.opsPerSecond)}]',
+  );
 
   // ===== Edge case: Non-multiple-of-4 lengths =====
   printHeader('Edge Case: Non-Multiple-of-4 Lengths');

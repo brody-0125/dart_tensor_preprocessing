@@ -24,8 +24,9 @@ void main() {
       });
 
       test('transpose preserves data access', () {
-        final data =
-            Float32List.fromList(List.generate(24, (i) => i.toDouble()));
+        final data = Float32List.fromList(
+          List.generate(24, (i) => i.toDouble()),
+        );
         final tensor = TensorBuffer.fromFloat32List(data, [2, 3, 4]);
 
         // [2, 3, 4] -> [4, 2, 3] via [2, 0, 1]
@@ -259,8 +260,9 @@ void main() {
       });
 
       test('contiguous on transposed tensor creates copy', () {
-        final data =
-            Float32List.fromList(List.generate(24, (i) => i.toDouble()));
+        final data = Float32List.fromList(
+          List.generate(24, (i) => i.toDouble()),
+        );
         final tensor = TensorBuffer.fromFloat32List(data, [2, 3, 4]);
         final transposed = tensor.transpose([2, 0, 1]);
 
@@ -322,8 +324,9 @@ void main() {
       });
 
       test('clone preserves data', () {
-        final data =
-            Float32List.fromList(List.generate(12, (i) => i.toDouble()));
+        final data = Float32List.fromList(
+          List.generate(12, (i) => i.toDouble()),
+        );
         final tensor = TensorBuffer.fromFloat32List(data, [3, 4]);
         final cloned = tensor.clone();
 
@@ -416,20 +419,23 @@ void main() {
 
   group('Stride Calculations', () {
     test('contiguous strides are row-major', () {
-      final strides = TensorBuffer.computeStrides(
-        [2, 3, 4],
-        MemoryFormat.contiguous,
-      );
+      final strides = TensorBuffer.computeStrides([
+        2,
+        3,
+        4,
+      ], MemoryFormat.contiguous);
 
       // Row-major: stride[i] = product of shape[i+1:]
       expect(strides, equals([12, 4, 1]));
     });
 
     test('channels-last strides for 4D', () {
-      final strides = TensorBuffer.computeStrides(
-        [2, 3, 4, 5],
-        MemoryFormat.channelsLast,
-      );
+      final strides = TensorBuffer.computeStrides([
+        2,
+        3,
+        4,
+        5,
+      ], MemoryFormat.channelsLast);
 
       // NHWC layout: N, H, W, C -> C is fastest
       // N stride = H*W*C = 4*5*3 = 60
@@ -440,10 +446,11 @@ void main() {
     });
 
     test('channels-last strides for 3D', () {
-      final strides = TensorBuffer.computeStrides(
-        [3, 4, 5],
-        MemoryFormat.channelsLast,
-      );
+      final strides = TensorBuffer.computeStrides([
+        3,
+        4,
+        5,
+      ], MemoryFormat.channelsLast);
 
       // HWC layout: C is fastest
       // C stride = 1

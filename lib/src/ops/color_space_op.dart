@@ -41,10 +41,10 @@ class RgbToGrayscaleOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: false,
-        pytorchEquivalent: 'torchvision.transforms.Grayscale',
-      );
+    requiresContiguous: true,
+    preservesShape: false,
+    pytorchEquivalent: 'torchvision.transforms.Grayscale',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -73,7 +73,8 @@ class RgbToGrayscaleOp extends TransformOp with RequiresContiguous {
         final src = input.storage.data as Float32List;
         final dst = Float32List(hw);
         for (int i = 0; i < hw; i++) {
-          dst[i] = src[i] * _rWeight +
+          dst[i] =
+              src[i] * _rWeight +
               src[hw + i] * _gWeight +
               src[2 * hw + i] * _bWeight;
         }
@@ -82,7 +83,8 @@ class RgbToGrayscaleOp extends TransformOp with RequiresContiguous {
         final src = input.storage.data as Float64List;
         final dst = Float64List(hw);
         for (int i = 0; i < hw; i++) {
-          dst[i] = src[i] * _rWeight +
+          dst[i] =
+              src[i] * _rWeight +
               src[hw + i] * _gWeight +
               src[2 * hw + i] * _bWeight;
         }
@@ -115,7 +117,8 @@ class RgbToGrayscaleOp extends TransformOp with RequiresContiguous {
           final srcOffset = batch * chw;
           final dstOffset = batch * hw;
           for (int i = 0; i < hw; i++) {
-            dst[dstOffset + i] = src[srcOffset + i] * _rWeight +
+            dst[dstOffset + i] =
+                src[srcOffset + i] * _rWeight +
                 src[srcOffset + hw + i] * _gWeight +
                 src[srcOffset + 2 * hw + i] * _bWeight;
           }
@@ -128,7 +131,8 @@ class RgbToGrayscaleOp extends TransformOp with RequiresContiguous {
           final srcOffset = batch * chw;
           final dstOffset = batch * hw;
           for (int i = 0; i < hw; i++) {
-            dst[dstOffset + i] = src[srcOffset + i] * _rWeight +
+            dst[dstOffset + i] =
+                src[srcOffset + i] * _rWeight +
                 src[srcOffset + hw + i] * _gWeight +
                 src[srcOffset + 2 * hw + i] * _bWeight;
           }
@@ -192,9 +196,9 @@ class RgbToHsvOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: true,
-      );
+    requiresContiguous: true,
+    preservesShape: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -268,7 +272,10 @@ class RgbToHsvOp extends TransformOp with RequiresContiguous {
           final off = batch * chw;
           for (int i = 0; i < hw; i++) {
             final (hv, s, v) = rgbToHsv(
-                src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
+              src[off + i],
+              src[off + hw + i],
+              src[off + 2 * hw + i],
+            );
             dst[off + i] = hv;
             dst[off + hw + i] = s;
             dst[off + 2 * hw + i] = v;
@@ -282,7 +289,10 @@ class RgbToHsvOp extends TransformOp with RequiresContiguous {
           final off = batch * chw;
           for (int i = 0; i < hw; i++) {
             final (hv, s, v) = rgbToHsv(
-                src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
+              src[off + i],
+              src[off + hw + i],
+              src[off + 2 * hw + i],
+            );
             dst[off + i] = hv;
             dst[off + hw + i] = s;
             dst[off + 2 * hw + i] = v;
@@ -339,9 +349,9 @@ class HsvToRgbOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: true,
-      );
+    requiresContiguous: true,
+    preservesShape: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -415,7 +425,10 @@ class HsvToRgbOp extends TransformOp with RequiresContiguous {
           final off = batch * chw;
           for (int i = 0; i < hw; i++) {
             final (r, g, b) = hsvToRgb(
-                src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
+              src[off + i],
+              src[off + hw + i],
+              src[off + 2 * hw + i],
+            );
             dst[off + i] = r;
             dst[off + hw + i] = g;
             dst[off + 2 * hw + i] = b;
@@ -429,7 +442,10 @@ class HsvToRgbOp extends TransformOp with RequiresContiguous {
           final off = batch * chw;
           for (int i = 0; i < hw; i++) {
             final (r, g, b) = hsvToRgb(
-                src[off + i], src[off + hw + i], src[off + 2 * hw + i]);
+              src[off + i],
+              src[off + hw + i],
+              src[off + 2 * hw + i],
+            );
             dst[off + i] = r;
             dst[off + hw + i] = g;
             dst[off + 2 * hw + i] = b;

@@ -8,11 +8,7 @@ void main() {
   group('TensorException hierarchy', () {
     group('IndexOutOfBoundsException', () {
       test('should contain index, min, max values', () {
-        final exception = IndexOutOfBoundsException(
-          index: 5,
-          min: 0,
-          max: 3,
-        );
+        final exception = IndexOutOfBoundsException(index: 5, min: 0, max: 3);
 
         expect(exception.index, equals(5));
         expect(exception.min, equals(0));
@@ -33,11 +29,7 @@ void main() {
       });
 
       test('should generate descriptive message', () {
-        final exception = IndexOutOfBoundsException(
-          index: 5,
-          min: 0,
-          max: 3,
-        );
+        final exception = IndexOutOfBoundsException(index: 5, min: 0, max: 3);
 
         expect(exception.message, contains('5'));
         expect(exception.message, contains('0'));

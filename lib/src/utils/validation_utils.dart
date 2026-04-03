@@ -55,11 +55,7 @@ extension TensorValidation on TensorBuffer {
 /// Throws [InvalidParameterException] if value is not positive.
 void requirePositive(num value, String paramName) {
   if (value <= 0) {
-    throw InvalidParameterException(
-      paramName,
-      value,
-      'must be positive',
-    );
+    throw InvalidParameterException(paramName, value, 'must be positive');
   }
 }
 
@@ -68,11 +64,7 @@ void requirePositive(num value, String paramName) {
 /// Throws [InvalidParameterException] if value is negative.
 void requireNonNegative(num value, String paramName) {
   if (value < 0) {
-    throw InvalidParameterException(
-      paramName,
-      value,
-      'must be non-negative',
-    );
+    throw InvalidParameterException(paramName, value, 'must be non-negative');
   }
 }
 
@@ -261,8 +253,9 @@ class OpValidator {
     List<int> shape2, {
     required String operationName,
   }) {
-    final maxRank =
-        shape1.length > shape2.length ? shape1.length : shape2.length;
+    final maxRank = shape1.length > shape2.length
+        ? shape1.length
+        : shape2.length;
     final result = List<int>.filled(maxRank, 0);
 
     for (int i = 0; i < maxRank; i++) {
@@ -291,15 +284,9 @@ class OpValidator {
   /// Validates that a dtype is a floating-point type (float32 or float64).
   ///
   /// Throws [DTypeMismatchException] if dtype is not floating-point.
-  static void validateFloatDType(
-    DType dtype, {
-    required String operationName,
-  }) {
+  static void validateFloatDType(DType dtype, {required String operationName}) {
     if (!dtype.isFloatingPoint) {
-      throw DTypeMismatchException(
-        expected: DType.float32,
-        actual: dtype,
-      );
+      throw DTypeMismatchException(expected: DType.float32, actual: dtype);
     }
   }
 }

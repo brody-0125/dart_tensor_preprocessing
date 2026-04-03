@@ -18,11 +18,7 @@ void main() {
       });
 
       test('creates slice with specific values', () {
-        final slice = SliceOp([
-          (0, 5, 1),
-          (null, null, null),
-          (2, 8, 2),
-        ]);
+        final slice = SliceOp([(0, 5, 1), (null, null, null), (2, 8, 2)]);
         expect(slice.slices.length, equals(3));
         expect(slice.slices[0], equals((0, 5, 1)));
         expect(slice.slices[1], equals((null, null, null)));
@@ -275,10 +271,7 @@ void main() {
 
         final slice = SliceOp([null, null, null]); // Too many for 1D tensor
 
-        expect(
-          () => slice(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => slice(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('throws for negative step', () {
@@ -287,10 +280,7 @@ void main() {
 
         final slice = SliceOp([(0, 3, -1)]);
 
-        expect(
-          () => slice(tensor),
-          throwsA(isA<InvalidParameterException>()),
-        );
+        expect(() => slice(tensor), throwsA(isA<InvalidParameterException>()));
       });
 
       test('throws for zero step', () {
@@ -299,10 +289,7 @@ void main() {
 
         final slice = SliceOp([(0, 3, 0)]);
 
-        expect(
-          () => slice(tensor),
-          throwsA(isA<InvalidParameterException>()),
-        );
+        expect(() => slice(tensor), throwsA(isA<InvalidParameterException>()));
       });
 
       test('throws for start > end', () {
@@ -311,10 +298,7 @@ void main() {
 
         final slice = SliceOp([(2, 1, 1)]);
 
-        expect(
-          () => slice(tensor),
-          throwsA(isA<InvalidParameterException>()),
-        );
+        expect(() => slice(tensor), throwsA(isA<InvalidParameterException>()));
       });
 
       test('throws for out of bounds indices', () {
@@ -348,8 +332,10 @@ void main() {
     group('string representation', () {
       test('toString returns operation name', () {
         final slice = SliceOp([(1, 4, 2), null, (0, -1, 1)]);
-        expect(slice.toString(),
-            equals('TransformOp(Slice(slices=[(1, 4, 2), null, (0, -1, 1)]))'));
+        expect(
+          slice.toString(),
+          equals('TransformOp(Slice(slices=[(1, 4, 2), null, (0, -1, 1)]))'),
+        );
       });
     });
   });

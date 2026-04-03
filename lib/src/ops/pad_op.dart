@@ -97,9 +97,9 @@ class PadOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: false,
-      );
+    requiresContiguous: true,
+    preservesShape: false,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -107,8 +107,10 @@ class PadOp extends TransformOp with RequiresContiguous {
     _validateShape(contiguous.shape);
 
     final outputShape = computeOutputShape(contiguous.shape);
-    final output =
-        TensorBuffer.uninitialized(outputShape, dtype: contiguous.dtype);
+    final output = TensorBuffer.uninitialized(
+      outputShape,
+      dtype: contiguous.dtype,
+    );
 
     switch (mode) {
       case PadMode.constant:
@@ -186,7 +188,11 @@ class PadOp extends TransformOp with RequiresContiguous {
   }
 
   void _copy3DInput(
-      TensorBuffer input, TensorBuffer output, int padH, int padW) {
+    TensorBuffer input,
+    TensorBuffer output,
+    int padH,
+    int padW,
+  ) {
     final (c, h, w) = (input.shape[0], input.shape[1], input.shape[2]);
     final inputChannelSize = h * w;
     final outputChannelSize = output.shape[1] * output.shape[2];
@@ -208,9 +214,17 @@ class PadOp extends TransformOp with RequiresContiguous {
   }
 
   void _copy4DInput(
-      TensorBuffer input, TensorBuffer output, int padH, int padW) {
-    final (n, c, h, w) =
-        (input.shape[0], input.shape[1], input.shape[2], input.shape[3]);
+    TensorBuffer input,
+    TensorBuffer output,
+    int padH,
+    int padW,
+  ) {
+    final (n, c, h, w) = (
+      input.shape[0],
+      input.shape[1],
+      input.shape[2],
+      input.shape[3],
+    );
     final inputChannelSize = h * w;
     final outputChannelSize = output.shape[2] * output.shape[3];
 
@@ -218,7 +232,8 @@ class PadOp extends TransformOp with RequiresContiguous {
       for (int ch = 0; ch < c; ch++) {
         final inputOffset =
             batch * c * inputChannelSize + ch * inputChannelSize;
-        final outputOffset = batch * c * outputChannelSize +
+        final outputOffset =
+            batch * c * outputChannelSize +
             ch * outputChannelSize +
             padH * output.shape[3] +
             padW;
@@ -257,8 +272,12 @@ class PadOp extends TransformOp with RequiresContiguous {
   }
 
   void _padReflect4D(TensorBuffer input, TensorBuffer output) {
-    final (n, c, h, w) =
-        (input.shape[0], input.shape[1], input.shape[2], input.shape[3]);
+    final (n, c, h, w) = (
+      input.shape[0],
+      input.shape[1],
+      input.shape[2],
+      input.shape[3],
+    );
     final (outH, outW) = (output.shape[2], output.shape[3]);
 
     for (int batch = 0; batch < n; batch++) {
@@ -271,7 +290,8 @@ class PadOp extends TransformOp with RequiresContiguous {
             if (inRow >= 0 && inRow < h && inCol >= 0 && inCol < w) {
               final inputIdx =
                   batch * c * h * w + ch * h * w + inRow * w + inCol;
-              final outputIdx = batch * c * outH * outW +
+              final outputIdx =
+                  batch * c * outH * outW +
                   ch * outH * outW +
                   outRow * outW +
                   outCol;
@@ -304,8 +324,12 @@ class PadOp extends TransformOp with RequiresContiguous {
   }
 
   void _padReplicate4D(TensorBuffer input, TensorBuffer output) {
-    final (n, c, h, w) =
-        (input.shape[0], input.shape[1], input.shape[2], input.shape[3]);
+    final (n, c, h, w) = (
+      input.shape[0],
+      input.shape[1],
+      input.shape[2],
+      input.shape[3],
+    );
     final (outH, outW) = (output.shape[2], output.shape[3]);
 
     for (int batch = 0; batch < n; batch++) {
@@ -316,7 +340,8 @@ class PadOp extends TransformOp with RequiresContiguous {
             final inCol = replicateIndex(outCol - left, w);
 
             final inputIdx = batch * c * h * w + ch * h * w + inRow * w + inCol;
-            final outputIdx = batch * c * outH * outW +
+            final outputIdx =
+                batch * c * outH * outW +
                 ch * outH * outW +
                 outRow * outW +
                 outCol;
@@ -348,8 +373,12 @@ class PadOp extends TransformOp with RequiresContiguous {
   }
 
   void _padCircular4D(TensorBuffer input, TensorBuffer output) {
-    final (n, c, h, w) =
-        (input.shape[0], input.shape[1], input.shape[2], input.shape[3]);
+    final (n, c, h, w) = (
+      input.shape[0],
+      input.shape[1],
+      input.shape[2],
+      input.shape[3],
+    );
     final (outH, outW) = (output.shape[2], output.shape[3]);
 
     for (int batch = 0; batch < n; batch++) {
@@ -360,7 +389,8 @@ class PadOp extends TransformOp with RequiresContiguous {
             final inCol = circularIndex(outCol - left, w);
 
             final inputIdx = batch * c * h * w + ch * h * w + inRow * w + inCol;
-            final outputIdx = batch * c * outH * outW +
+            final outputIdx =
+                batch * c * outH * outW +
                 ch * outH * outW +
                 outRow * outW +
                 outCol;

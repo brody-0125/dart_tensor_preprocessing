@@ -98,7 +98,8 @@ void main() async {
   // These operations use SIMD for Float32 tensors
   final clipped = ClipOp(min: 0.2, max: 0.8).apply(largeTensor);
   print(
-      'Clipped: min=${clipped.min().toStringAsFixed(2)}, max=${clipped.max().toStringAsFixed(2)}');
+    'Clipped: min=${clipped.min().toStringAsFixed(2)}, max=${clipped.max().toStringAsFixed(2)}',
+  );
 
   final normalized = NormalizeOp.imagenet().apply(largeTensor);
   print('Normalized: mean≈${normalized.mean().toStringAsFixed(4)}');
@@ -106,7 +107,9 @@ void main() async {
   // Example 8: Activation functions
   print('\n=== Activation Functions ===');
   final activationInput = TensorBuffer.fromFloat32List(
-      Float32List.fromList([-2, -1, 0, 1, 2]), [5]);
+    Float32List.fromList([-2, -1, 0, 1, 2]),
+    [5],
+  );
   print('Input: ${activationInput.toList()}');
 
   final reluResult = ReLUOp().apply(activationInput);
@@ -117,19 +120,24 @@ void main() async {
 
   final sigmoidResult = SigmoidOp().apply(activationInput);
   print(
-      'Sigmoid: ${sigmoidResult.toList().map((e) => e.toStringAsFixed(3)).toList()}');
+    'Sigmoid: ${sigmoidResult.toList().map((e) => e.toStringAsFixed(3)).toList()}',
+  );
 
   // Example 9: Math operations
   print('\n=== Math Operations ===');
   final mathInput = TensorBuffer.fromFloat32List(
-      Float32List.fromList([-4, -1, 0, 1, 4]), [5]);
+    Float32List.fromList([-4, -1, 0, 1, 4]),
+    [5],
+  );
   print('Input: ${mathInput.toList()}');
 
   final absResult = AbsOp().apply(mathInput);
   print('Abs: ${absResult.toList()}');
 
   final sqrtInput = TensorBuffer.fromFloat32List(
-      Float32List.fromList([1, 4, 9, 16, 25]), [5]);
+    Float32List.fromList([1, 4, 9, 16, 25]),
+    [5],
+  );
   final sqrtResult = SqrtOp().apply(sqrtInput);
   print('Sqrt([1,4,9,16,25]): ${sqrtResult.toList()}');
 
@@ -171,7 +179,8 @@ void main() async {
   );
   final lnResult = layerNormOp.apply(lnInput);
   print(
-      'LayerNorm: normalized over last dimension, output shape=${lnResult.shape}');
+    'LayerNorm: normalized over last dimension, output shape=${lnResult.shape}',
+  );
 
   // Example 12: Buffer pooling for memory efficiency
   print('\n=== Buffer Pooling ===');
@@ -189,7 +198,8 @@ void main() async {
   // Release back to pool for reuse
   pool.release(buffer);
   print(
-      'Released buffer. Pool: ${pool.pooledCount} buffers, ${pool.pooledBytes} bytes');
+    'Released buffer. Pool: ${pool.pooledCount} buffers, ${pool.pooledBytes} bytes',
+  );
 
   print('\nDone!');
 }

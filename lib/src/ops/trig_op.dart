@@ -27,12 +27,12 @@ class SinOp extends UnaryMathOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'torch.sin',
-        onnxOpType: 'Sin',
-        onnxOpsetVersion: 7,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'torch.sin',
+    onnxOpType: 'Sin',
+    onnxOpsetVersion: 7,
+  );
 
   @override
   double operation(double value) => math.sin(value);
@@ -54,12 +54,12 @@ class CosOp extends UnaryMathOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'torch.cos',
-        onnxOpType: 'Cos',
-        onnxOpsetVersion: 7,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'torch.cos',
+    onnxOpType: 'Cos',
+    onnxOpsetVersion: 7,
+  );
 
   @override
   double operation(double value) => math.cos(value);
@@ -81,12 +81,12 @@ class TanOp extends UnaryMathOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'torch.tan',
-        onnxOpType: 'Tan',
-        onnxOpsetVersion: 7,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'torch.tan',
+    onnxOpType: 'Tan',
+    onnxOpsetVersion: 7,
+  );
 
   @override
   double operation(double value) => math.tan(value);
@@ -111,12 +111,12 @@ class AsinOp extends UnaryMathOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'torch.asin',
-        onnxOpType: 'Asin',
-        onnxOpsetVersion: 7,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'torch.asin',
+    onnxOpType: 'Asin',
+    onnxOpsetVersion: 7,
+  );
 
   @override
   double operation(double value) => math.asin(value);
@@ -141,12 +141,12 @@ class AcosOp extends UnaryMathOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'torch.acos',
-        onnxOpType: 'Acos',
-        onnxOpsetVersion: 7,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'torch.acos',
+    onnxOpType: 'Acos',
+    onnxOpsetVersion: 7,
+  );
 
   @override
   double operation(double value) => math.acos(value);
@@ -168,12 +168,12 @@ class AtanOp extends UnaryMathOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'torch.atan',
-        onnxOpType: 'Atan',
-        onnxOpsetVersion: 7,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'torch.atan',
+    onnxOpType: 'Atan',
+    onnxOpsetVersion: 7,
+  );
 
   @override
   double operation(double value) => math.atan(value);
@@ -215,10 +215,10 @@ class Atan2Op extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'torch.atan2',
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'torch.atan2',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

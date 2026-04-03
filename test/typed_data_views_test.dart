@@ -42,12 +42,14 @@ void main() {
 
       test('creates view at offset', () {
         final original = Float32List.fromList([1, 2, 3, 4, 5]);
-        final view = TypedDataViews.viewAs(
-          original.buffer,
-          DType.float32,
-          offsetInBytes: 4, // Skip first float32 (4 bytes)
-          length: 3,
-        ) as Float32List;
+        final view =
+            TypedDataViews.viewAs(
+                  original.buffer,
+                  DType.float32,
+                  offsetInBytes: 4, // Skip first float32 (4 bytes)
+                  length: 3,
+                )
+                as Float32List;
 
         expect(view.length, equals(3));
         expect(view[0], equals(2));
@@ -71,8 +73,9 @@ void main() {
       });
 
       test('shares storage with original', () {
-        final data =
-            Float32List.fromList(List.generate(12, (i) => i.toDouble()));
+        final data = Float32List.fromList(
+          List.generate(12, (i) => i.toDouble()),
+        );
         final tensor = TensorBuffer.fromFloat32List(data, [3, 4]);
 
         final slice = tensor.sliceFirst(1, 2);

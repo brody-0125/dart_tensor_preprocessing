@@ -35,11 +35,11 @@ class SELUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'F.selu',
-        onnxOpType: 'Selu',
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'F.selu',
+    onnxOpType: 'Selu',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

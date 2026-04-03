@@ -34,10 +34,16 @@ void main() {
     });
 
     test('supports different dtypes', () {
-      final tensorFloat =
-          TensorBuffer.full([2], fillValue: 3.0, dtype: DType.float32);
-      final tensorInt =
-          TensorBuffer.full([2], fillValue: 3.0, dtype: DType.int32);
+      final tensorFloat = TensorBuffer.full(
+        [2],
+        fillValue: 3.0,
+        dtype: DType.float32,
+      );
+      final tensorInt = TensorBuffer.full(
+        [2],
+        fillValue: 3.0,
+        dtype: DType.int32,
+      );
 
       expect(tensorFloat.dtype, equals(DType.float32));
       expect(tensorInt.dtype, equals(DType.int32));
@@ -303,10 +309,12 @@ void main() {
     });
 
     test('supports memory format parameter', () {
-      final tensor = TensorBuffer.uninitialized(
-        [1, 3, 4, 4],
-        memoryFormat: MemoryFormat.channelsLast,
-      );
+      final tensor = TensorBuffer.uninitialized([
+        1,
+        3,
+        4,
+        4,
+      ], memoryFormat: MemoryFormat.channelsLast);
 
       expect(tensor.shape, equals([1, 3, 4, 4]));
       expect(tensor.memoryFormat, equals(MemoryFormat.channelsLast));

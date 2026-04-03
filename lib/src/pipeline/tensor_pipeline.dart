@@ -35,7 +35,7 @@ class TensorPipeline {
   ///
   /// Throws [EmptyPipelineException] if [operations] is empty.
   TensorPipeline(List<TransformOp> operations, {this.name})
-      : _operations = List.unmodifiable(operations) {
+    : _operations = List.unmodifiable(operations) {
     if (operations.isEmpty) {
       throw const EmptyPipelineException();
     }

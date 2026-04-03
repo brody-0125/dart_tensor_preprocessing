@@ -13,10 +13,7 @@ void main() {
   group('concat', () {
     group('parameter validation', () {
       test('throws for empty tensor list', () {
-        expect(
-          () => concat([]),
-          throwsA(isA<InvalidParameterException>()),
-        );
+        expect(() => concat([]), throwsA(isA<InvalidParameterException>()));
       });
 
       test('throws for single tensor list', () {
@@ -366,10 +363,7 @@ void main() {
   group('stack', () {
     group('parameter validation', () {
       test('throws for empty tensor list', () {
-        expect(
-          () => stack([]),
-          throwsA(isA<InvalidParameterException>()),
-        );
+        expect(() => stack([]), throwsA(isA<InvalidParameterException>()));
       });
 
       test('returns unsqueezed tensor for single tensor list', () {

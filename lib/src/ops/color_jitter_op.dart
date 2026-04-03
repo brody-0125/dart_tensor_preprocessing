@@ -131,10 +131,9 @@ class AdjustBrightnessOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        pytorchEquivalent:
-            'torchvision.transforms.functional.adjust_brightness',
-      );
+    requiresContiguous: true,
+    pytorchEquivalent: 'torchvision.transforms.functional.adjust_brightness',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -210,9 +209,9 @@ class AdjustContrastOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        pytorchEquivalent: 'torchvision.transforms.functional.adjust_contrast',
-      );
+    requiresContiguous: true,
+    pytorchEquivalent: 'torchvision.transforms.functional.adjust_contrast',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -332,10 +331,9 @@ class AdjustSaturationOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        pytorchEquivalent:
-            'torchvision.transforms.functional.adjust_saturation',
-      );
+    requiresContiguous: true,
+    pytorchEquivalent: 'torchvision.transforms.functional.adjust_saturation',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -447,9 +445,9 @@ class AdjustHueOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        pytorchEquivalent: 'torchvision.transforms.functional.adjust_hue',
-      );
+    requiresContiguous: true,
+    pytorchEquivalent: 'torchvision.transforms.functional.adjust_hue',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -616,14 +614,15 @@ class ColorJitterOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  String get name => 'ColorJitter(brightness=$brightness, contrast=$contrast, '
+  String get name =>
+      'ColorJitter(brightness=$brightness, contrast=$contrast, '
       'saturation=$saturation, hue=$hue, seed=$seed)';
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        pytorchEquivalent: 'torchvision.transforms.ColorJitter',
-      );
+    requiresContiguous: true,
+    pytorchEquivalent: 'torchvision.transforms.ColorJitter',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

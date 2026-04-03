@@ -100,9 +100,9 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: false,
-      );
+    requiresContiguous: true,
+    preservesShape: false,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -146,10 +146,12 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     final channelSize = srcH * srcW;
     final outChannelSize = height * width;
 
-    final scaleY =
-        alignCorners && height > 1 ? (srcH - 1) / (height - 1) : srcH / height;
-    final scaleX =
-        alignCorners && width > 1 ? (srcW - 1) / (width - 1) : srcW / width;
+    final scaleY = alignCorners && height > 1
+        ? (srcH - 1) / (height - 1)
+        : srcH / height;
+    final scaleX = alignCorners && width > 1
+        ? (srcW - 1) / (width - 1)
+        : srcW / width;
 
     switch (input.dtype) {
       case DType.float32:
@@ -208,10 +210,12 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     final outChannelSize = height * width;
     final outBatchSize = c * outChannelSize;
 
-    final scaleY =
-        alignCorners && height > 1 ? (srcH - 1) / (height - 1) : srcH / height;
-    final scaleX =
-        alignCorners && width > 1 ? (srcW - 1) / (width - 1) : srcW / width;
+    final scaleY = alignCorners && height > 1
+        ? (srcH - 1) / (height - 1)
+        : srcH / height;
+    final scaleX = alignCorners && width > 1
+        ? (srcW - 1) / (width - 1)
+        : srcW / width;
 
     switch (input.dtype) {
       case DType.float32:
@@ -293,8 +297,9 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
           final oneMinusFy = 1 - fy;
 
           for (int x = bx; x < endX; x++) {
-            final rawSrcX =
-                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final rawSrcX = alignCorners
+                ? x * scaleX
+                : (x + 0.5) * scaleX - 0.5;
             final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
             final x0 = srcX.floor().clamp(0, srcW - 1);
             final x1 = (x0 + 1).clamp(0, srcW - 1);
@@ -306,7 +311,8 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             final v10 = inList[srcOffset + y1 * srcW + x0];
             final v11 = inList[srcOffset + y1 * srcW + x1];
 
-            final resized = v00 * oneMinusFx * oneMinusFy +
+            final resized =
+                v00 * oneMinusFx * oneMinusFy +
                 v01 * fx * oneMinusFy +
                 v10 * oneMinusFx * fy +
                 v11 * fx * fy;
@@ -349,8 +355,9 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
           final oneMinusFy = 1 - fy;
 
           for (int x = bx; x < endX; x++) {
-            final rawSrcX =
-                alignCorners ? x * scaleX : (x + 0.5) * scaleX - 0.5;
+            final rawSrcX = alignCorners
+                ? x * scaleX
+                : (x + 0.5) * scaleX - 0.5;
             final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
             final x0 = srcX.floor().clamp(0, srcW - 1);
             final x1 = (x0 + 1).clamp(0, srcW - 1);
@@ -362,13 +369,16 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             final v10 = input.storage.getAsDouble(srcOffset + y1 * srcW + x0);
             final v11 = input.storage.getAsDouble(srcOffset + y1 * srcW + x1);
 
-            final resized = v00 * oneMinusFx * oneMinusFy +
+            final resized =
+                v00 * oneMinusFx * oneMinusFy +
                 v01 * fx * oneMinusFy +
                 v10 * oneMinusFx * fy +
                 v11 * fx * fy;
 
             output.storage.setFromDouble(
-                dstOffset + y * width + x, (resized - mean) * invStd);
+              dstOffset + y * width + x,
+              (resized - mean) * invStd,
+            );
           }
         }
       }

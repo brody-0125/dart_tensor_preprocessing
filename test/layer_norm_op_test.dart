@@ -75,30 +75,21 @@ void main() {
         final op = LayerNormOp(normalizedShape: [4, 4]);
         final tensor = TensorBuffer.zeros([4]); // rank 1 < 2
 
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('throws on trailing dimension mismatch', () {
         final op = LayerNormOp(normalizedShape: [768]);
         final tensor = TensorBuffer.zeros([2, 512]); // 512 != 768
 
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('throws on multi-dim shape mismatch', () {
         final op = LayerNormOp(normalizedShape: [4, 4]);
         final tensor = TensorBuffer.zeros([2, 4, 3]); // [4, 3] != [4, 4]
 
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
     });
 
@@ -152,23 +143,35 @@ void main() {
         const mean0 = 2.0;
         const var0 = 2.0 / 3.0;
         final invStd0 = 1.0 / math.sqrt(var0 + 1e-5);
-        expect(output.storage.getAsDouble(0),
-            closeTo((1.0 - mean0) * invStd0, 1e-4));
-        expect(output.storage.getAsDouble(1),
-            closeTo((2.0 - mean0) * invStd0, 1e-4));
-        expect(output.storage.getAsDouble(2),
-            closeTo((3.0 - mean0) * invStd0, 1e-4));
+        expect(
+          output.storage.getAsDouble(0),
+          closeTo((1.0 - mean0) * invStd0, 1e-4),
+        );
+        expect(
+          output.storage.getAsDouble(1),
+          closeTo((2.0 - mean0) * invStd0, 1e-4),
+        );
+        expect(
+          output.storage.getAsDouble(2),
+          closeTo((3.0 - mean0) * invStd0, 1e-4),
+        );
 
         // Sample 1
         const mean1 = 5.0;
         const var1 = 2.0 / 3.0;
         final invStd1 = 1.0 / math.sqrt(var1 + 1e-5);
-        expect(output.storage.getAsDouble(3),
-            closeTo((4.0 - mean1) * invStd1, 1e-4));
-        expect(output.storage.getAsDouble(4),
-            closeTo((5.0 - mean1) * invStd1, 1e-4));
-        expect(output.storage.getAsDouble(5),
-            closeTo((6.0 - mean1) * invStd1, 1e-4));
+        expect(
+          output.storage.getAsDouble(3),
+          closeTo((4.0 - mean1) * invStd1, 1e-4),
+        );
+        expect(
+          output.storage.getAsDouble(4),
+          closeTo((5.0 - mean1) * invStd1, 1e-4),
+        );
+        expect(
+          output.storage.getAsDouble(5),
+          closeTo((6.0 - mean1) * invStd1, 1e-4),
+        );
       });
 
       test('normalizes with custom weight and bias', () {
@@ -226,8 +229,10 @@ void main() {
         const mean = 2.5;
         const variance = 1.25;
         final invStd = 1.0 / math.sqrt(variance + 1e-5);
-        expect(output.storage.getAsDouble(0),
-            closeTo((1.0 - mean) * invStd, 1e-4));
+        expect(
+          output.storage.getAsDouble(0),
+          closeTo((1.0 - mean) * invStd, 1e-4),
+        );
       });
 
       test('normalizes over last 2 dimensions', () {
@@ -257,8 +262,10 @@ void main() {
         }
         var0 /= 6;
         final invStd0 = 1.0 / math.sqrt(var0 + 1e-5);
-        expect(output.storage.getAsDouble(0),
-            closeTo((1.0 - mean0) * invStd0, 1e-4));
+        expect(
+          output.storage.getAsDouble(0),
+          closeTo((1.0 - mean0) * invStd0, 1e-4),
+        );
       });
     });
 
@@ -307,8 +314,10 @@ void main() {
         const mean = 2.5;
         const variance = 1.25;
         final invStd = 1.0 / math.sqrt(variance + 1e-5);
-        expect(tensor.storage.getAsDouble(0),
-            closeTo((1.0 - mean) * invStd, 1e-4));
+        expect(
+          tensor.storage.getAsDouble(0),
+          closeTo((1.0 - mean) * invStd, 1e-4),
+        );
       });
 
       test('applyInPlace throws on non-contiguous tensor', () {
@@ -325,10 +334,7 @@ void main() {
 
     group('properties', () {
       test('name includes shape and eps', () {
-        final op = LayerNormOp(
-          normalizedShape: [768],
-          eps: 1e-6,
-        );
+        final op = LayerNormOp(normalizedShape: [768], eps: 1e-6);
 
         expect(op.name, contains('[768]'));
         expect(op.name, contains('0.000001'));
@@ -379,7 +385,9 @@ void main() {
         // Single element: mean=5, var=0, (x-mean)/sqrt(0+eps) * 2 + 1
         // With var=0, the normalized value approaches 0
         expect(
-            output.storage.getAsDouble(0), closeTo(1.0, 1e-4)); // 0 * 2 + 1 = 1
+          output.storage.getAsDouble(0),
+          closeTo(1.0, 1e-4),
+        ); // 0 * 2 + 1 = 1
       });
 
       test('handles constant input (zero variance)', () {

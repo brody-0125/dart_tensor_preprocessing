@@ -48,30 +48,19 @@ void main() {
 
       test('throws on eps <= 0', () {
         expect(
-          () => BatchNormOp(
-            runningMean: [0.5],
-            runningVar: [0.25],
-            eps: 0,
-          ),
+          () => BatchNormOp(runningMean: [0.5], runningVar: [0.25], eps: 0),
           throwsA(isA<InvalidParameterException>()),
         );
 
         expect(
-          () => BatchNormOp(
-            runningMean: [0.5],
-            runningVar: [0.25],
-            eps: -1e-5,
-          ),
+          () => BatchNormOp(runningMean: [0.5], runningVar: [0.25], eps: -1e-5),
           throwsA(isA<InvalidParameterException>()),
         );
       });
 
       test('throws on negative variance', () {
         expect(
-          () => BatchNormOp(
-            runningMean: [0.5, 0.5],
-            runningVar: [0.25, -0.1],
-          ),
+          () => BatchNormOp(runningMean: [0.5, 0.5], runningVar: [0.25, -0.1]),
           throwsA(isA<InvalidParameterException>()),
         );
       });
@@ -85,10 +74,7 @@ void main() {
         );
         final tensor = TensorBuffer.zeros([3, 4]);
 
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('throws on 5D tensor', () {
@@ -98,10 +84,7 @@ void main() {
         );
         final tensor = TensorBuffer.zeros([1, 3, 4, 4, 4]);
 
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('throws on channel mismatch for 3D tensor', () {
@@ -111,10 +94,7 @@ void main() {
         );
         final tensor = TensorBuffer.zeros([2, 4, 4]); // 2 channels
 
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('throws on channel mismatch for 4D tensor', () {
@@ -124,10 +104,7 @@ void main() {
         );
         final tensor = TensorBuffer.zeros([1, 2, 4, 4]); // 2 channels
 
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
     });
 
@@ -279,10 +256,7 @@ void main() {
 
     group('in-place operation', () {
       test('applyInPlace modifies tensor directly', () {
-        final op = BatchNormOp(
-          runningMean: [0.5],
-          runningVar: [0.25],
-        );
+        final op = BatchNormOp(runningMean: [0.5], runningVar: [0.25]);
 
         final tensor = TensorBuffer.fromFloat32List(
           Float32List.fromList([0.0, 0.5, 1.0, 1.5]),
@@ -336,10 +310,7 @@ void main() {
 
     group('non-contiguous input', () {
       test('handles transposed tensor', () {
-        final op = BatchNormOp(
-          runningMean: [0.0, 0.0],
-          runningVar: [1.0, 1.0],
-        );
+        final op = BatchNormOp(runningMean: [0.0, 0.0], runningVar: [1.0, 1.0]);
 
         // Create transposed (non-contiguous) tensor
         final original = TensorBuffer.fromFloat32List(

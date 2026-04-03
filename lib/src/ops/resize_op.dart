@@ -123,7 +123,8 @@ class ResizeOp extends TransformOp with RequiresContiguous {
         'Must be positive',
       );
     }
-    _effectiveMode = coordinateMode ??
+    _effectiveMode =
+        coordinateMode ??
         (alignCorners
             ? CoordinateTransformMode.alignCorners
             : CoordinateTransformMode.halfPixel);
@@ -134,9 +135,9 @@ class ResizeOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: false,
-      );
+    requiresContiguous: true,
+    preservesShape: false,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -326,30 +327,43 @@ class ResizeOp extends TransformOp with RequiresContiguous {
         final inList = input.storage.data as Float32List;
         final outList = output.storage.data as Float32List;
         for (int y = 0; y < height; y++) {
-          final srcY = _mapCoordinate(y, srcH, height, scaleY)
-              .floor()
-              .clamp(0, srcH - 1);
+          final srcY = _mapCoordinate(
+            y,
+            srcH,
+            height,
+            scaleY,
+          ).floor().clamp(0, srcH - 1);
           final srcRowOffset = srcOffset + srcY * srcW;
           final dstRowOffset = dstOffset + y * width;
           for (int x = 0; x < width; x++) {
-            final srcX = _mapCoordinate(x, srcW, width, scaleX)
-                .floor()
-                .clamp(0, srcW - 1);
+            final srcX = _mapCoordinate(
+              x,
+              srcW,
+              width,
+              scaleX,
+            ).floor().clamp(0, srcW - 1);
             outList[dstRowOffset + x] = inList[srcRowOffset + srcX];
           }
         }
       default:
         // Generic fallback
         for (int y = 0; y < height; y++) {
-          final srcY = _mapCoordinate(y, srcH, height, scaleY)
-              .floor()
-              .clamp(0, srcH - 1);
+          final srcY = _mapCoordinate(
+            y,
+            srcH,
+            height,
+            scaleY,
+          ).floor().clamp(0, srcH - 1);
           for (int x = 0; x < width; x++) {
-            final srcX = _mapCoordinate(x, srcW, width, scaleX)
-                .floor()
-                .clamp(0, srcW - 1);
-            final value =
-                input.storage.getAsDouble(srcOffset + srcY * srcW + srcX);
+            final srcX = _mapCoordinate(
+              x,
+              srcW,
+              width,
+              scaleX,
+            ).floor().clamp(0, srcW - 1);
+            final value = input.storage.getAsDouble(
+              srcOffset + srcY * srcW + srcX,
+            );
             output.storage.setFromDouble(dstOffset + y * width + x, value);
           }
         }
@@ -405,7 +419,8 @@ class ResizeOp extends TransformOp with RequiresContiguous {
                 final v10 = inList[srcOffset + y1 * srcW + x0];
                 final v11 = inList[srcOffset + y1 * srcW + x1];
 
-                final value = v00 * oneMinusFx * oneMinusFy +
+                final value =
+                    v00 * oneMinusFx * oneMinusFy +
                     v01 * fx * oneMinusFy +
                     v10 * oneMinusFx * fy +
                     v11 * fx * fy;
@@ -439,16 +454,21 @@ class ResizeOp extends TransformOp with RequiresContiguous {
                 final x1 = (x0 + 1).clamp(0, srcW - 1);
                 final fx = srcX - x0;
 
-                final v00 =
-                    input.storage.getAsDouble(srcOffset + y0 * srcW + x0);
-                final v01 =
-                    input.storage.getAsDouble(srcOffset + y0 * srcW + x1);
-                final v10 =
-                    input.storage.getAsDouble(srcOffset + y1 * srcW + x0);
-                final v11 =
-                    input.storage.getAsDouble(srcOffset + y1 * srcW + x1);
+                final v00 = input.storage.getAsDouble(
+                  srcOffset + y0 * srcW + x0,
+                );
+                final v01 = input.storage.getAsDouble(
+                  srcOffset + y0 * srcW + x1,
+                );
+                final v10 = input.storage.getAsDouble(
+                  srcOffset + y1 * srcW + x0,
+                );
+                final v11 = input.storage.getAsDouble(
+                  srcOffset + y1 * srcW + x1,
+                );
 
-                final value = v00 * (1 - fx) * (1 - fy) +
+                final value =
+                    v00 * (1 - fx) * (1 - fy) +
                     v01 * fx * (1 - fy) +
                     v10 * (1 - fx) * fy +
                     v11 * fx * fy;
@@ -526,7 +546,8 @@ class ResizeOp extends TransformOp with RequiresContiguous {
                 final xi3 = (x0 + 2).clamp(0, srcW - 1);
 
                 // Unrolled 4x4 kernel for performance
-                final value = wy0 *
+                final value =
+                    wy0 *
                         (wx0 * inList[srcOffset + yj0 * srcW + xi0] +
                             wx1 * inList[srcOffset + yj0 * srcW + xi1] +
                             wx2 * inList[srcOffset + yj0 * srcW + xi2] +
@@ -664,8 +685,9 @@ class ResizeOp extends TransformOp with RequiresContiguous {
                   }
                 }
 
-                outList[dstOffset + y * width + x] =
-                    totalWeight > 0 ? sum / totalWeight : 0;
+                outList[dstOffset + y * width + x] = totalWeight > 0
+                    ? sum / totalWeight
+                    : 0;
               }
             }
           }
@@ -708,8 +730,9 @@ class ResizeOp extends TransformOp with RequiresContiguous {
 
                     final weight = overlapX * overlapY;
                     if (weight > 0) {
-                      final v =
-                          input.storage.getAsDouble(srcOffset + sy * srcW + sx);
+                      final v = input.storage.getAsDouble(
+                        srcOffset + sy * srcW + sx,
+                      );
                       sum += v * weight;
                       totalWeight += weight;
                     }
@@ -781,8 +804,9 @@ class ResizeOp extends TransformOp with RequiresContiguous {
             }
 
             // Normalize by weight sum to handle edge effects
-            outList[dstOffset + y * width + x] =
-                weightSum > 0 ? value / weightSum : 0;
+            outList[dstOffset + y * width + x] = weightSum > 0
+                ? value / weightSum
+                : 0;
           }
         }
       default:
@@ -882,11 +906,7 @@ class ResizeShortestOp extends TransformOp {
 
     final (newH, newW) = _computeNewSize(h, w);
 
-    final resizeOp = ResizeOp(
-      height: newH,
-      width: newW,
-      mode: mode,
-    );
+    final resizeOp = ResizeOp(height: newH, width: newW, mode: mode);
 
     return resizeOp.apply(input);
   }

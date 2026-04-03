@@ -14,14 +14,20 @@ class TypedDataViews {
   /// Creates a sublist view of a Float32List without copying.
   ///
   /// This is a zero-copy operation that returns a view into the original data.
-  static Float32List float32SublistView(Float32List data, int start,
-      [int? end]) {
+  static Float32List float32SublistView(
+    Float32List data,
+    int start, [
+    int? end,
+  ]) {
     return Float32List.sublistView(data, start, end);
   }
 
   /// Creates a sublist view of a Float64List without copying.
-  static Float64List float64SublistView(Float64List data, int start,
-      [int? end]) {
+  static Float64List float64SublistView(
+    Float64List data,
+    int start, [
+    int? end,
+  ]) {
     return Float64List.sublistView(data, start, end);
   }
 
@@ -166,13 +172,15 @@ extension TensorViewExtension on TensorBuffer {
       // Calculate offset for this slice
       final sliceOffset = storageOffset + i * strides[dim];
 
-      results.add(TensorBuffer(
-        storage: storage,
-        shape: newShape,
-        strides: newStrides,
-        storageOffset: sliceOffset,
-        memoryFormat: MemoryFormat.contiguous,
-      ));
+      results.add(
+        TensorBuffer(
+          storage: storage,
+          shape: newShape,
+          strides: newStrides,
+          storageOffset: sliceOffset,
+          memoryFormat: MemoryFormat.contiguous,
+        ),
+      );
     }
 
     return results;
@@ -191,7 +199,8 @@ extension TensorViewExtension on TensorBuffer {
     }
     if (index < 0 || index >= shape[dim]) {
       throw RangeError(
-          'index $index out of range for dim $dim size ${shape[dim]}');
+        'index $index out of range for dim $dim size ${shape[dim]}',
+      );
     }
 
     final newShape = [...shape]..removeAt(dim);
@@ -222,7 +231,8 @@ extension TensorViewExtension on TensorBuffer {
     }
     if (start < 0 || start + length > shape[dim]) {
       throw RangeError(
-          'Invalid narrow range: start=$start, length=$length, dim size=${shape[dim]}');
+        'Invalid narrow range: start=$start, length=$length, dim size=${shape[dim]}',
+      );
     }
 
     final newShape = [...shape];

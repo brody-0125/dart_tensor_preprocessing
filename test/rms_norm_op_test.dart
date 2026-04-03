@@ -47,24 +47,26 @@ void main() {
       final data = Float32List.fromList([1.0, 2.0, 3.0, 4.0]);
       final tensor = TensorBuffer.fromFloat32List(data, [4]);
 
-      final op = RMSNormOp(
-        normalizedShape: [4],
-        weight: [2.0, 2.0, 2.0, 2.0],
-      );
+      final op = RMSNormOp(normalizedShape: [4], weight: [2.0, 2.0, 2.0, 2.0]);
       final result = op.apply(tensor);
 
       final expectedRms = math.sqrt((1 + 4 + 9 + 16) / 4 + 1e-6);
       // With weight=2.0, result should be doubled
-      expect(result.storage.getAsDouble(0),
-          closeTo(2.0 * 1.0 / expectedRms, 1e-5));
-      expect(result.storage.getAsDouble(1),
-          closeTo(2.0 * 2.0 / expectedRms, 1e-5));
+      expect(
+        result.storage.getAsDouble(0),
+        closeTo(2.0 * 1.0 / expectedRms, 1e-5),
+      );
+      expect(
+        result.storage.getAsDouble(1),
+        closeTo(2.0 * 2.0 / expectedRms, 1e-5),
+      );
     });
 
     test('works with 3D tensor (batch, seq, hidden)', () {
       // [2, 3, 4] - batch=2, seq_len=3, hidden_size=4
-      final data =
-          Float32List.fromList(List.generate(24, (i) => (i + 1).toDouble()));
+      final data = Float32List.fromList(
+        List.generate(24, (i) => (i + 1).toDouble()),
+      );
       final tensor = TensorBuffer.fromFloat32List(data, [2, 3, 4]);
 
       final op = RMSNormOp(normalizedShape: [4]);
@@ -97,8 +99,9 @@ void main() {
 
     test('throws on insufficient rank', () {
       final tensor = TensorBuffer.zeros([4]);
-      final op =
-          RMSNormOp(normalizedShape: [2, 4]); // requires 2D normalized shape
+      final op = RMSNormOp(
+        normalizedShape: [2, 4],
+      ); // requires 2D normalized shape
 
       expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
     });

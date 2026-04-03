@@ -29,8 +29,13 @@ TensorBuffer _createRgbTensor4D(int n, int h, int w) {
 }
 
 /// Creates a 3D tensor with uniform RGB values.
-TensorBuffer _createUniformRgbTensor(double r, double g, double b,
-    {int h = 2, int w = 2}) {
+TensorBuffer _createUniformRgbTensor(
+  double r,
+  double g,
+  double b, {
+  int h = 2,
+  int w = 2,
+}) {
   final hw = h * w;
   final data = Float32List(3 * hw);
   for (int i = 0; i < hw; i++) {
@@ -145,23 +150,31 @@ void main() {
         final op = RgbToGrayscaleOp();
         expect(op.capabilities.requiresContiguous, isTrue);
         expect(op.capabilities.preservesShape, isFalse);
-        expect(op.capabilities.pytorchEquivalent,
-            equals('torchvision.transforms.Grayscale'));
+        expect(
+          op.capabilities.pytorchEquivalent,
+          equals('torchvision.transforms.Grayscale'),
+        );
       });
 
       test('computeOutputShape for 3D', () {
-        expect(RgbToGrayscaleOp().computeOutputShape([3, 4, 4]),
-            equals([1, 4, 4]));
+        expect(
+          RgbToGrayscaleOp().computeOutputShape([3, 4, 4]),
+          equals([1, 4, 4]),
+        );
       });
 
       test('computeOutputShape for 4D', () {
-        expect(RgbToGrayscaleOp().computeOutputShape([2, 3, 4, 4]),
-            equals([2, 1, 4, 4]));
+        expect(
+          RgbToGrayscaleOp().computeOutputShape([2, 3, 4, 4]),
+          equals([2, 1, 4, 4]),
+        );
       });
 
       test('computeOutputShape rejects invalid rank', () {
-        expect(() => RgbToGrayscaleOp().computeOutputShape([4, 4]),
-            throwsA(isA<ShapeMismatchException>()));
+        expect(
+          () => RgbToGrayscaleOp().computeOutputShape([4, 4]),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
     });
 
@@ -271,13 +284,17 @@ void main() {
       test('rejects 2D tensor', () {
         final tensor = TensorBuffer.zeros([4, 4]);
         expect(
-            () => RgbToHsvOp()(tensor), throwsA(isA<ShapeMismatchException>()));
+          () => RgbToHsvOp()(tensor),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
 
       test('rejects non-3-channel tensor', () {
         final tensor = TensorBuffer.zeros([4, 3, 3]);
         expect(
-            () => RgbToHsvOp()(tensor), throwsA(isA<ShapeMismatchException>()));
+          () => RgbToHsvOp()(tensor),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
     });
 
@@ -294,8 +311,10 @@ void main() {
 
       test('computeOutputShape preserves shape', () {
         expect(RgbToHsvOp().computeOutputShape([3, 4, 4]), equals([3, 4, 4]));
-        expect(RgbToHsvOp().computeOutputShape([2, 3, 4, 4]),
-            equals([2, 3, 4, 4]));
+        expect(
+          RgbToHsvOp().computeOutputShape([2, 3, 4, 4]),
+          equals([2, 3, 4, 4]),
+        );
       });
     });
   });
@@ -324,7 +343,9 @@ void main() {
           expect(result.storage.getAsDouble(i), closeTo(1.0, 1e-5)); // R
           expect(result.storage.getAsDouble(hw + i), closeTo(0.0, 1e-5)); // G
           expect(
-              result.storage.getAsDouble(2 * hw + i), closeTo(0.0, 1e-5)); // B
+            result.storage.getAsDouble(2 * hw + i),
+            closeTo(0.0, 1e-5),
+          ); // B
         }
       });
 
@@ -349,13 +370,17 @@ void main() {
       test('rejects 2D tensor', () {
         final tensor = TensorBuffer.zeros([4, 4]);
         expect(
-            () => HsvToRgbOp()(tensor), throwsA(isA<ShapeMismatchException>()));
+          () => HsvToRgbOp()(tensor),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
 
       test('rejects non-3-channel tensor', () {
         final tensor = TensorBuffer.zeros([1, 3, 3]);
         expect(
-            () => HsvToRgbOp()(tensor), throwsA(isA<ShapeMismatchException>()));
+          () => HsvToRgbOp()(tensor),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
     });
 
@@ -372,8 +397,10 @@ void main() {
 
       test('computeOutputShape preserves shape', () {
         expect(HsvToRgbOp().computeOutputShape([3, 4, 4]), equals([3, 4, 4]));
-        expect(HsvToRgbOp().computeOutputShape([2, 3, 4, 4]),
-            equals([2, 3, 4, 4]));
+        expect(
+          HsvToRgbOp().computeOutputShape([2, 3, 4, 4]),
+          equals([2, 3, 4, 4]),
+        );
       });
     });
   });
@@ -394,8 +421,10 @@ void main() {
       expect(restored.shape, equals(original.shape));
       final numel = original.numel;
       for (int i = 0; i < numel; i++) {
-        expect(restored.storage.getAsDouble(i),
-            closeTo(original.storage.getAsDouble(i), 1e-5));
+        expect(
+          restored.storage.getAsDouble(i),
+          closeTo(original.storage.getAsDouble(i), 1e-5),
+        );
       }
     });
 
@@ -410,8 +439,10 @@ void main() {
       expect(restored.shape, equals(original.shape));
       final numel = original.numel;
       for (int i = 0; i < numel; i++) {
-        expect(restored.storage.getAsDouble(i),
-            closeTo(original.storage.getAsDouble(i), 1e-5));
+        expect(
+          restored.storage.getAsDouble(i),
+          closeTo(original.storage.getAsDouble(i), 1e-5),
+        );
       }
     });
 
@@ -424,8 +455,10 @@ void main() {
 
       final numel = original.numel;
       for (int i = 0; i < numel; i++) {
-        expect(restored.storage.getAsDouble(i),
-            closeTo(original.storage.getAsDouble(i), 1e-5));
+        expect(
+          restored.storage.getAsDouble(i),
+          closeTo(original.storage.getAsDouble(i), 1e-5),
+        );
       }
     });
   });
@@ -436,9 +469,7 @@ void main() {
 
   group('pipeline integration', () {
     test('works in TensorPipeline', () {
-      final pipeline = TensorPipeline([
-        RgbToGrayscaleOp(),
-      ]);
+      final pipeline = TensorPipeline([RgbToGrayscaleOp()]);
 
       final input = _createRgbTensor3D(4, 4);
       final result = pipeline.run(input);
@@ -446,18 +477,13 @@ void main() {
     });
 
     test('RGB -> Grayscale pipeline shape computation', () {
-      final pipeline = TensorPipeline([
-        RgbToGrayscaleOp(),
-      ]);
+      final pipeline = TensorPipeline([RgbToGrayscaleOp()]);
 
       expect(pipeline.computeOutputShape([3, 224, 224]), equals([1, 224, 224]));
     });
 
     test('RGB -> HSV -> RGB pipeline', () {
-      final pipeline = TensorPipeline([
-        RgbToHsvOp(),
-        HsvToRgbOp(),
-      ]);
+      final pipeline = TensorPipeline([RgbToHsvOp(), HsvToRgbOp()]);
 
       final input = _createRgbTensor3D(4, 4);
       final result = pipeline.run(input);
@@ -524,8 +550,10 @@ void main() {
 
       expect(restored.dtype, equals(DType.float64));
       for (int i = 0; i < original.numel; i++) {
-        expect(restored.storage.getAsDouble(i),
-            closeTo(original.storage.getAsDouble(i), 1e-10));
+        expect(
+          restored.storage.getAsDouble(i),
+          closeTo(original.storage.getAsDouble(i), 1e-10),
+        );
       }
     });
   });
@@ -561,7 +589,9 @@ void main() {
 
     test('toString returns expected format', () {
       expect(
-          RgbToGrayscaleOp().toString(), equals('TransformOp(RgbToGrayscale)'));
+        RgbToGrayscaleOp().toString(),
+        equals('TransformOp(RgbToGrayscale)'),
+      );
       expect(RgbToHsvOp().toString(), equals('TransformOp(RgbToHsv)'));
       expect(HsvToRgbOp().toString(), equals('TransformOp(HsvToRgb)'));
     });

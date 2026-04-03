@@ -52,11 +52,11 @@ class LpNormalizeOp extends TransformOp
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'F.normalize',
-        onnxOpType: 'LpNormalization',
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'F.normalize',
+    onnxOpType: 'LpNormalization',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

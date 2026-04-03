@@ -111,19 +111,23 @@ void main() {
       });
 
       test('throws for 5D tensor', () {
-        final tensor = TensorBuffer.fromFloat32List(
-          Float32List(32),
-          [1, 1, 2, 4, 4],
-        );
+        final tensor = TensorBuffer.fromFloat32List(Float32List(32), [
+          1,
+          1,
+          2,
+          4,
+          4,
+        ]);
         final op = RandomErasingOp(probability: 1.0, seed: 42);
         expect(() => op(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('accepts 3D tensor', () {
-        final tensor = TensorBuffer.fromFloat32List(
-          Float32List(3 * 8 * 8),
-          [3, 8, 8],
-        );
+        final tensor = TensorBuffer.fromFloat32List(Float32List(3 * 8 * 8), [
+          3,
+          8,
+          8,
+        ]);
         final op = RandomErasingOp(probability: 1.0, seed: 42);
         expect(() => op(tensor), returnsNormally);
       });
@@ -155,34 +159,40 @@ void main() {
         }
       });
 
-      test('probability=1.0 always attempts erase on sufficiently large tensor',
-          () {
-        // With a large enough tensor and reasonable parameters, erasure should happen
-        final data = Float32List(3 * 32 * 32);
-        for (int i = 0; i < data.length; i++) {
-          data[i] = 1.0;
-        }
-        final tensor = TensorBuffer.fromFloat32List(data, [3, 32, 32]);
-
-        final op = RandomErasingOp(
-          probability: 1.0,
-          scaleRange: (0.02, 0.33),
-          ratioRange: (0.3, 3.3),
-          value: 0.0,
-          seed: 42,
-        );
-        final result = op(tensor);
-
-        // At least some pixels should be erased (set to 0.0)
-        bool hasErased = false;
-        for (int i = 0; i < result.numel; i++) {
-          if (result.storage.getAsDouble(i) == 0.0) {
-            hasErased = true;
-            break;
+      test(
+        'probability=1.0 always attempts erase on sufficiently large tensor',
+        () {
+          // With a large enough tensor and reasonable parameters, erasure should happen
+          final data = Float32List(3 * 32 * 32);
+          for (int i = 0; i < data.length; i++) {
+            data[i] = 1.0;
           }
-        }
-        expect(hasErased, isTrue, reason: 'Expected some pixels to be erased');
-      });
+          final tensor = TensorBuffer.fromFloat32List(data, [3, 32, 32]);
+
+          final op = RandomErasingOp(
+            probability: 1.0,
+            scaleRange: (0.02, 0.33),
+            ratioRange: (0.3, 3.3),
+            value: 0.0,
+            seed: 42,
+          );
+          final result = op(tensor);
+
+          // At least some pixels should be erased (set to 0.0)
+          bool hasErased = false;
+          for (int i = 0; i < result.numel; i++) {
+            if (result.storage.getAsDouble(i) == 0.0) {
+              hasErased = true;
+              break;
+            }
+          }
+          expect(
+            hasErased,
+            isTrue,
+            reason: 'Expected some pixels to be erased',
+          );
+        },
+      );
     });
 
     group('3D tensor erasing', () {
@@ -222,10 +232,11 @@ void main() {
       });
 
       test('preserves shape', () {
-        final tensor = TensorBuffer.fromFloat32List(
-          Float32List(3 * 10 * 10),
-          [3, 10, 10],
-        );
+        final tensor = TensorBuffer.fromFloat32List(Float32List(3 * 10 * 10), [
+          3,
+          10,
+          10,
+        ]);
         final op = RandomErasingOp(probability: 1.0, seed: 42);
         final result = op(tensor);
         expect(result.shape, equals([3, 10, 10]));
@@ -303,8 +314,11 @@ void main() {
               erasedCount++;
             }
           }
-          expect(erasedCount, greaterThan(0),
-              reason: 'Batch $batch should have erased pixels');
+          expect(
+            erasedCount,
+            greaterThan(0),
+            reason: 'Batch $batch should have erased pixels',
+          );
         }
       });
 
@@ -327,11 +341,7 @@ void main() {
         }
         final tensor = TensorBuffer.fromFloat32List(data, [1, 32, 32]);
 
-        final op = RandomErasingOp(
-          probability: 1.0,
-          value: 0.5,
-          seed: 42,
-        );
+        final op = RandomErasingOp(probability: 1.0, value: 0.5, seed: 42);
         final result = op(tensor);
 
         // Erased pixels should be exactly 0.5
@@ -342,8 +352,11 @@ void main() {
             foundFillValue = true;
           }
           // Should only contain original value (1.0) or fill value (0.5)
-          expect(v == 1.0 || v == 0.5, isTrue,
-              reason: 'Expected 1.0 or 0.5, got $v');
+          expect(
+            v == 1.0 || v == 0.5,
+            isTrue,
+            reason: 'Expected 1.0 or 0.5, got $v',
+          );
         }
         expect(foundFillValue, isTrue);
       });
@@ -355,11 +368,7 @@ void main() {
         }
         final tensor = TensorBuffer.fromFloat32List(data, [1, 32, 32]);
 
-        final op = RandomErasingOp(
-          probability: 1.0,
-          value: null,
-          seed: 42,
-        );
+        final op = RandomErasingOp(probability: 1.0, value: null, seed: 42);
         final result = op(tensor);
 
         // Should have values other than the original 5.0
@@ -368,8 +377,11 @@ void main() {
           uniqueValues.add(result.storage.getAsDouble(i));
         }
         // With random fill, we expect multiple different values
-        expect(uniqueValues.length, greaterThan(2),
-            reason: 'Random fill should produce diverse values');
+        expect(
+          uniqueValues.length,
+          greaterThan(2),
+          reason: 'Random fill should produce diverse values',
+        );
       });
     });
 
@@ -381,11 +393,7 @@ void main() {
         }
         final tensor = TensorBuffer.fromFloat32List(data, [1, 32, 32]);
 
-        final op = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 42,
-        );
+        final op = RandomErasingOp(probability: 1.0, value: 0.0, seed: 42);
         op.applyInPlace(tensor);
 
         // Some values should be erased
@@ -410,16 +418,8 @@ void main() {
         final tensor1 = TensorBuffer.fromFloat32List(data1, [3, 16, 16]);
         final tensor2 = TensorBuffer.fromFloat32List(data2, [3, 16, 16]);
 
-        final op1 = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 99,
-        );
-        final op2 = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 99,
-        );
+        final op1 = RandomErasingOp(probability: 1.0, value: 0.0, seed: 99);
+        final op2 = RandomErasingOp(probability: 1.0, value: 0.0, seed: 99);
 
         final result1 = op1(tensor1);
         op2.applyInPlace(tensor2);
@@ -435,10 +435,11 @@ void main() {
       });
 
       test('throws for non-contiguous tensor', () {
-        final tensor = TensorBuffer.fromFloat32List(
-          Float32List(3 * 8 * 8),
-          [3, 8, 8],
-        );
+        final tensor = TensorBuffer.fromFloat32List(Float32List(3 * 8 * 8), [
+          3,
+          8,
+          8,
+        ]);
         // Transpose creates a non-contiguous view
         final transposed = tensor.transpose([2, 1, 0]);
 
@@ -458,16 +459,8 @@ void main() {
         }
         final tensor = TensorBuffer.fromFloat32List(data, [3, 16, 16]);
 
-        final op1 = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 42,
-        );
-        final op2 = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 42,
-        );
+        final op1 = RandomErasingOp(probability: 1.0, value: 0.0, seed: 42);
+        final op2 = RandomErasingOp(probability: 1.0, value: 0.0, seed: 42);
 
         final result1 = op1(tensor);
         final result2 = op2(tensor);
@@ -488,16 +481,8 @@ void main() {
         }
         final tensor = TensorBuffer.fromFloat32List(data, [3, 32, 32]);
 
-        final op1 = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 42,
-        );
-        final op2 = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 99,
-        );
+        final op1 = RandomErasingOp(probability: 1.0, value: 0.0, seed: 42);
+        final op2 = RandomErasingOp(probability: 1.0, value: 0.0, seed: 99);
 
         final result1 = op1(tensor);
         final result2 = op2(tensor);
@@ -511,8 +496,11 @@ void main() {
             break;
           }
         }
-        expect(hasDifference, isTrue,
-            reason: 'Different seeds should produce different results');
+        expect(
+          hasDifference,
+          isTrue,
+          reason: 'Different seeds should produce different results',
+        );
       });
     });
 
@@ -525,11 +513,7 @@ void main() {
         final storage = TensorStorage(data, DType.float64);
         final tensor = TensorBuffer(storage: storage, shape: [1, 16, 16]);
 
-        final op = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 42,
-        );
+        final op = RandomErasingOp(probability: 1.0, value: 0.0, seed: 42);
         final result = op(tensor);
 
         expect(result.dtype, equals(DType.float64));
@@ -554,11 +538,7 @@ void main() {
         final storage = TensorStorage(data, DType.int32);
         final tensor = TensorBuffer(storage: storage, shape: [1, 16, 16]);
 
-        final op = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 42,
-        );
+        final op = RandomErasingOp(probability: 1.0, value: 0.0, seed: 42);
         final result = op(tensor);
 
         expect(result.dtype, equals(DType.int32));
@@ -574,17 +554,16 @@ void main() {
         }
         final tensor = TensorBuffer.fromFloat32List(data, [3, 16, 16]);
 
-        final op = RandomErasingOp(
-          probability: 1.0,
-          value: 0.0,
-          seed: 42,
-        );
+        final op = RandomErasingOp(probability: 1.0, value: 0.0, seed: 42);
         op(tensor);
 
         // Original tensor should be untouched
         for (int i = 0; i < tensor.numel; i++) {
-          expect(tensor.storage.getAsDouble(i), equals(1.0),
-              reason: 'Input tensor should not be modified by apply()');
+          expect(
+            tensor.storage.getAsDouble(i),
+            equals(1.0),
+            reason: 'Input tensor should not be modified by apply()',
+          );
         }
       });
     });
@@ -598,7 +577,9 @@ void main() {
       test('preserves input shape for 4D', () {
         final op = RandomErasingOp();
         expect(
-            op.computeOutputShape([1, 3, 224, 224]), equals([1, 3, 224, 224]));
+          op.computeOutputShape([1, 3, 224, 224]),
+          equals([1, 3, 224, 224]),
+        );
       });
     });
 
@@ -608,8 +589,10 @@ void main() {
         expect(op.capabilities.supportsInPlace, isTrue);
         expect(op.capabilities.requiresContiguous, isTrue);
         expect(op.capabilities.preservesShape, isTrue);
-        expect(op.capabilities.pytorchEquivalent,
-            equals('torchvision.transforms.RandomErasing'));
+        expect(
+          op.capabilities.pytorchEquivalent,
+          equals('torchvision.transforms.RandomErasing'),
+        );
       });
     });
 
@@ -645,19 +628,21 @@ void main() {
       });
 
       test('handles tall narrow tensor', () {
-        final tensor = TensorBuffer.fromFloat32List(
-          Float32List(1 * 32 * 4),
-          [1, 32, 4],
-        );
+        final tensor = TensorBuffer.fromFloat32List(Float32List(1 * 32 * 4), [
+          1,
+          32,
+          4,
+        ]);
         final op = RandomErasingOp(probability: 1.0, seed: 42);
         expect(() => op(tensor), returnsNormally);
       });
 
       test('handles wide short tensor', () {
-        final tensor = TensorBuffer.fromFloat32List(
-          Float32List(1 * 4 * 32),
-          [1, 4, 32],
-        );
+        final tensor = TensorBuffer.fromFloat32List(Float32List(1 * 4 * 32), [
+          1,
+          4,
+          32,
+        ]);
         final op = RandomErasingOp(probability: 1.0, seed: 42);
         expect(() => op(tensor), returnsNormally);
       });

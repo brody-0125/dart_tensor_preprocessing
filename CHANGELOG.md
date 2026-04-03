@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.5] - 2026-04-03
+
+### Added
+
+- **`TopKOp`** - Top-K selection operation along a specified axis (Issue #35):
+  - Selects the k largest or smallest values and their corresponding indices
+  - Equivalent to `torch.topk()` in PyTorch and ONNX `TopK` operator (opset 1+)
+  - Returns `(TensorBuffer values, TensorBuffer indices)` record via `applyTopK()`
+  - Pipeline-compatible `apply()` returns values only
+  - Parameters: `k` (required), `axis` (default: -1), `largest` (default: true), `sorted` (default: true)
+  - Extension method: `tensor.topk(k, axis:, largest:, sorted:)`
+  - Uses introselect algorithm (quickselect + insertion sort) for O(n) average-case selection
+  - Int64 index output, float32/float64 dtype-specialized value paths
+  - Supports negative axis indexing
+
+### Changed
+
+- **Code formatting** - Reformatted entire codebase (94 files) with Dart 3.x tall style formatter
+
 ## [0.8.4] - 2026-03-28
 
 ### Added

@@ -62,10 +62,7 @@ TensorBuffer _zerosImpl(
 }
 
 /// Creates a tensor filled with ones.
-TensorBuffer _onesImpl(
-  List<int> shape, {
-  DType dtype = DType.float32,
-}) {
+TensorBuffer _onesImpl(List<int> shape, {DType dtype = DType.float32}) {
   TensorBuffer._validateShapeStatic(shape);
   final numel = shape.fold(1, (a, b) => a * b);
   final data = dtype.createBuffer(numel);
@@ -222,11 +219,7 @@ TensorBuffer _randnImpl(
 /// final tensor = TensorBuffer.eye(3); // 3x3 identity matrix
 /// final rect = TensorBuffer.eye(2, m: 4); // 2x4 matrix with 1s on diagonal
 /// ```
-TensorBuffer _eyeImpl(
-  int n, {
-  int? m,
-  DType dtype = DType.float32,
-}) {
+TensorBuffer _eyeImpl(int n, {int? m, DType dtype = DType.float32}) {
   if (n <= 0) {
     throw InvalidParameterException('n', n, 'n must be positive');
   }

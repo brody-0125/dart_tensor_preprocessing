@@ -245,10 +245,7 @@ void main() {
 
       final softmax = SoftmaxOp(axis: 5);
 
-      expect(
-        () => softmax(tensor),
-        throwsA(isA<IndexOutOfBoundsException>()),
-      );
+      expect(() => softmax(tensor), throwsA(isA<IndexOutOfBoundsException>()));
     });
   });
 
@@ -283,7 +280,9 @@ void main() {
 
     test('LeakyReLUOp name', () {
       expect(
-          LeakyReLUOp(negativeSlope: 0.2).name, equals('LeakyReLU(slope=0.2)'));
+        LeakyReLUOp(negativeSlope: 0.2).name,
+        equals('LeakyReLU(slope=0.2)'),
+      );
     });
 
     test('SigmoidOp name', () {
@@ -351,7 +350,9 @@ void main() {
     test('name reflects approximation mode', () {
       expect(GELUOp().name, equals('GELU'));
       expect(
-          GELUOp(approximate: 'tanh').name, equals('GELU(approximate=tanh)'));
+        GELUOp(approximate: 'tanh').name,
+        equals('GELU(approximate=tanh)'),
+      );
     });
   });
 
@@ -690,10 +691,7 @@ void main() {
     test('throws for odd-sized dimension', () {
       final tensor = TensorBuffer.zeros([3]);
 
-      expect(
-        () => GLUOp()(tensor),
-        throwsA(isA<InvalidParameterException>()),
-      );
+      expect(() => GLUOp()(tensor), throwsA(isA<InvalidParameterException>()));
     });
 
     test('throws for out-of-bounds dim', () {

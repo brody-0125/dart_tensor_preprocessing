@@ -105,8 +105,10 @@ TensorBuffer stack(List<TensorBuffer> tensors, {int dim = 0}) {
   }
 
   // Create output tensor
-  final output =
-      TensorBuffer.uninitialized(outputShape, dtype: firstTensor.dtype);
+  final output = TensorBuffer.uninitialized(
+    outputShape,
+    dtype: firstTensor.dtype,
+  );
 
   // Copy data from each tensor
   _stackTensors(tensors, output, normalizedDim);
@@ -313,8 +315,10 @@ TensorBuffer concat(List<TensorBuffer> tensors, {int axis = 0}) {
   outputShape[normalizedAxis] = totalAxisSize;
 
   // Create output tensor
-  final output =
-      TensorBuffer.uninitialized(outputShape, dtype: firstTensor.dtype);
+  final output = TensorBuffer.uninitialized(
+    outputShape,
+    dtype: firstTensor.dtype,
+  );
 
   // Optimized copy using linear indexing
   // For axis=0 and contiguous tensors, use bulk copy

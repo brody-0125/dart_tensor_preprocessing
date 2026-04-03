@@ -57,8 +57,11 @@ void main() {
       const seqLen = 2;
       const batchSize = 2;
       final data = Float32List(batchSize * seqLen * dModel); // all zeros
-      final tensor =
-          TensorBuffer.fromFloat32List(data, [batchSize, seqLen, dModel]);
+      final tensor = TensorBuffer.fromFloat32List(data, [
+        batchSize,
+        seqLen,
+        dModel,
+      ]);
 
       final posEnc = PositionalEncodingOp(dModel: dModel, maxLen: 100);
       final result = posEnc(tensor);

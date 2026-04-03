@@ -52,10 +52,7 @@ class NormalizeOp extends TransformOp
 
   /// Creates normalization using ImageNet statistics.
   factory NormalizeOp.imagenet() {
-    return NormalizeOp(
-      mean: [0.485, 0.456, 0.406],
-      std: [0.229, 0.224, 0.225],
-    );
+    return NormalizeOp(mean: [0.485, 0.456, 0.406], std: [0.229, 0.224, 0.225]);
   }
 
   /// Creates normalization using CIFAR-10 statistics.
@@ -68,10 +65,7 @@ class NormalizeOp extends TransformOp
 
   /// Creates symmetric normalization mapping `[0, 1]` to `[-1, 1]`.
   factory NormalizeOp.symmetric() {
-    return NormalizeOp(
-      mean: [0.5, 0.5, 0.5],
-      std: [0.5, 0.5, 0.5],
-    );
+    return NormalizeOp(mean: [0.5, 0.5, 0.5], std: [0.5, 0.5, 0.5]);
   }
 
   @override
@@ -79,9 +73,9 @@ class NormalizeOp extends TransformOp
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -144,8 +138,11 @@ class NormalizeOp extends TransformOp
         final list = data as Float32List;
         for (int ch = 0; ch < c; ch++) {
           final offset = ch * channelSize;
-          final channelData =
-              Float32List.sublistView(list, offset, offset + channelSize);
+          final channelData = Float32List.sublistView(
+            list,
+            offset,
+            offset + channelSize,
+          );
           SimdOps.normalize(channelData, mean[ch], std[ch]);
         }
       case DType.float64:
@@ -153,8 +150,11 @@ class NormalizeOp extends TransformOp
         final list = data as Float64List;
         for (int ch = 0; ch < c; ch++) {
           final offset = ch * channelSize;
-          final channelData =
-              Float64List.sublistView(list, offset, offset + channelSize);
+          final channelData = Float64List.sublistView(
+            list,
+            offset,
+            offset + channelSize,
+          );
           SimdOps.normalizeF64(channelData, mean[ch], std[ch]);
         }
       default:
@@ -190,8 +190,11 @@ class NormalizeOp extends TransformOp
           final batchOffset = batch * batchSize;
           for (int ch = 0; ch < c; ch++) {
             final offset = batchOffset + ch * channelSize;
-            final channelData =
-                Float32List.sublistView(list, offset, offset + channelSize);
+            final channelData = Float32List.sublistView(
+              list,
+              offset,
+              offset + channelSize,
+            );
             SimdOps.normalize(channelData, mean[ch], std[ch]);
           }
         }
@@ -202,8 +205,11 @@ class NormalizeOp extends TransformOp
           final batchOffset = batch * batchSize;
           for (int ch = 0; ch < c; ch++) {
             final offset = batchOffset + ch * channelSize;
-            final channelData =
-                Float64List.sublistView(list, offset, offset + channelSize);
+            final channelData = Float64List.sublistView(
+              list,
+              offset,
+              offset + channelSize,
+            );
             SimdOps.normalizeF64(channelData, mean[ch], std[ch]);
           }
         }
@@ -260,9 +266,9 @@ class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
