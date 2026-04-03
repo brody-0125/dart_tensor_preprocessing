@@ -54,8 +54,7 @@ void main() {
           ]),
           [2, 5],
         );
-        final (values, indices) =
-            TopKOp(k: 2, axis: 1).applyTopK(tensor);
+        final (values, indices) = TopKOp(k: 2, axis: 1).applyTopK(tensor);
 
         expect(values.shape, equals([2, 2]));
         expect(indices.shape, equals([2, 2]));
@@ -82,8 +81,7 @@ void main() {
           ]),
           [3, 3],
         );
-        final (values, indices) =
-            TopKOp(k: 2, axis: 0).applyTopK(tensor);
+        final (values, indices) = TopKOp(k: 2, axis: 0).applyTopK(tensor);
 
         expect(values.shape, equals([2, 3]));
 
@@ -121,8 +119,7 @@ void main() {
           ]),
           [2, 2, 4],
         );
-        final (values, indices) =
-            TopKOp(k: 2, axis: -1).applyTopK(tensor);
+        final (values, indices) = TopKOp(k: 2, axis: -1).applyTopK(tensor);
 
         expect(values.shape, equals([2, 2, 2]));
 
@@ -175,8 +172,7 @@ void main() {
           Float32List.fromList([5, 2, 8, 1, 9, 3]),
           [6],
         );
-        final (values, indices) =
-            TopKOp(k: 3, sorted: false).applyTopK(tensor);
+        final (values, indices) = TopKOp(k: 3, sorted: false).applyTopK(tensor);
 
         // Collect returned values
         final returnedValues = <double>{};
@@ -426,8 +422,7 @@ void main() {
           ]),
           [2, 5],
         );
-        final (values, indices) =
-            TopKOp(k: 3, axis: 1).applyTopK(tensor);
+        final (values, indices) = TopKOp(k: 3, axis: 1).applyTopK(tensor);
 
         // For each row, verify that input[row][indices[row][i]] == values[row][i]
         for (int row = 0; row < 2; row++) {

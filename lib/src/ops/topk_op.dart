@@ -115,8 +115,7 @@ class TopKOp extends TransformOp {
     final outputShape = List<int>.from(src.shape);
     outputShape[normalizedAxis] = k;
 
-    final valuesOut =
-        TensorBuffer.uninitialized(outputShape, dtype: src.dtype);
+    final valuesOut = TensorBuffer.uninitialized(outputShape, dtype: src.dtype);
     final indicesOut =
         TensorBuffer.uninitialized(outputShape, dtype: DType.int64);
 
@@ -232,8 +231,7 @@ class TopKOp extends TransformOp {
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {
-    final normalizedAxis =
-        axis < 0 ? inputShape.length + axis : axis;
+    final normalizedAxis = axis < 0 ? inputShape.length + axis : axis;
     final out = List<int>.from(inputShape);
     out[normalizedAxis] = k;
     return out;
