@@ -23,11 +23,7 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
   final int? seed;
 
   /// Creates a random crop operation.
-  RandomCropOp({
-    required this.height,
-    required this.width,
-    this.seed,
-  }) {
+  RandomCropOp({required this.height, required this.width, this.seed}) {
     if (height <= 0 || width <= 0) {
       throw InvalidParameterException(
         'height/width',
@@ -42,9 +38,9 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: false,
-      );
+    requiresContiguous: true,
+    preservesShape: false,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -91,8 +87,11 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
     if (inputShape.length == 3) {
       // 3D: [C, H, W]
       final (c, h, w) = (inputShape[0], inputShape[1], inputShape[2]);
-      final output =
-          TensorBuffer.uninitialized([c, height, width], dtype: input.dtype);
+      final output = TensorBuffer.uninitialized([
+        c,
+        height,
+        width,
+      ], dtype: input.dtype);
 
       for (int ch = 0; ch < c; ch++) {
         for (int row = 0; row < height; row++) {
@@ -108,20 +107,30 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
       return output;
     } else {
       // 4D: [N, C, H, W]
-      final (n, c, h, w) =
-          (inputShape[0], inputShape[1], inputShape[2], inputShape[3]);
-      final output =
-          TensorBuffer.uninitialized([n, c, height, width], dtype: input.dtype);
+      final (n, c, h, w) = (
+        inputShape[0],
+        inputShape[1],
+        inputShape[2],
+        inputShape[3],
+      );
+      final output = TensorBuffer.uninitialized([
+        n,
+        c,
+        height,
+        width,
+      ], dtype: input.dtype);
 
       for (int batch = 0; batch < n; batch++) {
         for (int ch = 0; ch < c; ch++) {
           for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-              final inputIdx = batch * c * h * w +
+              final inputIdx =
+                  batch * c * h * w +
                   ch * h * w +
                   (startH + row) * w +
                   (startW + col);
-              final outputIdx = batch * c * height * width +
+              final outputIdx =
+                  batch * c * height * width +
                   ch * height * width +
                   row * width +
                   col;
@@ -165,10 +174,8 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
   final double sigma;
 
   /// Creates a Gaussian blur operation.
-  GaussianBlurOp({
-    this.kernelSize = 3,
-    double? sigma,
-  }) : sigma = sigma ?? _defaultSigma(kernelSize) {
+  GaussianBlurOp({this.kernelSize = 3, double? sigma})
+    : sigma = sigma ?? _defaultSigma(kernelSize) {
     if (kernelSize < 1 || kernelSize % 2 == 0) {
       throw InvalidParameterException(
         'kernelSize',
@@ -198,9 +205,8 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
   String get name => 'GaussianBlur(kernelSize=$kernelSize, sigma=$sigma)';
 
   @override
-  OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-      );
+  OperationCapabilities get capabilities =>
+      const OperationCapabilities(requiresContiguous: true);
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -325,10 +331,18 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
       return output;
     } else {
       // 4D: [N, C, H, W]
-      final (n, c, h, w) =
-          (inputShape[0], inputShape[1], inputShape[2], inputShape[3]);
-      final output =
-          TensorBuffer.uninitialized([n, c, h, w], dtype: input.dtype);
+      final (n, c, h, w) = (
+        inputShape[0],
+        inputShape[1],
+        inputShape[2],
+        inputShape[3],
+      );
+      final output = TensorBuffer.uninitialized([
+        n,
+        c,
+        h,
+        w,
+      ], dtype: input.dtype);
 
       // Acquire pooled temp buffer (reused across batches and channels)
       final temp = BufferPool.instance.acquireFloat64(h * w);
@@ -437,10 +451,10 @@ class HorizontalFlipOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: true,
-        pytorchEquivalent: 'torchvision.transforms.functional.hflip',
-      );
+    requiresContiguous: true,
+    preservesShape: true,
+    pytorchEquivalent: 'torchvision.transforms.functional.hflip',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -476,10 +490,10 @@ class VerticalFlipOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: true,
-        pytorchEquivalent: 'torchvision.transforms.functional.vflip',
-      );
+    requiresContiguous: true,
+    preservesShape: true,
+    pytorchEquivalent: 'torchvision.transforms.functional.vflip',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -522,10 +536,7 @@ class RandomHorizontalFlipOp extends TransformOp with RequiresContiguous {
   ///
   /// [probability] defaults to 0.5, matching PyTorch's default.
   /// [seed] can be provided for deterministic behavior.
-  RandomHorizontalFlipOp({
-    this.probability = 0.5,
-    this.seed,
-  }) {
+  RandomHorizontalFlipOp({this.probability = 0.5, this.seed}) {
     if (probability < 0.0 || probability > 1.0) {
       throw InvalidParameterException(
         'probability',
@@ -542,10 +553,10 @@ class RandomHorizontalFlipOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: true,
-        pytorchEquivalent: 'torchvision.transforms.RandomHorizontalFlip',
-      );
+    requiresContiguous: true,
+    preservesShape: true,
+    pytorchEquivalent: 'torchvision.transforms.RandomHorizontalFlip',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -591,10 +602,7 @@ class RandomVerticalFlipOp extends TransformOp with RequiresContiguous {
   ///
   /// [probability] defaults to 0.5, matching PyTorch's default.
   /// [seed] can be provided for deterministic behavior.
-  RandomVerticalFlipOp({
-    this.probability = 0.5,
-    this.seed,
-  }) {
+  RandomVerticalFlipOp({this.probability = 0.5, this.seed}) {
     if (probability < 0.0 || probability > 1.0) {
       throw InvalidParameterException(
         'probability',
@@ -611,10 +619,10 @@ class RandomVerticalFlipOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        preservesShape: true,
-        pytorchEquivalent: 'torchvision.transforms.RandomVerticalFlip',
-      );
+    requiresContiguous: true,
+    preservesShape: true,
+    pytorchEquivalent: 'torchvision.transforms.RandomVerticalFlip',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -684,8 +692,10 @@ TensorBuffer _flipHorizontal(TensorBuffer input) {
             for (int col = 0; col < w; col++) {
               final srcIdx = ch * h * w + row * w + (w - 1 - col);
               final dstIdx = ch * h * w + row * w + col;
-              output.storage
-                  .setFromDouble(dstIdx, input.storage.getAsDouble(srcIdx));
+              output.storage.setFromDouble(
+                dstIdx,
+                input.storage.getAsDouble(srcIdx),
+              );
             }
           }
         }
@@ -736,8 +746,10 @@ TensorBuffer _flipHorizontal(TensorBuffer input) {
                 final srcIdx =
                     batch * c * h * w + ch * h * w + row * w + (w - 1 - col);
                 final dstIdx = batch * c * h * w + ch * h * w + row * w + col;
-                output.storage
-                    .setFromDouble(dstIdx, input.storage.getAsDouble(srcIdx));
+                output.storage.setFromDouble(
+                  dstIdx,
+                  input.storage.getAsDouble(srcIdx),
+                );
               }
             }
           }
@@ -789,8 +801,10 @@ TensorBuffer _flipVertical(TensorBuffer input) {
             for (int col = 0; col < w; col++) {
               final srcIdx = ch * h * w + (h - 1 - row) * w + col;
               final dstIdx = ch * h * w + row * w + col;
-              output.storage
-                  .setFromDouble(dstIdx, input.storage.getAsDouble(srcIdx));
+              output.storage.setFromDouble(
+                dstIdx,
+                input.storage.getAsDouble(srcIdx),
+              );
             }
           }
         }
@@ -843,8 +857,10 @@ TensorBuffer _flipVertical(TensorBuffer input) {
                 final srcIdx =
                     batch * c * h * w + ch * h * w + (h - 1 - row) * w + col;
                 final dstIdx = batch * c * h * w + ch * h * w + row * w + col;
-                output.storage
-                    .setFromDouble(dstIdx, input.storage.getAsDouble(srcIdx));
+                output.storage.setFromDouble(
+                  dstIdx,
+                  input.storage.getAsDouble(srcIdx),
+                );
               }
             }
           }

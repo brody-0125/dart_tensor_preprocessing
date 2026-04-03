@@ -193,19 +193,22 @@ void main() {
 
     group('strides', () {
       test('computes contiguous strides correctly', () {
-        final strides = TensorBuffer.computeStrides(
-          [2, 3, 4],
-          MemoryFormat.contiguous,
-        );
+        final strides = TensorBuffer.computeStrides([
+          2,
+          3,
+          4,
+        ], MemoryFormat.contiguous);
 
         expect(strides, equals([12, 4, 1]));
       });
 
       test('computes channels-last strides correctly', () {
-        final strides = TensorBuffer.computeStrides(
-          [1, 3, 224, 224],
-          MemoryFormat.channelsLast,
-        );
+        final strides = TensorBuffer.computeStrides([
+          1,
+          3,
+          224,
+          224,
+        ], MemoryFormat.channelsLast);
 
         // NHWC strides for [N=1, C=3, H=224, W=224]
         // N stride = H*W*C = 224*224*3 = 150528

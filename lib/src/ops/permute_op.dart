@@ -14,7 +14,10 @@ class PermuteOp extends TransformOp {
   PermuteOp(this.dims) {
     if (dims.isEmpty) {
       throw InvalidParameterException(
-          'dims', dims.toString(), 'Cannot be empty');
+        'dims',
+        dims.toString(),
+        'Cannot be empty',
+      );
     }
   }
 
@@ -73,13 +76,17 @@ class LayoutConvertOp extends TransformOp {
 
   /// Converts to NCHW (contiguous) layout.
   factory LayoutConvertOp.toNchw({bool forceContiguous = true}) =>
-      LayoutConvertOp(MemoryFormat.contiguous,
-          forceContiguous: forceContiguous);
+      LayoutConvertOp(
+        MemoryFormat.contiguous,
+        forceContiguous: forceContiguous,
+      );
 
   /// Converts to NHWC (channels-last) layout.
   factory LayoutConvertOp.toNhwc({bool forceContiguous = true}) =>
-      LayoutConvertOp(MemoryFormat.channelsLast,
-          forceContiguous: forceContiguous);
+      LayoutConvertOp(
+        MemoryFormat.channelsLast,
+        forceContiguous: forceContiguous,
+      );
 
   @override
   String get name => 'LayoutConvert(${targetFormat.layoutName})';
@@ -157,7 +164,7 @@ class UnsqueezeOp extends TransformOp {
     return [
       ...inputShape.sublist(0, normalizedDim),
       1,
-      ...inputShape.sublist(normalizedDim)
+      ...inputShape.sublist(normalizedDim),
     ];
   }
 }

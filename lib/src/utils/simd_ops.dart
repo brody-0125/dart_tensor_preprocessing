@@ -117,17 +117,27 @@ class SimdOps {
     final simdLength = length ~/ 4 * 4;
 
     // Check if all arrays are aligned
-    final allAligned = a.offsetInBytes % 16 == 0 &&
+    final allAligned =
+        a.offsetInBytes % 16 == 0 &&
         b.offsetInBytes % 16 == 0 &&
         out.offsetInBytes % 16 == 0;
 
     if (allAligned) {
-      final aView =
-          Float32x4List.view(a.buffer, a.offsetInBytes, simdLength ~/ 4);
-      final bView =
-          Float32x4List.view(b.buffer, b.offsetInBytes, simdLength ~/ 4);
-      final outView =
-          Float32x4List.view(out.buffer, out.offsetInBytes, simdLength ~/ 4);
+      final aView = Float32x4List.view(
+        a.buffer,
+        a.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      final bView = Float32x4List.view(
+        b.buffer,
+        b.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      final outView = Float32x4List.view(
+        out.buffer,
+        out.offsetInBytes,
+        simdLength ~/ 4,
+      );
 
       for (var i = 0; i < aView.length; i++) {
         outView[i] = aView[i] + bView[i];
@@ -162,17 +172,27 @@ class SimdOps {
     final simdLength = length ~/ 4 * 4;
 
     // Check if all arrays are aligned
-    final allAligned = a.offsetInBytes % 16 == 0 &&
+    final allAligned =
+        a.offsetInBytes % 16 == 0 &&
         b.offsetInBytes % 16 == 0 &&
         out.offsetInBytes % 16 == 0;
 
     if (allAligned) {
-      final aView =
-          Float32x4List.view(a.buffer, a.offsetInBytes, simdLength ~/ 4);
-      final bView =
-          Float32x4List.view(b.buffer, b.offsetInBytes, simdLength ~/ 4);
-      final outView =
-          Float32x4List.view(out.buffer, out.offsetInBytes, simdLength ~/ 4);
+      final aView = Float32x4List.view(
+        a.buffer,
+        a.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      final bView = Float32x4List.view(
+        b.buffer,
+        b.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      final outView = Float32x4List.view(
+        out.buffer,
+        out.offsetInBytes,
+        simdLength ~/ 4,
+      );
 
       for (var i = 0; i < aView.length; i++) {
         outView[i] = aView[i] - bView[i];
@@ -207,17 +227,27 @@ class SimdOps {
     final simdLength = length ~/ 4 * 4;
 
     // Check if all arrays are aligned
-    final allAligned = a.offsetInBytes % 16 == 0 &&
+    final allAligned =
+        a.offsetInBytes % 16 == 0 &&
         b.offsetInBytes % 16 == 0 &&
         out.offsetInBytes % 16 == 0;
 
     if (allAligned) {
-      final aView =
-          Float32x4List.view(a.buffer, a.offsetInBytes, simdLength ~/ 4);
-      final bView =
-          Float32x4List.view(b.buffer, b.offsetInBytes, simdLength ~/ 4);
-      final outView =
-          Float32x4List.view(out.buffer, out.offsetInBytes, simdLength ~/ 4);
+      final aView = Float32x4List.view(
+        a.buffer,
+        a.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      final bView = Float32x4List.view(
+        b.buffer,
+        b.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      final outView = Float32x4List.view(
+        out.buffer,
+        out.offsetInBytes,
+        simdLength ~/ 4,
+      );
 
       for (var i = 0; i < aView.length; i++) {
         outView[i] = aView[i] / bView[i];
@@ -251,17 +281,27 @@ class SimdOps {
 
     final simdLength = length ~/ 4 * 4;
 
-    final allAligned = a.offsetInBytes % 16 == 0 &&
+    final allAligned =
+        a.offsetInBytes % 16 == 0 &&
         b.offsetInBytes % 16 == 0 &&
         out.offsetInBytes % 16 == 0;
 
     if (allAligned) {
-      final aView =
-          Float32x4List.view(a.buffer, a.offsetInBytes, simdLength ~/ 4);
-      final bView =
-          Float32x4List.view(b.buffer, b.offsetInBytes, simdLength ~/ 4);
-      final outView =
-          Float32x4List.view(out.buffer, out.offsetInBytes, simdLength ~/ 4);
+      final aView = Float32x4List.view(
+        a.buffer,
+        a.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      final bView = Float32x4List.view(
+        b.buffer,
+        b.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      final outView = Float32x4List.view(
+        out.buffer,
+        out.offsetInBytes,
+        simdLength ~/ 4,
+      );
 
       for (var i = 0; i < aView.length; i++) {
         outView[i] = aView[i] * bView[i];
@@ -421,10 +461,16 @@ class SimdOps {
         src.offsetInBytes % 16 == 0 && dst.offsetInBytes % 16 == 0;
 
     if (allAligned) {
-      final srcView =
-          Float32x4List.view(src.buffer, src.offsetInBytes, simdLength ~/ 4);
-      final dstView =
-          Float32x4List.view(dst.buffer, dst.offsetInBytes, simdLength ~/ 4);
+      final srcView = Float32x4List.view(
+        src.buffer,
+        src.offsetInBytes,
+        simdLength ~/ 4,
+      );
+      final dstView = Float32x4List.view(
+        dst.buffer,
+        dst.offsetInBytes,
+        simdLength ~/ 4,
+      );
       for (var i = 0; i < srcView.length; i++) {
         dstView[i] = srcView[i];
       }

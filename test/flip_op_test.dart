@@ -192,8 +192,10 @@ void main() {
         final op = HorizontalFlipOp();
         expect(op.capabilities.requiresContiguous, isTrue);
         expect(op.capabilities.preservesShape, isTrue);
-        expect(op.capabilities.pytorchEquivalent,
-            equals('torchvision.transforms.functional.hflip'));
+        expect(
+          op.capabilities.pytorchEquivalent,
+          equals('torchvision.transforms.functional.hflip'),
+        );
       });
     });
   });
@@ -369,8 +371,10 @@ void main() {
         final op = VerticalFlipOp();
         expect(op.capabilities.requiresContiguous, isTrue);
         expect(op.capabilities.preservesShape, isTrue);
-        expect(op.capabilities.pytorchEquivalent,
-            equals('torchvision.transforms.functional.vflip'));
+        expect(
+          op.capabilities.pytorchEquivalent,
+          equals('torchvision.transforms.functional.vflip'),
+        );
       });
     });
   });
@@ -453,8 +457,10 @@ void main() {
         final result2 = op2(tensor);
 
         for (int i = 0; i < 6; i++) {
-          expect(result1.storage.getAsDouble(i),
-              equals(result2.storage.getAsDouble(i)));
+          expect(
+            result1.storage.getAsDouble(i),
+            equals(result2.storage.getAsDouble(i)),
+          );
         }
       });
     });
@@ -495,13 +501,17 @@ void main() {
       test('toString without seed', () {
         final op = RandomHorizontalFlipOp(probability: 0.5);
         expect(
-            op.toString(), equals('TransformOp(RandomHorizontalFlip(p=0.5))'));
+          op.toString(),
+          equals('TransformOp(RandomHorizontalFlip(p=0.5))'),
+        );
       });
 
       test('toString with seed', () {
         final op = RandomHorizontalFlipOp(probability: 0.3, seed: 42);
-        expect(op.toString(),
-            equals('TransformOp(RandomHorizontalFlip(p=0.3, seed=42))'));
+        expect(
+          op.toString(),
+          equals('TransformOp(RandomHorizontalFlip(p=0.3, seed=42))'),
+        );
       });
     });
 
@@ -510,8 +520,10 @@ void main() {
         final op = RandomHorizontalFlipOp();
         expect(op.capabilities.requiresContiguous, isTrue);
         expect(op.capabilities.preservesShape, isTrue);
-        expect(op.capabilities.pytorchEquivalent,
-            equals('torchvision.transforms.RandomHorizontalFlip'));
+        expect(
+          op.capabilities.pytorchEquivalent,
+          equals('torchvision.transforms.RandomHorizontalFlip'),
+        );
       });
     });
   });
@@ -595,8 +607,10 @@ void main() {
         final result2 = op2(tensor);
 
         for (int i = 0; i < 6; i++) {
-          expect(result1.storage.getAsDouble(i),
-              equals(result2.storage.getAsDouble(i)));
+          expect(
+            result1.storage.getAsDouble(i),
+            equals(result2.storage.getAsDouble(i)),
+          );
         }
       });
     });
@@ -644,8 +658,10 @@ void main() {
 
       test('toString with seed', () {
         final op = RandomVerticalFlipOp(probability: 0.7, seed: 99);
-        expect(op.toString(),
-            equals('TransformOp(RandomVerticalFlip(p=0.7, seed=99))'));
+        expect(
+          op.toString(),
+          equals('TransformOp(RandomVerticalFlip(p=0.7, seed=99))'),
+        );
       });
     });
 
@@ -654,8 +670,10 @@ void main() {
         final op = RandomVerticalFlipOp();
         expect(op.capabilities.requiresContiguous, isTrue);
         expect(op.capabilities.preservesShape, isTrue);
-        expect(op.capabilities.pytorchEquivalent,
-            equals('torchvision.transforms.RandomVerticalFlip'));
+        expect(
+          op.capabilities.pytorchEquivalent,
+          equals('torchvision.transforms.RandomVerticalFlip'),
+        );
       });
     });
   });
@@ -685,8 +703,20 @@ void main() {
     });
 
     test('both flips are commutative', () {
-      final data =
-          Float32List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      final data = Float32List.fromList([
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+      ]);
       final tensor = TensorBuffer.fromFloat32List(data, [1, 3, 4]);
 
       final hFlip = HorizontalFlipOp();
@@ -696,8 +726,10 @@ void main() {
       final vhResult = hFlip(vFlip(tensor));
 
       for (int i = 0; i < 12; i++) {
-        expect(hvResult.storage.getAsDouble(i),
-            equals(vhResult.storage.getAsDouble(i)));
+        expect(
+          hvResult.storage.getAsDouble(i),
+          equals(vhResult.storage.getAsDouble(i)),
+        );
       }
     });
 

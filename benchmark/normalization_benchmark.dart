@@ -57,10 +57,7 @@ Future<List<BenchmarkResult>> runNormalizationBenchmarks() async {
 
     // Create input tensor
     final numel = shape.reduce((a, b) => a * b);
-    _tensor = TensorBuffer.fromFloat32List(
-      Float32List(numel),
-      shape,
-    );
+    _tensor = TensorBuffer.fromFloat32List(Float32List(numel), shape);
 
     final result = await benchmark(
       'BatchNorm $name',
@@ -85,15 +82,11 @@ Future<List<BenchmarkResult>> runNormalizationBenchmarks() async {
 
     final numel = shape.reduce((a, b) => a * b);
 
-    final result = await benchmark(
-      'BatchNorm.inPlace $name',
-      () {
-        // Create fresh tensor each iteration for in-place
-        _tensor = TensorBuffer.fromFloat32List(Float32List(numel), shape);
-        _batchNormOp.applyInPlace(_tensor);
-      },
-      iterations: numel > 500000 ? 20 : 50,
-    );
+    final result = await benchmark('BatchNorm.inPlace $name', () {
+      // Create fresh tensor each iteration for in-place
+      _tensor = TensorBuffer.fromFloat32List(Float32List(numel), shape);
+      _batchNormOp.applyInPlace(_tensor);
+    }, iterations: numel > 500000 ? 20 : 50);
     results.add(result);
     print(result);
   }
@@ -140,10 +133,7 @@ Future<List<BenchmarkResult>> runNormalizationBenchmarks() async {
     );
 
     final numel = shape.reduce((a, b) => a * b);
-    _tensor = TensorBuffer.fromFloat32List(
-      Float32List(numel),
-      shape,
-    );
+    _tensor = TensorBuffer.fromFloat32List(Float32List(numel), shape);
 
     final result = await benchmark(
       'LayerNorm $name',
@@ -169,14 +159,10 @@ Future<List<BenchmarkResult>> runNormalizationBenchmarks() async {
 
     final numel = shape.reduce((a, b) => a * b);
 
-    final result = await benchmark(
-      'LayerNorm.inPlace $name',
-      () {
-        _tensor = TensorBuffer.fromFloat32List(Float32List(numel), shape);
-        _layerNormOp.applyInPlace(_tensor);
-      },
-      iterations: numel > 500000 ? 10 : 50,
-    );
+    final result = await benchmark('LayerNorm.inPlace $name', () {
+      _tensor = TensorBuffer.fromFloat32List(Float32List(numel), shape);
+      _layerNormOp.applyInPlace(_tensor);
+    }, iterations: numel > 500000 ? 10 : 50);
     results.add(result);
     print(result);
   }
@@ -207,10 +193,7 @@ Future<List<BenchmarkResult>> runNormalizationBenchmarks() async {
     );
 
     final numel = shape.reduce((a, b) => a * b);
-    _tensor = TensorBuffer.fromFloat32List(
-      Float32List(numel),
-      shape,
-    );
+    _tensor = TensorBuffer.fromFloat32List(Float32List(numel), shape);
 
     final result = await benchmark(
       'LayerNorm $name',

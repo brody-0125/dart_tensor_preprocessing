@@ -168,10 +168,7 @@ void main() {
 
   group('TensorPipeline', () {
     test('chains multiple operations', () {
-      final pipeline = TensorPipeline([
-        UnsqueezeOp.batch(),
-        SqueezeOp.batch(),
-      ]);
+      final pipeline = TensorPipeline([UnsqueezeOp.batch(), SqueezeOp.batch()]);
 
       final tensor = TensorBuffer.zeros([3, 224, 224]);
       final result = pipeline.run(tensor);
@@ -278,15 +275,15 @@ void main() {
     });
 
     test('EmptyPipelineException on empty operations', () {
-      expect(
-        () => TensorPipeline([]),
-        throwsA(isA<EmptyPipelineException>()),
-      );
+      expect(() => TensorPipeline([]), throwsA(isA<EmptyPipelineException>()));
     });
 
     test('InvalidParameterException provides details', () {
-      final exception =
-          InvalidParameterException('size', -1, 'Must be positive');
+      final exception = InvalidParameterException(
+        'size',
+        -1,
+        'Must be positive',
+      );
 
       expect(exception.message, contains('size'));
       expect(exception.message, contains('-1'));

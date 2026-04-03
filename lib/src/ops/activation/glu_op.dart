@@ -35,11 +35,11 @@ class GLUOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        preservesShape: false,
-        requiresContiguous: true,
-        pytorchEquivalent: 'F.glu',
-        onnxOpType: 'Split+Sigmoid+Mul',
-      );
+    preservesShape: false,
+    requiresContiguous: true,
+    pytorchEquivalent: 'F.glu',
+    onnxOpType: 'Split+Sigmoid+Mul',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -71,8 +71,10 @@ class GLUOp extends TransformOp with RequiresContiguous {
     final outputShape = List<int>.from(shape);
     outputShape[normalizedDim] = halfSize;
 
-    final output =
-        TensorBuffer.uninitialized(outputShape, dtype: contiguous.dtype);
+    final output = TensorBuffer.uninitialized(
+      outputShape,
+      dtype: contiguous.dtype,
+    );
 
     _computeGlu(contiguous, output, normalizedDim, halfSize);
 
@@ -173,10 +175,7 @@ class GLUOp extends TransformOp with RequiresContiguous {
 
           final a = inStorage.getAsDouble(aIdx);
           final b = inStorage.getAsDouble(bIdx);
-          outStorage.setFromDouble(
-            outIdx,
-            a * (1.0 / (1.0 + math.exp(-b))),
-          );
+          outStorage.setFromDouble(outIdx, a * (1.0 / (1.0 + math.exp(-b))));
         }
     }
   }

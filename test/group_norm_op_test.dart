@@ -80,37 +80,25 @@ void main() {
       test('throws on 2D tensor', () {
         final tensor = TensorBuffer.zeros([4, 16]);
         final op = GroupNormOp(numGroups: 2, numChannels: 4);
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('throws on 5D tensor', () {
         final tensor = TensorBuffer.zeros([1, 4, 2, 2, 2]);
         final op = GroupNormOp(numGroups: 2, numChannels: 4);
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('throws on channel mismatch for 3D', () {
         final tensor = TensorBuffer.zeros([8, 2, 2]); // 8 channels
         final op = GroupNormOp(numGroups: 2, numChannels: 4); // expects 4
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('throws on channel mismatch for 4D', () {
         final tensor = TensorBuffer.zeros([1, 8, 2, 2]); // 8 channels
         final op = GroupNormOp(numGroups: 2, numChannels: 4); // expects 4
-        expect(
-          () => op.apply(tensor),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => op.apply(tensor), throwsA(isA<ShapeMismatchException>()));
       });
 
       test('accepts valid 3D tensor', () {

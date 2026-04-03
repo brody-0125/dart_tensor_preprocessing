@@ -31,9 +31,9 @@ class RollOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-        pytorchEquivalent: 'torch.roll',
-      );
+    requiresContiguous: true,
+    pytorchEquivalent: 'torch.roll',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -59,8 +59,10 @@ class RollOp extends TransformOp with RequiresContiguous {
     final numel = input.numel;
     final shift = ((shifts[0] % numel) + numel) % numel;
 
-    final output = TensorBuffer.uninitialized(List<int>.from(input.shape),
-        dtype: input.dtype);
+    final output = TensorBuffer.uninitialized(
+      List<int>.from(input.shape),
+      dtype: input.dtype,
+    );
 
     switch (input.dtype) {
       case DType.float32:
@@ -112,8 +114,10 @@ class RollOp extends TransformOp with RequiresContiguous {
     final strides = TensorIndexer.computeStrides(shape);
     final numel = input.numel;
 
-    final output =
-        TensorBuffer.uninitialized(List<int>.from(shape), dtype: input.dtype);
+    final output = TensorBuffer.uninitialized(
+      List<int>.from(shape),
+      dtype: input.dtype,
+    );
 
     switch (input.dtype) {
       case DType.float32:

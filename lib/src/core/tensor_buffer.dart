@@ -353,22 +353,17 @@ class TensorBuffer {
     List<int> shape, {
     DType dtype = DType.float32,
     MemoryFormat memoryFormat = MemoryFormat.contiguous,
-  }) =>
-      _uninitializedImpl(shape, dtype: dtype, memoryFormat: memoryFormat);
+  }) => _uninitializedImpl(shape, dtype: dtype, memoryFormat: memoryFormat);
 
   /// Creates a tensor filled with zeros.
   static TensorBuffer zeros(
     List<int> shape, {
     DType dtype = DType.float32,
     MemoryFormat memoryFormat = MemoryFormat.contiguous,
-  }) =>
-      _zerosImpl(shape, dtype: dtype, memoryFormat: memoryFormat);
+  }) => _zerosImpl(shape, dtype: dtype, memoryFormat: memoryFormat);
 
   /// Creates a tensor filled with ones.
-  static TensorBuffer ones(
-    List<int> shape, {
-    DType dtype = DType.float32,
-  }) =>
+  static TensorBuffer ones(List<int> shape, {DType dtype = DType.float32}) =>
       _onesImpl(shape, dtype: dtype);
 
   /// Creates a tensor filled with a specific value.
@@ -382,8 +377,7 @@ class TensorBuffer {
     List<int> shape, {
     required double fillValue,
     DType dtype = DType.float32,
-  }) =>
-      _fullImpl(shape, fillValue: fillValue, dtype: dtype);
+  }) => _fullImpl(shape, fillValue: fillValue, dtype: dtype);
 
   /// Creates a tensor with random values uniformly distributed in [0, 1).
   ///
@@ -397,8 +391,7 @@ class TensorBuffer {
     List<int> shape, {
     DType dtype = DType.float32,
     int? seed,
-  }) =>
-      _randomImpl(shape, dtype: dtype, seed: seed);
+  }) => _randomImpl(shape, dtype: dtype, seed: seed);
 
   /// Creates a tensor with random values from a standard normal distribution N(0, 1).
   ///
@@ -412,8 +405,7 @@ class TensorBuffer {
     List<int> shape, {
     DType dtype = DType.float32,
     int? seed,
-  }) =>
-      _randnImpl(shape, dtype: dtype, seed: seed);
+  }) => _randnImpl(shape, dtype: dtype, seed: seed);
 
   /// Creates a 2D identity matrix.
   ///
@@ -423,11 +415,7 @@ class TensorBuffer {
   /// final tensor = TensorBuffer.eye(3); // 3x3 identity matrix
   /// final rect = TensorBuffer.eye(2, m: 4); // 2x4 matrix with 1s on diagonal
   /// ```
-  static TensorBuffer eye(
-    int n, {
-    int? m,
-    DType dtype = DType.float32,
-  }) =>
+  static TensorBuffer eye(int n, {int? m, DType dtype = DType.float32}) =>
       _eyeImpl(n, m: m, dtype: dtype);
 
   /// Creates a 1D tensor with evenly spaced values.
@@ -443,8 +431,7 @@ class TensorBuffer {
     double end, {
     required int steps,
     DType dtype = DType.float32,
-  }) =>
-      _linspaceImpl(start, end, steps: steps, dtype: dtype);
+  }) => _linspaceImpl(start, end, steps: steps, dtype: dtype);
 
   /// Creates a 1D tensor with values in a range with a given step.
   ///
@@ -462,8 +449,7 @@ class TensorBuffer {
     required double end,
     double step = 1.0,
     DType dtype = DType.float32,
-  }) =>
-      _arangeImpl(start: start, end: end, step: step, dtype: dtype);
+  }) => _arangeImpl(start: start, end: end, step: step, dtype: dtype);
 
   /// Creates a tensor from an existing [Float32List] with the given [shape].
   ///

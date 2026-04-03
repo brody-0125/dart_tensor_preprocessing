@@ -10,8 +10,7 @@ class ErrorMessages {
     String operationName,
     int expectedRank,
     int actualRank,
-  ) =>
-      '$operationName: expected ${expectedRank}D tensor, got ${actualRank}D';
+  ) => '$operationName: expected ${expectedRank}D tensor, got ${actualRank}D';
 
   /// Message for rank range errors.
   static String rankRange(
@@ -35,15 +34,10 @@ class ErrorMessages {
     String operationName,
     List<int> expectedShape,
     List<int> actualShape,
-  ) =>
-      '$operationName: expected shape $expectedShape, got $actualShape';
+  ) => '$operationName: expected shape $expectedShape, got $actualShape';
 
   /// Message for axis out of bounds errors.
-  static String axisBounds(
-    String operationName,
-    int axis,
-    int rank,
-  ) =>
+  static String axisBounds(String operationName, int axis, int rank) =>
       '$operationName: axis $axis is out of bounds for ${rank}D tensor';
 
   /// Message for dtype mismatch errors.
@@ -51,8 +45,7 @@ class ErrorMessages {
     String operationName,
     String expectedDType,
     String actualDType,
-  ) =>
-      '$operationName: expected dtype $expectedDType, got $actualDType';
+  ) => '$operationName: expected dtype $expectedDType, got $actualDType';
 
   /// Message for parameter out of range errors.
   static String parameterRange(
@@ -61,8 +54,7 @@ class ErrorMessages {
     num value,
     num min,
     num max,
-  ) =>
-      '$operationName: $paramName $value is out of range [$min, $max]';
+  ) => '$operationName: $paramName $value is out of range [$min, $max]';
 
   /// Message for broadcast-incompatible shapes.
   static String broadcastIncompatible(

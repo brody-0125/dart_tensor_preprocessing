@@ -144,18 +144,15 @@ Future<List<BenchmarkResult>> runPipelineBenchmarks() async {
 
   // Process 10 images sequentially (sync)
   final images = List.generate(10, (_) => _createRandomTensor([3, 224, 224]));
-  result = await benchmark(
-    'Batch 10 images (sync)',
-    () {
-      for (final img in images) {
-        simplePipeline.run(img);
-      }
-    },
-    iterations: 5,
-  );
+  result = await benchmark('Batch 10 images (sync)', () {
+    for (final img in images) {
+      simplePipeline.run(img);
+    }
+  }, iterations: 5);
   results.add(result);
   print(
-      '${result.name}: ${(result.avgMilliseconds / 10).toStringAsFixed(2)}ms per image');
+    '${result.name}: ${(result.avgMilliseconds / 10).toStringAsFixed(2)}ms per image',
+  );
 
   return results;
 }

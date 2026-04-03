@@ -34,12 +34,7 @@ void main() {
       });
 
       test('normalizes along dim=0 for 2D tensor', () {
-        final data = Float32List.fromList([
-          3.0,
-          1.0,
-          4.0,
-          0.0,
-        ]);
+        final data = Float32List.fromList([3.0, 1.0, 4.0, 0.0]);
         final tensor = TensorBuffer.fromFloat32List(data, [2, 2]);
 
         final result = LpNormalizeOp.l2(dim: 0)(tensor);
@@ -187,10 +182,7 @@ void main() {
       test('name reflects parameters', () {
         expect(LpNormalizeOp.l2().name, equals('LpNormalize(p=2.0)'));
         expect(LpNormalizeOp.l1().name, equals('LpNormalize(p=1.0)'));
-        expect(
-          LpNormalizeOp.linf().name,
-          equals('LpNormalize(p=Infinity)'),
-        );
+        expect(LpNormalizeOp.linf().name, equals('LpNormalize(p=Infinity)'));
       });
 
       test('capabilities include pytorch and onnx equivalents', () {

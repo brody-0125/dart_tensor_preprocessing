@@ -84,10 +84,10 @@ enum DType {
       Uint32List() => DType.uint32,
       Uint64List() => DType.uint64,
       _ => throw InvalidParameterException(
-          'data',
-          data.runtimeType,
-          'Unsupported TypedData type',
-        ),
+        'data',
+        data.runtimeType,
+        'Unsupported TypedData type',
+      ),
     };
   }
 

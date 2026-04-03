@@ -16,7 +16,10 @@ import 'transform_op.dart';
 /// final result = tensorWhere(condition, x, y);
 /// ```
 TensorBuffer tensorWhere(
-    TensorBuffer condition, TensorBuffer x, TensorBuffer y) {
+  TensorBuffer condition,
+  TensorBuffer x,
+  TensorBuffer y,
+) {
   // Validate shapes match (v0.8.1: no broadcasting)
   if (condition.shape.length != x.shape.length) {
     throw ShapeMismatchException(
@@ -49,13 +52,16 @@ TensorBuffer tensorWhere(
     }
   }
 
-  final condContiguous =
-      condition.isContiguous ? condition : condition.contiguous();
+  final condContiguous = condition.isContiguous
+      ? condition
+      : condition.contiguous();
   final xContiguous = x.isContiguous ? x : x.contiguous();
   final yContiguous = y.isContiguous ? y : y.contiguous();
 
-  final output =
-      TensorBuffer.uninitialized(List<int>.from(x.shape), dtype: x.dtype);
+  final output = TensorBuffer.uninitialized(
+    List<int>.from(x.shape),
+    dtype: x.dtype,
+  );
   final numel = output.numel;
 
   switch (x.dtype) {
@@ -120,10 +126,10 @@ class WhereOp extends TransformOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        preservesShape: true,
-        pytorchEquivalent: 'torch.where',
-        onnxOpType: 'Where',
-      );
+    preservesShape: true,
+    pytorchEquivalent: 'torch.where',
+    onnxOpType: 'Where',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) => tensorWhere(condition, input, y);

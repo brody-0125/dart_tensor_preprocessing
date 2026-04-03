@@ -45,7 +45,7 @@ Future<List<BenchmarkResult>> runTensorCreationBenchmarks() async {
     [100, 100],
     [1000, 1000],
     [3, 224, 224],
-    [3, 640, 640]
+    [3, 640, 640],
   ]) {
     final name = 'zeros(${dims.toString()})';
     final result = await benchmark(

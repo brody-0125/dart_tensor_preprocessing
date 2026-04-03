@@ -120,9 +120,9 @@ class InstanceNormOp extends TransformOp
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -239,7 +239,11 @@ class InstanceNormOp extends TransformOp
   }
 
   void _normalizeSliceFloat32(
-      Float32List data, int offset, int size, int channel) {
+    Float32List data,
+    int offset,
+    int size,
+    int channel,
+  ) {
     // Welford's algorithm for numerically stable mean and variance
     double mean = 0.0;
     double m2 = 0.0;
@@ -264,7 +268,11 @@ class InstanceNormOp extends TransformOp
   }
 
   void _normalizeSliceFloat64(
-      Float64List data, int offset, int size, int channel) {
+    Float64List data,
+    int offset,
+    int size,
+    int channel,
+  ) {
     // Welford's algorithm for numerically stable mean and variance
     double mean = 0.0;
     double m2 = 0.0;
@@ -289,7 +297,11 @@ class InstanceNormOp extends TransformOp
   }
 
   void _normalizeSliceGeneric(
-      TensorBuffer tensor, int offset, int size, int channel) {
+    TensorBuffer tensor,
+    int offset,
+    int size,
+    int channel,
+  ) {
     // Welford's algorithm for numerically stable mean and variance
     double mean = 0.0;
     double m2 = 0.0;

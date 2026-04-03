@@ -198,9 +198,20 @@ void main() {
             for (int h = 0; h < shape[2]; h++) {
               for (int w = 0; w < shape[3]; w++) {
                 final fromIndex4D = TensorIndexer.index4D(
-                    b, c, h, w, shape[1], shape[2], shape[3]);
-                final fromCoords =
-                    TensorIndexer.coordsToLinear([b, c, h, w], strides);
+                  b,
+                  c,
+                  h,
+                  w,
+                  shape[1],
+                  shape[2],
+                  shape[3],
+                );
+                final fromCoords = TensorIndexer.coordsToLinear([
+                  b,
+                  c,
+                  h,
+                  w,
+                ], strides);
                 expect(fromIndex4D, fromCoords);
               }
             }

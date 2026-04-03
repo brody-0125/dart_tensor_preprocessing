@@ -17,24 +17,30 @@ class SliceOp extends TransformOp {
 
   /// Creates a slice for a range in a specific dimension.
   factory SliceOp.range(int dim, int start, int end, {int step = 1}) {
-    final sliceList =
-        List<(int? start, int? end, int? step)?>.filled(dim + 1, null);
+    final sliceList = List<(int? start, int? end, int? step)?>.filled(
+      dim + 1,
+      null,
+    );
     sliceList[dim] = (start, end, step);
     return SliceOp(sliceList);
   }
 
   /// Creates a slice from a specific start index to the end.
   factory SliceOp.from(int dim, int start, {int step = 1}) {
-    final sliceList =
-        List<(int? start, int? end, int? step)?>.filled(dim + 1, null);
+    final sliceList = List<(int? start, int? end, int? step)?>.filled(
+      dim + 1,
+      null,
+    );
     sliceList[dim] = (start, null, step);
     return SliceOp(sliceList);
   }
 
   /// Creates a slice from the beginning to a specific end index.
   factory SliceOp.to(int dim, int end, {int step = 1}) {
-    final sliceList =
-        List<(int? start, int? end, int? step)?>.filled(dim + 1, null);
+    final sliceList = List<(int? start, int? end, int? step)?>.filled(
+      dim + 1,
+      null,
+    );
     sliceList[dim] = (null, end, step);
     return SliceOp(sliceList);
   }
@@ -55,8 +61,10 @@ class SliceOp extends TransformOp {
 
       final (start, end, step) = slice;
       final concreteStart = _normalizeIndex(start ?? 0, input.shape[dim]);
-      final concreteEnd =
-          _normalizeIndex(end ?? input.shape[dim], input.shape[dim]);
+      final concreteEnd = _normalizeIndex(
+        end ?? input.shape[dim],
+        input.shape[dim],
+      );
       final concreteStep = step ?? 1;
 
       return (concreteStart, concreteEnd, concreteStep);
@@ -127,7 +135,10 @@ class SliceOp extends TransformOp {
   }
 
   void _copySlicedData(
-      TensorBuffer input, TensorBuffer output, List<(int, int, int)> ranges) {
+    TensorBuffer input,
+    TensorBuffer output,
+    List<(int, int, int)> ranges,
+  ) {
     final inputIndices = List<int>.filled(input.rank, 0);
     final outputIndices = List<int>.filled(output.rank, 0);
 
@@ -178,10 +189,12 @@ class SliceOp extends TransformOp {
       } else {
         final (start, end, step) = slice;
         final dimSize = inputShape[dim];
-        final concreteStart =
-            start != null ? _normalizeIndex(start, dimSize) : 0;
-        final concreteEnd =
-            end != null ? _normalizeIndex(end, dimSize) : dimSize;
+        final concreteStart = start != null
+            ? _normalizeIndex(start, dimSize)
+            : 0;
+        final concreteEnd = end != null
+            ? _normalizeIndex(end, dimSize)
+            : dimSize;
         final concreteStep = step ?? 1;
 
         if (concreteStep <= 0) {
@@ -192,8 +205,8 @@ class SliceOp extends TransformOp {
           );
         }
 
-        final slicedSize =
-            ((concreteEnd - concreteStart) / concreteStep).ceil();
+        final slicedSize = ((concreteEnd - concreteStart) / concreteStep)
+            .ceil();
         outputShape.add(slicedSize);
       }
     }

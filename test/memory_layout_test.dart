@@ -56,58 +56,87 @@ void main() {
   group('Stride Calculations - Contiguous', () {
     test('1D contiguous strides', () {
       // 1D tensor always has stride of 1
-      final strides =
-          TensorBuffer.computeStrides([10], MemoryFormat.contiguous);
+      final strides = TensorBuffer.computeStrides([
+        10,
+      ], MemoryFormat.contiguous);
       expect(strides, equals([1]));
     });
 
     test('2D contiguous strides', () {
       // Shape [3, 4]: stride[0] = 4, stride[1] = 1
-      final strides =
-          TensorBuffer.computeStrides([3, 4], MemoryFormat.contiguous);
+      final strides = TensorBuffer.computeStrides([
+        3,
+        4,
+      ], MemoryFormat.contiguous);
       expect(strides, equals([4, 1]));
     });
 
     test('3D contiguous strides', () {
       // [2, 3, 4]: stride = [3*4, 4, 1] = [12, 4, 1]
-      final strides =
-          TensorBuffer.computeStrides([2, 3, 4], MemoryFormat.contiguous);
+      final strides = TensorBuffer.computeStrides([
+        2,
+        3,
+        4,
+      ], MemoryFormat.contiguous);
       expect(strides, equals([12, 4, 1]));
     });
 
     test('4D contiguous strides (NCHW)', () {
       // [2, 3, 4, 5]: stride = [3*4*5, 4*5, 5, 1] = [60, 20, 5, 1]
-      final strides =
-          TensorBuffer.computeStrides([2, 3, 4, 5], MemoryFormat.contiguous);
+      final strides = TensorBuffer.computeStrides([
+        2,
+        3,
+        4,
+        5,
+      ], MemoryFormat.contiguous);
       expect(strides, equals([60, 20, 5, 1]));
     });
 
     test('5D contiguous strides', () {
       // Same pattern for 5D tensors
-      final strides =
-          TensorBuffer.computeStrides([2, 3, 4, 5, 6], MemoryFormat.contiguous);
+      final strides = TensorBuffer.computeStrides([
+        2,
+        3,
+        4,
+        5,
+        6,
+      ], MemoryFormat.contiguous);
       expect(strides, equals([360, 120, 30, 6, 1]));
     });
 
     test('6D contiguous strides', () {
       // 6D [2,2,2,2,2,2]: 32, 16, 8, 4, 2, 1
-      final strides = TensorBuffer.computeStrides(
-          [2, 2, 2, 2, 2, 2], MemoryFormat.contiguous);
+      final strides = TensorBuffer.computeStrides([
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+      ], MemoryFormat.contiguous);
       expect(strides, equals([32, 16, 8, 4, 2, 1]));
     });
 
     test('size-1 dimensions have correct strides', () {
       // Size-1 dimensions also have correct stride computation
       // [1, 3, 1, 224]: stride = [672, 224, 224, 1]
-      final strides =
-          TensorBuffer.computeStrides([1, 3, 1, 224], MemoryFormat.contiguous);
+      final strides = TensorBuffer.computeStrides([
+        1,
+        3,
+        1,
+        224,
+      ], MemoryFormat.contiguous);
       expect(strides, equals([672, 224, 224, 1]));
     });
 
     test('large tensor strides do not overflow', () {
       // 8K resolution batch images (no overflow)
-      final strides = TensorBuffer.computeStrides(
-          [4, 3, 4320, 7680], MemoryFormat.contiguous);
+      final strides = TensorBuffer.computeStrides([
+        4,
+        3,
+        4320,
+        7680,
+      ], MemoryFormat.contiguous);
       expect(strides[0], equals(3 * 4320 * 7680)); // 99,532,800
       expect(strides[3], equals(1));
     });
@@ -124,8 +153,12 @@ void main() {
       // C stride = 1 (fastest)
       // H stride = W*C = 5*3 = 15
       // W stride = C = 3
-      final strides =
-          TensorBuffer.computeStrides([2, 3, 4, 5], MemoryFormat.channelsLast);
+      final strides = TensorBuffer.computeStrides([
+        2,
+        3,
+        4,
+        5,
+      ], MemoryFormat.channelsLast);
       expect(strides, equals([60, 1, 15, 3]));
     });
 
@@ -133,15 +166,22 @@ void main() {
       // HWC layout for 3D tensors
       // Shape [C=3, H=4, W=5]
       // C stride = 1, H stride = W*C, W stride = C
-      final strides =
-          TensorBuffer.computeStrides([3, 4, 5], MemoryFormat.channelsLast);
+      final strides = TensorBuffer.computeStrides([
+        3,
+        4,
+        5,
+      ], MemoryFormat.channelsLast);
       expect(strides, equals([1, 15, 3]));
     });
 
     test('typical ImageNet shape channelsLast', () {
       // NHWC strides for ImageNet standard shape [1, 3, 224, 224]
-      final strides = TensorBuffer.computeStrides(
-          [1, 3, 224, 224], MemoryFormat.channelsLast);
+      final strides = TensorBuffer.computeStrides([
+        1,
+        3,
+        224,
+        224,
+      ], MemoryFormat.channelsLast);
       expect(strides[0], equals(224 * 224 * 3)); // 150528
       expect(strides[1], equals(1)); // C is fastest
       expect(strides[2], equals(224 * 3)); // 672
@@ -159,8 +199,13 @@ void main() {
     test('channelsLast throws for 5D', () {
       // 5D tensors also don't support channelsLast
       expect(
-        () => TensorBuffer.computeStrides(
-            [1, 2, 3, 4, 5], MemoryFormat.channelsLast),
+        () => TensorBuffer.computeStrides([
+          1,
+          2,
+          3,
+          4,
+          5,
+        ], MemoryFormat.channelsLast),
         throwsUnsupportedError,
       );
     });
@@ -268,13 +313,17 @@ void main() {
       // Already contiguous tensor returns itself
       final contiguousTensor = TensorBuffer.zeros([2, 3, 4]);
       expect(
-          identical(contiguousTensor.contiguous(), contiguousTensor), isTrue);
+        identical(contiguousTensor.contiguous(), contiguousTensor),
+        isTrue,
+      );
 
       // Non-contiguous tensor creates new storage
       final nonContiguous = contiguousTensor.transpose([2, 0, 1]);
       final madeContinuous = nonContiguous.contiguous();
       expect(
-          identical(madeContinuous.storage, contiguousTensor.storage), isFalse);
+        identical(madeContinuous.storage, contiguousTensor.storage),
+        isFalse,
+      );
     });
 
     test('clone always creates new storage', () {
@@ -418,10 +467,12 @@ void main() {
 
     test('channels last memory format data access', () {
       // Data access with channelsLast memory format
-      final tensor = TensorBuffer.zeros(
-        [1, 3, 2, 2],
-        memoryFormat: MemoryFormat.channelsLast,
-      );
+      final tensor = TensorBuffer.zeros([
+        1,
+        3,
+        2,
+        2,
+      ], memoryFormat: MemoryFormat.channelsLast);
 
       // Verify C is fastest changing stride pattern
       expect(tensor.strides[1], equals(1)); // Channel stride = 1
@@ -463,10 +514,12 @@ void main() {
 
     test('multiple size-1 dimensions with channelsLast', () {
       // Multiple size-1 dimensions with channelsLast
-      final tensor = TensorBuffer.zeros(
-        [1, 1, 224, 224],
-        memoryFormat: MemoryFormat.channelsLast,
-      );
+      final tensor = TensorBuffer.zeros([
+        1,
+        1,
+        224,
+        224,
+      ], memoryFormat: MemoryFormat.channelsLast);
 
       // C=1 still follows NHWC stride pattern
       expect(tensor.strides[1], equals(1)); // C stride
@@ -479,10 +532,12 @@ void main() {
   group('Tensor Creation with Memory Format', () {
     test('zeros with contiguous format', () {
       // Create zeros with contiguous format
-      final tensor = TensorBuffer.zeros(
-        [1, 3, 224, 224],
-        memoryFormat: MemoryFormat.contiguous,
-      );
+      final tensor = TensorBuffer.zeros([
+        1,
+        3,
+        224,
+        224,
+      ], memoryFormat: MemoryFormat.contiguous);
 
       expect(tensor.memoryFormat, equals(MemoryFormat.contiguous));
       // NCHW strides: [150528, 50176, 224, 1]
@@ -491,10 +546,12 @@ void main() {
 
     test('zeros with channelsLast format', () {
       // Create zeros with channelsLast format
-      final tensor = TensorBuffer.zeros(
-        [1, 3, 224, 224],
-        memoryFormat: MemoryFormat.channelsLast,
-      );
+      final tensor = TensorBuffer.zeros([
+        1,
+        3,
+        224,
+        224,
+      ], memoryFormat: MemoryFormat.channelsLast);
 
       expect(tensor.memoryFormat, equals(MemoryFormat.channelsLast));
       // NHWC strides: [150528, 1, 672, 3]

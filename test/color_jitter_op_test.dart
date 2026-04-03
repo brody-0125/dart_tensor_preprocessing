@@ -41,8 +41,13 @@ TensorBuffer _createRgbTensor4D(int n, int h, int w) {
 }
 
 /// Creates a 3D tensor with uniform RGB values for all pixels.
-TensorBuffer _createUniformRgbTensor(double r, double g, double b,
-    {int h = 2, int w = 2}) {
+TensorBuffer _createUniformRgbTensor(
+  double r,
+  double g,
+  double b, {
+  int h = 2,
+  int w = 2,
+}) {
   final size = 3 * h * w;
   final data = Float32List(size);
   for (int i = 0; i < h * w; i++) {
@@ -120,25 +125,34 @@ void main() {
       }
     });
 
-    test('HSV -> RGB -> HSV roundtrip preserves values for chromatic colors',
-        () {
-      // Only test chromatic (s > 0) colors since achromatic hue is undefined
-      final testHsvs = [
-        (0.0, 1.0, 1.0), // pure red
-        (0.5, 0.5, 0.8),
-        (0.25, 0.7, 0.6),
-        (0.75, 0.9, 0.4),
-      ];
+    test(
+      'HSV -> RGB -> HSV roundtrip preserves values for chromatic colors',
+      () {
+        // Only test chromatic (s > 0) colors since achromatic hue is undefined
+        final testHsvs = [
+          (0.0, 1.0, 1.0), // pure red
+          (0.5, 0.5, 0.8),
+          (0.25, 0.7, 0.6),
+          (0.75, 0.9, 0.4),
+        ];
 
-      for (final (h, s, v) in testHsvs) {
-        final (r, g, b) = hsvToRgb(h, s, v);
-        final (nh, ns, nv) = rgbToHsv(r, g, b);
-        expect(nh, closeTo(h, 1e-6), reason: 'Hue mismatch for ($h, $s, $v)');
-        expect(ns, closeTo(s, 1e-6),
-            reason: 'Saturation mismatch for ($h, $s, $v)');
-        expect(nv, closeTo(v, 1e-6), reason: 'Value mismatch for ($h, $s, $v)');
-      }
-    });
+        for (final (h, s, v) in testHsvs) {
+          final (r, g, b) = hsvToRgb(h, s, v);
+          final (nh, ns, nv) = rgbToHsv(r, g, b);
+          expect(nh, closeTo(h, 1e-6), reason: 'Hue mismatch for ($h, $s, $v)');
+          expect(
+            ns,
+            closeTo(s, 1e-6),
+            reason: 'Saturation mismatch for ($h, $s, $v)',
+          );
+          expect(
+            nv,
+            closeTo(v, 1e-6),
+            reason: 'Value mismatch for ($h, $s, $v)',
+          );
+        }
+      },
+    );
   });
 
   // ==========================================================================
@@ -174,8 +188,10 @@ void main() {
         final result = op(tensor);
 
         for (int i = 0; i < result.numel; i++) {
-          expect(result.storage.getAsDouble(i),
-              closeTo(tensor.storage.getAsDouble(i), 1e-5));
+          expect(
+            result.storage.getAsDouble(i),
+            closeTo(tensor.storage.getAsDouble(i), 1e-5),
+          );
         }
       });
 
@@ -276,8 +292,10 @@ void main() {
 
         expect(result.shape, equals(tensor.shape));
         for (int i = 0; i < result.numel; i++) {
-          expect(result.storage.getAsDouble(i),
-              closeTo(tensor.storage.getAsDouble(i), 1e-5));
+          expect(
+            result.storage.getAsDouble(i),
+            closeTo(tensor.storage.getAsDouble(i), 1e-5),
+          );
         }
       });
 
@@ -682,8 +700,10 @@ void main() {
 
         // With no adjustments, should return same values
         for (int i = 0; i < result.numel; i++) {
-          expect(result.storage.getAsDouble(i),
-              closeTo(tensor.storage.getAsDouble(i), 1e-5));
+          expect(
+            result.storage.getAsDouble(i),
+            closeTo(tensor.storage.getAsDouble(i), 1e-5),
+          );
         }
       });
 
@@ -724,8 +744,10 @@ void main() {
         final result2 = op2(tensor);
 
         for (int i = 0; i < result1.numel; i++) {
-          expect(result1.storage.getAsDouble(i),
-              closeTo(result2.storage.getAsDouble(i), 1e-6));
+          expect(
+            result1.storage.getAsDouble(i),
+            closeTo(result2.storage.getAsDouble(i), 1e-6),
+          );
         }
       });
 
@@ -842,8 +864,10 @@ void main() {
 
       expect(result.dtype, equals(DType.float64));
       for (int i = 0; i < result.numel; i++) {
-        expect(result.storage.getAsDouble(i),
-            closeTo(tensor.storage.getAsDouble(i), 1e-5));
+        expect(
+          result.storage.getAsDouble(i),
+          closeTo(tensor.storage.getAsDouble(i), 1e-5),
+        );
       }
     });
   });
@@ -902,8 +926,10 @@ void main() {
       final result = op(tensor);
 
       for (int i = 0; i < result.numel; i++) {
-        expect(result.storage.getAsDouble(i),
-            closeTo(tensor.storage.getAsDouble(i), 1e-5));
+        expect(
+          result.storage.getAsDouble(i),
+          closeTo(tensor.storage.getAsDouble(i), 1e-5),
+        );
       }
     });
   });

@@ -341,10 +341,9 @@ extension TensorBufferReduce on TensorBuffer {
         _incrementIndices(indices);
       }
       final resultValue = reduce(values);
-      return TensorBuffer.fromFloat32List(
-        Float32List.fromList([resultValue]),
-        [1],
-      );
+      return TensorBuffer.fromFloat32List(Float32List.fromList([resultValue]), [
+        1,
+      ]);
     }
 
     // Create output buffer

@@ -58,8 +58,10 @@ List<TensorBuffer> split(
     final outShape = List<int>.from(shape);
     outShape[normalizedDim] = size;
 
-    final output =
-        TensorBuffer.uninitialized(outShape, dtype: contiguous.dtype);
+    final output = TensorBuffer.uninitialized(
+      outShape,
+      dtype: contiguous.dtype,
+    );
 
     _copySlice(contiguous, output, normalizedDim, axisOffset);
     result.add(output);
@@ -79,11 +81,7 @@ List<TensorBuffer> split(
 /// ```dart
 /// final parts = chunk(tensor, 3, dim: 0);
 /// ```
-List<TensorBuffer> chunk(
-  TensorBuffer tensor,
-  int chunks, {
-  int dim = 0,
-}) {
+List<TensorBuffer> chunk(TensorBuffer tensor, int chunks, {int dim = 0}) {
   if (chunks <= 0) {
     throw InvalidParameterException(
       'chunks',

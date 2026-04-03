@@ -55,25 +55,14 @@ class RMSNormOp extends TransformOp with InPlaceTransform, RequiresContiguous {
   /// - [normalizedShape]: Shape of dimensions to normalize over (from right)
   /// - [weight]: Optional per-element scale, defaults to 1.0
   /// - [eps]: Small constant to avoid division by zero (default: 1e-6, LLaMA default)
-  RMSNormOp({
-    required this.normalizedShape,
-    this.weight,
-    this.eps = 1e-6,
-  }) {
+  RMSNormOp({required this.normalizedShape, this.weight, this.eps = 1e-6}) {
     _validateParameters();
     _normalizedSize = normalizedShape.fold(1, (a, b) => a * b);
   }
 
   /// Creates a RMS normalization for LLaMA 7B (hidden size 4096).
-  factory RMSNormOp.llama7B({
-    required List<double> weight,
-    double eps = 1e-6,
-  }) {
-    return RMSNormOp(
-      normalizedShape: [4096],
-      weight: weight,
-      eps: eps,
-    );
+  factory RMSNormOp.llama7B({required List<double> weight, double eps = 1e-6}) {
+    return RMSNormOp(normalizedShape: [4096], weight: weight, eps: eps);
   }
 
   /// Creates a RMS normalization for LLaMA 13B (hidden size 5120).
@@ -81,11 +70,7 @@ class RMSNormOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     required List<double> weight,
     double eps = 1e-6,
   }) {
-    return RMSNormOp(
-      normalizedShape: [5120],
-      weight: weight,
-      eps: eps,
-    );
+    return RMSNormOp(normalizedShape: [5120], weight: weight, eps: eps);
   }
 
   /// Creates a RMS normalization for LLaMA 70B (hidden size 8192).
@@ -93,23 +78,12 @@ class RMSNormOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     required List<double> weight,
     double eps = 1e-6,
   }) {
-    return RMSNormOp(
-      normalizedShape: [8192],
-      weight: weight,
-      eps: eps,
-    );
+    return RMSNormOp(normalizedShape: [8192], weight: weight, eps: eps);
   }
 
   /// Creates a RMS normalization for Gemma 2B (hidden size 2048).
-  factory RMSNormOp.gemma2B({
-    required List<double> weight,
-    double eps = 1e-6,
-  }) {
-    return RMSNormOp(
-      normalizedShape: [2048],
-      weight: weight,
-      eps: eps,
-    );
+  factory RMSNormOp.gemma2B({required List<double> weight, double eps = 1e-6}) {
+    return RMSNormOp(normalizedShape: [2048], weight: weight, eps: eps);
   }
 
   /// Creates a RMS normalization from PyTorch state_dict Float32Lists.
@@ -171,9 +145,9 @@ class RMSNormOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

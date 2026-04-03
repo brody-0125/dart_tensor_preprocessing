@@ -340,11 +340,10 @@ void main() {
       });
 
       test('handles empty shapes', () {
-        final result = OpValidator.validateBroadcast(
-          [],
-          [2, 3],
-          operationName: 'TestOp',
-        );
+        final result = OpValidator.validateBroadcast([], [
+          2,
+          3,
+        ], operationName: 'TestOp');
         expect(result, equals([2, 3]));
       });
     });

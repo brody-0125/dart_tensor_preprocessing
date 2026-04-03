@@ -31,16 +31,13 @@ abstract class PipelinePresets {
     int cropSize = 224,
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
-    return TensorPipeline(
-      [
-        ResizeShortestOp(shortestEdge: shortestEdge, mode: interpolation),
-        CenterCropOp(height: cropSize, width: cropSize),
-        ToTensorOp(normalize: true),
-        NormalizeOp.imagenet(),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'ImageNet Classification',
-    );
+    return TensorPipeline([
+      ResizeShortestOp(shortestEdge: shortestEdge, mode: interpolation),
+      CenterCropOp(height: cropSize, width: cropSize),
+      ToTensorOp(normalize: true),
+      NormalizeOp.imagenet(),
+      UnsqueezeOp.batch(),
+    ], name: 'ImageNet Classification');
   }
 
   /// Creates a pipeline for ResNet classification models.
@@ -49,15 +46,12 @@ abstract class PipelinePresets {
     int width = 224,
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
-    return TensorPipeline(
-      [
-        ResizeOp(height: height, width: width, mode: interpolation),
-        ToTensorOp(normalize: true),
-        NormalizeOp.imagenet(),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'ResNet Classification',
-    );
+    return TensorPipeline([
+      ResizeOp(height: height, width: width, mode: interpolation),
+      ToTensorOp(normalize: true),
+      NormalizeOp.imagenet(),
+      UnsqueezeOp.batch(),
+    ], name: 'ResNet Classification');
   }
 
   /// Creates a pipeline for object detection models (e.g., YOLO).
@@ -66,14 +60,11 @@ abstract class PipelinePresets {
     int width = 640,
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
-    return TensorPipeline(
-      [
-        ResizeOp(height: height, width: width, mode: interpolation),
-        ToTensorOp(normalize: true),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'Object Detection',
-    );
+    return TensorPipeline([
+      ResizeOp(height: height, width: width, mode: interpolation),
+      ToTensorOp(normalize: true),
+      UnsqueezeOp.batch(),
+    ], name: 'Object Detection');
   }
 
   /// Creates a pipeline for semantic segmentation models.
@@ -82,15 +73,12 @@ abstract class PipelinePresets {
     int width = 512,
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
-    return TensorPipeline(
-      [
-        ResizeOp(height: height, width: width, mode: interpolation),
-        ToTensorOp(normalize: true),
-        NormalizeOp.imagenet(),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'Segmentation',
-    );
+    return TensorPipeline([
+      ResizeOp(height: height, width: width, mode: interpolation),
+      ToTensorOp(normalize: true),
+      NormalizeOp.imagenet(),
+      UnsqueezeOp.batch(),
+    ], name: 'Segmentation');
   }
 
   /// Creates a pipeline for face recognition models (e.g., ArcFace).
@@ -99,15 +87,12 @@ abstract class PipelinePresets {
     int width = 112,
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
-    return TensorPipeline(
-      [
-        ResizeOp(height: height, width: width, mode: interpolation),
-        ToTensorOp(normalize: true),
-        NormalizeOp.symmetric(),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'Face Recognition',
-    );
+    return TensorPipeline([
+      ResizeOp(height: height, width: width, mode: interpolation),
+      ToTensorOp(normalize: true),
+      NormalizeOp.symmetric(),
+      UnsqueezeOp.batch(),
+    ], name: 'Face Recognition');
   }
 
   /// Creates a pipeline for MobileNet models.
@@ -116,15 +101,12 @@ abstract class PipelinePresets {
     int width = 224,
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
-    return TensorPipeline(
-      [
-        ResizeOp(height: height, width: width, mode: interpolation),
-        ToTensorOp(normalize: true),
-        NormalizeOp.symmetric(),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'MobileNet',
-    );
+    return TensorPipeline([
+      ResizeOp(height: height, width: width, mode: interpolation),
+      ToTensorOp(normalize: true),
+      NormalizeOp.symmetric(),
+      UnsqueezeOp.batch(),
+    ], name: 'MobileNet');
   }
 
   /// Creates a pipeline for CLIP vision encoder.
@@ -132,19 +114,16 @@ abstract class PipelinePresets {
     int size = 224,
     InterpolationMode interpolation = InterpolationMode.bicubic,
   }) {
-    return TensorPipeline(
-      [
-        ResizeShortestOp(shortestEdge: size, mode: interpolation),
-        CenterCropOp(height: size, width: size),
-        ToTensorOp(normalize: true),
-        NormalizeOp(
-          mean: [0.48145466, 0.4578275, 0.40821073],
-          std: [0.26862954, 0.26130258, 0.27577711],
-        ),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'CLIP',
-    );
+    return TensorPipeline([
+      ResizeShortestOp(shortestEdge: size, mode: interpolation),
+      CenterCropOp(height: size, width: size),
+      ToTensorOp(normalize: true),
+      NormalizeOp(
+        mean: [0.48145466, 0.4578275, 0.40821073],
+        std: [0.26862954, 0.26130258, 0.27577711],
+      ),
+      UnsqueezeOp.batch(),
+    ], name: 'CLIP');
   }
 
   /// Creates a pipeline for Vision Transformer (ViT) models.
@@ -152,18 +131,12 @@ abstract class PipelinePresets {
     int size = 224,
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
-    return TensorPipeline(
-      [
-        ResizeOp(height: size, width: size, mode: interpolation),
-        ToTensorOp(normalize: true),
-        NormalizeOp(
-          mean: [0.5, 0.5, 0.5],
-          std: [0.5, 0.5, 0.5],
-        ),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'ViT',
-    );
+    return TensorPipeline([
+      ResizeOp(height: size, width: size, mode: interpolation),
+      ToTensorOp(normalize: true),
+      NormalizeOp(mean: [0.5, 0.5, 0.5], std: [0.5, 0.5, 0.5]),
+      UnsqueezeOp.batch(),
+    ], name: 'ViT');
   }
 
   /// Creates a pipeline for TensorFlow Lite models.
@@ -172,30 +145,21 @@ abstract class PipelinePresets {
     int width = 224,
     bool normalize = true,
   }) {
-    return TensorPipeline(
-      [
-        ResizeOp(height: height, width: width),
-        TypeCastOp.toFloat32(),
-        if (normalize) ScaleOp.toUnit(),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'TFLite',
-    );
+    return TensorPipeline([
+      ResizeOp(height: height, width: width),
+      TypeCastOp.toFloat32(),
+      if (normalize) ScaleOp.toUnit(),
+      UnsqueezeOp.batch(),
+    ], name: 'TFLite');
   }
 
   /// Creates a minimal preprocessing pipeline with just resize and normalize.
-  static TensorPipeline minimal({
-    int height = 224,
-    int width = 224,
-  }) {
-    return TensorPipeline(
-      [
-        ResizeOp(height: height, width: width),
-        ToTensorOp(normalize: true),
-        UnsqueezeOp.batch(),
-      ],
-      name: 'Minimal',
-    );
+  static TensorPipeline minimal({int height = 224, int width = 224}) {
+    return TensorPipeline([
+      ResizeOp(height: height, width: width),
+      ToTensorOp(normalize: true),
+      UnsqueezeOp.batch(),
+    ], name: 'Minimal');
   }
 
   /// Creates a fully customizable preprocessing pipeline.

@@ -24,11 +24,11 @@ class RepeatOp extends TransformOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        preservesShape: false,
-        requiresContiguous: true,
-        pytorchEquivalent: 'Tensor.repeat',
-        onnxOpType: 'Tile',
-      );
+    preservesShape: false,
+    requiresContiguous: true,
+    pytorchEquivalent: 'Tensor.repeat',
+    onnxOpType: 'Tile',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) => TileOp(reps: sizes).apply(input);

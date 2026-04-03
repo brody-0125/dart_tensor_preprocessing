@@ -109,8 +109,12 @@ void main() {
           31,
           32,
         ]);
-        final tensor =
-            TensorBuffer.fromFloat32List(data, [2, 2, 4, 2]); // 2x2x4x2
+        final tensor = TensorBuffer.fromFloat32List(data, [
+          2,
+          2,
+          4,
+          2,
+        ]); // 2x2x4x2
 
         final crop = RandomCropOp(height: 3, width: 1, seed: 123);
         final result = crop(tensor);
@@ -136,8 +140,10 @@ void main() {
         expect(result1.shape, equals(result2.shape));
         expect(result1.numel, equals(result2.numel));
         // Just verify both have same non-zero values
-        expect(result1.storage.getAsDouble(0),
-            equals(result2.storage.getAsDouble(0)));
+        expect(
+          result1.storage.getAsDouble(0),
+          equals(result2.storage.getAsDouble(0)),
+        );
       });
     });
 
@@ -147,15 +153,19 @@ void main() {
 
         expect(crop.computeOutputShape([1, 5, 6]), equals([1, 3, 4])); // 3D
         expect(
-            crop.computeOutputShape([2, 3, 5, 6]), equals([2, 3, 3, 4])); // 4D
+          crop.computeOutputShape([2, 3, 5, 6]),
+          equals([2, 3, 3, 4]),
+        ); // 4D
       });
     });
 
     group('string representation', () {
       test('toString returns operation name', () {
         final crop = RandomCropOp(height: 5, width: 3, seed: 42);
-        expect(crop.toString(),
-            equals('TransformOp(RandomCrop(height=5, width=3, seed=42))'));
+        expect(
+          crop.toString(),
+          equals('TransformOp(RandomCrop(height=5, width=3, seed=42))'),
+        );
       });
     });
   });
@@ -185,9 +195,13 @@ void main() {
 
       test('accepts valid parameters', () {
         expect(
-            () => GaussianBlurOp(kernelSize: 3, sigma: 1.0), returnsNormally);
-        expect(() => GaussianBlurOp(kernelSize: 5),
-            returnsNormally); // default sigma
+          () => GaussianBlurOp(kernelSize: 3, sigma: 1.0),
+          returnsNormally,
+        );
+        expect(
+          () => GaussianBlurOp(kernelSize: 5),
+          returnsNormally,
+        ); // default sigma
       });
     });
 
@@ -264,8 +278,12 @@ void main() {
 
       test('blurs 4D tensor', () {
         final data = Float32List(32)..fillRange(0, 32, 1.0);
-        final tensor =
-            TensorBuffer.fromFloat32List(data, [2, 2, 4, 2]); // 2x2x4x2
+        final tensor = TensorBuffer.fromFloat32List(data, [
+          2,
+          2,
+          4,
+          2,
+        ]); // 2x2x4x2
 
         final blur = GaussianBlurOp(kernelSize: 3, sigma: 0.5);
         final result = blur(tensor);
@@ -350,8 +368,10 @@ void main() {
     group('string representation', () {
       test('toString returns operation name', () {
         final blur = GaussianBlurOp(kernelSize: 5, sigma: 1.5);
-        expect(blur.toString(),
-            equals('TransformOp(GaussianBlur(kernelSize=5, sigma=1.5))'));
+        expect(
+          blur.toString(),
+          equals('TransformOp(GaussianBlur(kernelSize=5, sigma=1.5))'),
+        );
       });
     });
   });

@@ -107,7 +107,8 @@ class RandomErasingOp extends TransformOp
   }
 
   @override
-  String get name => 'RandomErasing('
+  String get name =>
+      'RandomErasing('
       'p=$probability, '
       'scale=$scaleRange, '
       'ratio=$ratioRange, '
@@ -115,10 +116,10 @@ class RandomErasingOp extends TransformOp
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-        pytorchEquivalent: 'torchvision.transforms.RandomErasing',
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+    pytorchEquivalent: 'torchvision.transforms.RandomErasing',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -210,7 +211,17 @@ class RandomErasingOp extends TransformOp
 
       // Fill the erased region
       _fillRegion(
-          tensor, c, h, w, baseOffset, startH, startW, eraseH, eraseW, random);
+        tensor,
+        c,
+        h,
+        w,
+        baseOffset,
+        startH,
+        startW,
+        eraseH,
+        eraseW,
+        random,
+      );
       return;
     }
     // If no valid rectangle found after maxAttempts, do nothing

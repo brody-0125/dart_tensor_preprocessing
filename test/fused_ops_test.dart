@@ -105,8 +105,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
 
@@ -132,8 +135,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
     });
@@ -252,8 +258,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
     });
@@ -277,8 +286,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
     });
@@ -333,8 +345,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
     });
@@ -356,16 +371,21 @@ void main() {
         final fusedResult = fused.apply(input);
 
         final resize = ResizeOp(height: 2, width: 2);
-        final normalize =
-            NormalizeOp(mean: [0.1, 0.2, 0.3, 0.4], std: [0.1, 0.2, 0.3, 0.4]);
+        final normalize = NormalizeOp(
+          mean: [0.1, 0.2, 0.3, 0.4],
+          std: [0.1, 0.2, 0.3, 0.4],
+        );
         final separateResult = normalize.apply(resize.apply(input));
 
         expect(fusedResult.shape, [4, 2, 2]);
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
     });
@@ -389,8 +409,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
     });
@@ -412,8 +435,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
 
@@ -436,8 +462,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final normalizeData = normalizeOnly.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(normalizeData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(normalizeData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
 
@@ -464,8 +493,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
 
@@ -488,8 +520,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
     });
@@ -502,10 +537,7 @@ void main() {
         }
         final input = TensorBuffer.fromFloat32List(data, [3, 4, 4]);
 
-        final opDefault = ResizeNormalizeFusedOp.imagenet(
-          height: 2,
-          width: 2,
-        );
+        final opDefault = ResizeNormalizeFusedOp.imagenet(height: 2, width: 2);
         final opAligned = ResizeNormalizeFusedOp.imagenet(
           height: 2,
           width: 2,
@@ -550,8 +582,11 @@ void main() {
         final fusedData = fusedResult.storage.data as Float32List;
         final separateData = separateResult.storage.data as Float32List;
         for (int i = 0; i < fusedData.length; i++) {
-          expect(fusedData[i], closeTo(separateData[i], 1e-5),
-              reason: 'Mismatch at index $i');
+          expect(
+            fusedData[i],
+            closeTo(separateData[i], 1e-5),
+            reason: 'Mismatch at index $i',
+          );
         }
       });
     });

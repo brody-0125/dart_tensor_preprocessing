@@ -22,9 +22,9 @@ class SigmoidOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -90,9 +90,9 @@ class HardsigmoidOp extends TransformOp
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -155,9 +155,9 @@ class TanhOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

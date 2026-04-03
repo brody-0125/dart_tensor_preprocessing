@@ -7,12 +7,7 @@ void main() {
   group('ResizeOp', () {
     group('InterpolationMode.nearest', () {
       test('upscales 2x2 to 4x4', () {
-        final data = Float32List.fromList([
-          1,
-          2,
-          3,
-          4,
-        ]);
+        final data = Float32List.fromList([1, 2, 3, 4]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
         final op = ResizeOp(
           height: 4,
@@ -62,12 +57,7 @@ void main() {
 
     group('InterpolationMode.bilinear', () {
       test('upscales with interpolation', () {
-        final data = Float32List.fromList([
-          0,
-          10,
-          10,
-          20,
-        ]);
+        final data = Float32List.fromList([0, 10, 10, 20]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
         final op = ResizeOp(
           height: 3,
@@ -145,11 +135,7 @@ void main() {
           16,
         ]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
-        final op = ResizeOp(
-          height: 2,
-          width: 2,
-          mode: InterpolationMode.area,
-        );
+        final op = ResizeOp(height: 2, width: 2, mode: InterpolationMode.area);
         final result = op.apply(tensor);
 
         expect(result.shape, equals([1, 2, 2]));
@@ -166,11 +152,7 @@ void main() {
 
       test('handles fractional scale factors', () {
         final tensor = TensorBuffer.full([3, 10, 10], fillValue: 100.0);
-        final op = ResizeOp(
-          height: 3,
-          width: 3,
-          mode: InterpolationMode.area,
-        );
+        final op = ResizeOp(height: 3, width: 3, mode: InterpolationMode.area);
         final result = op.apply(tensor);
 
         expect(result.shape, equals([3, 3, 3]));
@@ -179,18 +161,9 @@ void main() {
       });
 
       test('falls back to bilinear for upscaling', () {
-        final data = Float32List.fromList([
-          1,
-          2,
-          3,
-          4,
-        ]);
+        final data = Float32List.fromList([1, 2, 3, 4]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
-        final op = ResizeOp(
-          height: 4,
-          width: 4,
-          mode: InterpolationMode.area,
-        );
+        final op = ResizeOp(height: 4, width: 4, mode: InterpolationMode.area);
         final result = op.apply(tensor);
 
         expect(result.shape, equals([1, 4, 4]));
@@ -200,11 +173,7 @@ void main() {
 
       test('preserves values for same-size resize', () {
         final tensor = TensorBuffer.full([3, 8, 8], fillValue: 42.0);
-        final op = ResizeOp(
-          height: 8,
-          width: 8,
-          mode: InterpolationMode.area,
-        );
+        final op = ResizeOp(height: 8, width: 8, mode: InterpolationMode.area);
         final result = op.apply(tensor);
 
         expect(result.shape, equals([3, 8, 8]));
@@ -275,22 +244,31 @@ void main() {
         for (final mode in InterpolationMode.values) {
           final op = ResizeOp(height: 4, width: 4, mode: mode);
           final result = op.apply(tensor);
-          expect(result.shape, equals([2, 3, 4, 4]),
-              reason: 'Failed for mode: $mode');
+          expect(
+            result.shape,
+            equals([2, 3, 4, 4]),
+            reason: 'Failed for mode: $mode',
+          );
         }
       });
     });
 
     group('dtype support', () {
       test('handles Float64 tensors with all modes', () {
-        final tensor =
-            TensorBuffer.full([1, 4, 4], fillValue: 10.0, dtype: DType.float64);
+        final tensor = TensorBuffer.full(
+          [1, 4, 4],
+          fillValue: 10.0,
+          dtype: DType.float64,
+        );
 
         for (final mode in InterpolationMode.values) {
           final op = ResizeOp(height: 8, width: 8, mode: mode);
           final result = op.apply(tensor);
-          expect(result.dtype, equals(DType.float64),
-              reason: 'Failed for mode: $mode');
+          expect(
+            result.dtype,
+            equals(DType.float64),
+            reason: 'Failed for mode: $mode',
+          );
         }
       });
     });
@@ -304,7 +282,9 @@ void main() {
       test('calculates correct output shape for 4D', () {
         final op = ResizeOp(height: 224, width: 224);
         expect(
-            op.computeOutputShape([1, 3, 480, 640]), equals([1, 3, 224, 224]));
+          op.computeOutputShape([1, 3, 480, 640]),
+          equals([1, 3, 224, 224]),
+        );
       });
     });
 
@@ -319,8 +299,9 @@ void main() {
 
       test('default coordinateMode preserves existing behavior', () {
         // Create input: 1-channel 4x4 with sequential values
-        final data =
-            Float32List.fromList(List.generate(16, (i) => i.toDouble()));
+        final data = Float32List.fromList(
+          List.generate(16, (i) => i.toDouble()),
+        );
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
 
         // Existing behavior (no coordinateMode specified)
@@ -352,8 +333,9 @@ void main() {
 
       test('asymmetric mode uses x * inSize / outSize mapping', () {
         // 1-channel 4x4 tensor: row0=[0,1,2,3], row1=[4,5,6,7], ...
-        final data =
-            Float32List.fromList(List.generate(16, (i) => i.toDouble()));
+        final data = Float32List.fromList(
+          List.generate(16, (i) => i.toDouble()),
+        );
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
 
         final op = ResizeOp(
@@ -378,8 +360,9 @@ void main() {
 
       test('pytorchHalfPixel returns 0 when outSize is 1', () {
         // 1-channel 4x4 tensor
-        final data =
-            Float32List.fromList(List.generate(16, (i) => i.toDouble()));
+        final data = Float32List.fromList(
+          List.generate(16, (i) => i.toDouble()),
+        );
         final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
 
         final op = ResizeOp(
@@ -395,38 +378,41 @@ void main() {
         expect(result[[0, 0, 0]], equals(0.0));
       });
 
-      test('alignCorners mode via coordinateMode matches alignCorners bool',
-          () {
-        final data =
-            Float32List.fromList(List.generate(16, (i) => i.toDouble()));
-        final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
-
-        // Using old alignCorners: true
-        final opBool = ResizeOp(
-          height: 3,
-          width: 3,
-          mode: InterpolationMode.bilinear,
-          alignCorners: true,
-        );
-        final resultBool = opBool.apply(tensor);
-
-        // Using new coordinateMode
-        final opEnum = ResizeOp(
-          height: 3,
-          width: 3,
-          mode: InterpolationMode.bilinear,
-          coordinateMode: CoordinateTransformMode.alignCorners,
-        );
-        final resultEnum = opEnum.apply(tensor);
-
-        for (int i = 0; i < resultBool.numel; i++) {
-          expect(
-            resultEnum.storage.getAsDouble(i),
-            closeTo(resultBool.storage.getAsDouble(i), 1e-6),
-            reason: 'Mismatch at index $i',
+      test(
+        'alignCorners mode via coordinateMode matches alignCorners bool',
+        () {
+          final data = Float32List.fromList(
+            List.generate(16, (i) => i.toDouble()),
           );
-        }
-      });
+          final tensor = TensorBuffer.fromFloat32List(data, [1, 4, 4]);
+
+          // Using old alignCorners: true
+          final opBool = ResizeOp(
+            height: 3,
+            width: 3,
+            mode: InterpolationMode.bilinear,
+            alignCorners: true,
+          );
+          final resultBool = opBool.apply(tensor);
+
+          // Using new coordinateMode
+          final opEnum = ResizeOp(
+            height: 3,
+            width: 3,
+            mode: InterpolationMode.bilinear,
+            coordinateMode: CoordinateTransformMode.alignCorners,
+          );
+          final resultEnum = opEnum.apply(tensor);
+
+          for (int i = 0; i < resultBool.numel; i++) {
+            expect(
+              resultEnum.storage.getAsDouble(i),
+              closeTo(resultBool.storage.getAsDouble(i), 1e-6),
+              reason: 'Mismatch at index $i',
+            );
+          }
+        },
+      );
     });
   });
 }

@@ -48,9 +48,9 @@ class GELUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        supportsInPlace: true,
-        requiresContiguous: true,
-      );
+    supportsInPlace: true,
+    requiresContiguous: true,
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -159,7 +159,8 @@ class GELUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     final t4 = t3 * t;
     final t5 = t4 * t;
 
-    final y = 1.0 -
+    final y =
+        1.0 -
         (a1 * t + a2 * t2 + a3 * t3 + a4 * t4 + a5 * t5) *
             math.exp(-absX * absX);
 

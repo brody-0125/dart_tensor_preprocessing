@@ -38,16 +38,25 @@ void main() {
         );
         expect(
           () => PadOp(
-              top: 1, bottom: 1, left: 1, right: 1, value: double.infinity),
+            top: 1,
+            bottom: 1,
+            left: 1,
+            right: 1,
+            value: double.infinity,
+          ),
           throwsA(isA<InvalidParameterException>()),
         );
       });
 
       test('accepts valid parameters', () {
         expect(
-            () => PadOp(top: 1, bottom: 2, left: 3, right: 4), returnsNormally);
+          () => PadOp(top: 1, bottom: 2, left: 3, right: 4),
+          returnsNormally,
+        );
         expect(
-            () => PadOp(top: 0, bottom: 0, left: 0, right: 0), returnsNormally);
+          () => PadOp(top: 0, bottom: 0, left: 0, right: 0),
+          returnsNormally,
+        );
       });
     });
 
@@ -86,18 +95,9 @@ void main() {
 
         final pad = PadOp(top: 1, bottom: 1, left: 1, right: 1);
 
-        expect(
-          () => pad(tensor1d),
-          throwsA(isA<ShapeMismatchException>()),
-        );
-        expect(
-          () => pad(tensor2d),
-          throwsA(isA<ShapeMismatchException>()),
-        );
-        expect(
-          () => pad(tensor5d),
-          throwsA(isA<ShapeMismatchException>()),
-        );
+        expect(() => pad(tensor1d), throwsA(isA<ShapeMismatchException>()));
+        expect(() => pad(tensor2d), throwsA(isA<ShapeMismatchException>()));
+        expect(() => pad(tensor5d), throwsA(isA<ShapeMismatchException>()));
       });
     });
 
@@ -108,9 +108,9 @@ void main() {
         final outputShape = pad.computeOutputShape(inputShape);
 
         expect(
-            outputShape,
-            equals(
-                [3, 4 + 2 + 3, 5 + 1 + 4])); // [C, H+top+bottom, W+left+right]
+          outputShape,
+          equals([3, 4 + 2 + 3, 5 + 1 + 4]),
+        ); // [C, H+top+bottom, W+left+right]
       });
 
       test('computes correct shape for 4D tensors', () {
@@ -119,13 +119,9 @@ void main() {
         final outputShape = pad.computeOutputShape(inputShape);
 
         expect(
-            outputShape,
-            equals([
-              2,
-              3,
-              4 + 1 + 2,
-              5 + 3 + 4
-            ])); // [N, C, H+top+bottom, W+left+right]
+          outputShape,
+          equals([2, 3, 4 + 1 + 2, 5 + 3 + 4]),
+        ); // [N, C, H+top+bottom, W+left+right]
       });
     });
 
@@ -175,13 +171,18 @@ void main() {
         final data = Float32List.fromList([1, 2, 3, 4]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
 
-        final pad =
-            PadOp(top: 1, bottom: 1, left: 1, right: 1, mode: PadMode.reflect);
+        final pad = PadOp(
+          top: 1,
+          bottom: 1,
+          left: 1,
+          right: 1,
+          mode: PadMode.reflect,
+        );
         final result = pad(tensor);
 
         expect(result.shape, equals([1, 4, 4]));
 
-// Check reflection pattern
+        // Check reflection pattern
         // Original tensor:
         // [1, 2]
         // [3, 4]
@@ -217,7 +218,12 @@ void main() {
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
 
         final pad = PadOp(
-            top: 1, bottom: 1, left: 1, right: 1, mode: PadMode.replicate);
+          top: 1,
+          bottom: 1,
+          left: 1,
+          right: 1,
+          mode: PadMode.replicate,
+        );
         final result = pad(tensor);
 
         expect(result.shape, equals([1, 4, 4]));
@@ -246,8 +252,13 @@ void main() {
         final data = Float32List.fromList([1, 2, 3, 4]);
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
 
-        final pad =
-            PadOp(top: 1, bottom: 1, left: 1, right: 1, mode: PadMode.circular);
+        final pad = PadOp(
+          top: 1,
+          bottom: 1,
+          left: 1,
+          right: 1,
+          mode: PadMode.circular,
+        );
         final result = pad(tensor);
 
         expect(result.shape, equals([1, 4, 4]));
@@ -277,12 +288,13 @@ void main() {
         final tensor = TensorBuffer.fromFloat32List(data, [1, 2, 2]);
 
         final pad = PadOp(
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            mode: PadMode.constant,
-            value: 9.0);
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          mode: PadMode.constant,
+          value: 9.0,
+        );
         final result = pad(tensor);
 
         expect(result.shape, equals([1, 2, 2]));
@@ -297,12 +309,13 @@ void main() {
         final tensor = TensorBuffer.fromFloat32List(data, [1, 1, 1]);
 
         final pad = PadOp(
-            top: 3,
-            bottom: 1,
-            left: 2,
-            right: 4,
-            mode: PadMode.constant,
-            value: 7.0);
+          top: 3,
+          bottom: 1,
+          left: 2,
+          right: 4,
+          mode: PadMode.constant,
+          value: 7.0,
+        );
         final result = pad(tensor);
 
         expect(result.shape, equals([1, 5, 7]));
@@ -334,12 +347,19 @@ void main() {
 
     group('string representation', () {
       test('toString returns operation name', () {
-        final pad =
-            PadOp(top: 1, bottom: 2, left: 3, right: 4, mode: PadMode.reflect);
+        final pad = PadOp(
+          top: 1,
+          bottom: 2,
+          left: 3,
+          right: 4,
+          mode: PadMode.reflect,
+        );
         expect(
-            pad.toString(),
-            equals(
-                'TransformOp(Pad(top=1, bottom=2, left=3, right=4, mode=PadMode.reflect))'));
+          pad.toString(),
+          equals(
+            'TransformOp(Pad(top=1, bottom=2, left=3, right=4, mode=PadMode.reflect))',
+          ),
+        );
       });
     });
   });

@@ -33,10 +33,10 @@ class GatherOp extends TransformOp {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        preservesShape: false,
-        pytorchEquivalent: 'torch.gather',
-        onnxOpType: 'GatherElements',
-      );
+    preservesShape: false,
+    pytorchEquivalent: 'torch.gather',
+    onnxOpType: 'GatherElements',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {

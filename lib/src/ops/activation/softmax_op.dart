@@ -33,9 +33,8 @@ class SoftmaxOp extends TransformOp with RequiresContiguous {
   String get name => 'Softmax(axis=$axis)';
 
   @override
-  OperationCapabilities get capabilities => const OperationCapabilities(
-        requiresContiguous: true,
-      );
+  OperationCapabilities get capabilities =>
+      const OperationCapabilities(requiresContiguous: true);
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -65,17 +64,9 @@ class SoftmaxOp extends TransformOp with RequiresContiguous {
 
     // Dtype-specialized implementation
     if (tensor.dtype == DType.float32) {
-      _computeSoftmaxFloat32(
-        tensor.storage.data as Float32List,
-        shape,
-        axis,
-      );
+      _computeSoftmaxFloat32(tensor.storage.data as Float32List, shape, axis);
     } else if (tensor.dtype == DType.float64) {
-      _computeSoftmaxFloat64(
-        tensor.storage.data as Float64List,
-        shape,
-        axis,
-      );
+      _computeSoftmaxFloat64(tensor.storage.data as Float64List, shape, axis);
     } else {
       // Fallback for other types (convert, compute, store back)
       _computeSoftmaxGeneric(tensor, shape, axis);

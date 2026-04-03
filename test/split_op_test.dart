@@ -40,16 +40,7 @@ void main() {
 
     test('splits 2D tensor along dim=0', () {
       final tensor = TensorBuffer.fromFloat32List(
-        Float32List.fromList([
-          1.0,
-          2.0,
-          3.0,
-          4.0,
-          5.0,
-          6.0,
-          7.0,
-          8.0,
-        ]),
+        Float32List.fromList([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]),
         [4, 2],
       );
 
@@ -66,16 +57,7 @@ void main() {
 
     test('splits 2D tensor along dim=1', () {
       final tensor = TensorBuffer.fromFloat32List(
-        Float32List.fromList([
-          1.0,
-          2.0,
-          3.0,
-          4.0,
-          5.0,
-          6.0,
-          7.0,
-          8.0,
-        ]),
+        Float32List.fromList([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]),
         [2, 4],
       );
 
@@ -177,14 +159,7 @@ void main() {
 
     test('chunks 2D tensor along dim=0', () {
       final tensor = TensorBuffer.fromFloat32List(
-        Float32List.fromList([
-          1.0,
-          2.0,
-          3.0,
-          4.0,
-          5.0,
-          6.0,
-        ]),
+        Float32List.fromList([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
         [3, 2],
       );
 
@@ -198,10 +173,7 @@ void main() {
     test('throws for zero chunks', () {
       final tensor = TensorBuffer.zeros([6]);
 
-      expect(
-        () => chunk(tensor, 0),
-        throwsA(isA<InvalidParameterException>()),
-      );
+      expect(() => chunk(tensor, 0), throwsA(isA<InvalidParameterException>()));
     });
 
     test('throws for negative chunks', () {

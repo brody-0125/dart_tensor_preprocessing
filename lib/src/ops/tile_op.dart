@@ -28,11 +28,11 @@ class TileOp extends TransformOp with RequiresContiguous {
 
   @override
   OperationCapabilities get capabilities => const OperationCapabilities(
-        preservesShape: false,
-        requiresContiguous: true,
-        pytorchEquivalent: 'Tensor.repeat',
-        onnxOpType: 'Tile',
-      );
+    preservesShape: false,
+    requiresContiguous: true,
+    pytorchEquivalent: 'Tensor.repeat',
+    onnxOpType: 'Tile',
+  );
 
   @override
   TensorBuffer apply(TensorBuffer input) {
@@ -49,8 +49,10 @@ class TileOp extends TransformOp with RequiresContiguous {
     }
 
     final outputShape = computeOutputShape(shape);
-    final output =
-        TensorBuffer.uninitialized(outputShape, dtype: contiguous.dtype);
+    final output = TensorBuffer.uninitialized(
+      outputShape,
+      dtype: contiguous.dtype,
+    );
 
     final inStrides = TensorIndexer.computeStrides(shape);
     final outStrides = TensorIndexer.computeStrides(outputShape);
