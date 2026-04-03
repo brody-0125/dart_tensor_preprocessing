@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Int64 index output, float32/float64 dtype-specialized value paths
   - Supports negative axis indexing
 
+### Changed
+
+- **Code formatting** - Reformatted entire codebase (94 files) with Dart 3.x tall style formatter
+
 ## [0.8.4] - 2026-03-28
 
 ### Added
