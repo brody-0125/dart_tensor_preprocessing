@@ -24,7 +24,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.8.5
+  dart_tensor_preprocessing: ^0.9.0
 ```
 
 ## Quick Start
@@ -153,6 +153,7 @@ final result = await pipeline.runAsync(input, isolateThreshold: 50000);
 - `MaskedFillOp` - Fill tensor positions where mask is true
 - `GatherOp` - Gather elements along a dimension by index
 - `TopKOp` - Select k largest/smallest values and indices along an axis (quickselect)
+- `ArgMaxOp` / `ArgMinOp` - Index of max/min value along an axis (ONNX ArgMax/ArgMin opset 13)
 - `TileOp` - Tile/repeat tensor contents
 - `RepeatOp` - Repeat tensor (PyTorch `.repeat()` semantics)
 - `RollOp` - Circular shift along dimensions
@@ -351,6 +352,8 @@ This library is designed to produce identical results to PyTorch/torchvision ope
 | `MaskedFillOp` | `Tensor.masked_fill_()` |
 | `GatherOp` | `torch.gather()` |
 | `TopKOp` / `tensor.topk()` | `torch.topk()` |
+| `tensor.argmax()` / `tensor.argmin()` | `tensor.argmax()` / `tensor.argmin()` |
+| `ArgMaxOp` / `ArgMinOp` | `torch.argmax()` / `torch.argmin()` |
 | `split()` / `chunk()` | `torch.split()` / `torch.chunk()` |
 | `TileOp` | `Tensor.repeat()` / ONNX `Tile` |
 | `RepeatOp` | `Tensor.repeat()` |
