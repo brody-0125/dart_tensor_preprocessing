@@ -71,6 +71,7 @@ export 'src/ops/roll_op.dart';
 export 'src/ops/split_op.dart';
 export 'src/ops/tile_op.dart';
 export 'src/ops/topk_op.dart';
+export 'src/ops/argmax_op.dart';
 export 'src/ops/where_op.dart';
 export 'src/pipeline/tensor_pipeline.dart';
 export 'src/pipeline/presets.dart';

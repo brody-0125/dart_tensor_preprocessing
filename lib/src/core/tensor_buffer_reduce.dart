@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
 import '../exceptions/tensor_exceptions.dart';
+import 'dtype.dart';
 import 'tensor_buffer.dart';
+import 'tensor_storage.dart';
 
 /// Extension providing reduction operations for [TensorBuffer].
 ///
@@ -100,6 +102,70 @@ extension TensorBufferReduce on TensorBuffer {
     return result;
   }
 
+  /// Returns the flat index of the maximum value in this tensor.
+  ///
+  /// If multiple elements have the maximum value, the index of the first
+  /// occurrence (in row-major order) is returned.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([3, 1, 4, 1, 5]),
+  ///   [5],
+  /// );
+  /// print(tensor.argmax()); // 4
+  /// ```
+  int argmax() {
+    double maxVal = double.negativeInfinity;
+    int maxIdx = 0;
+    final indices = List<int>.filled(rank, 0);
+
+    for (int i = 0; i < numel; i++) {
+      int offset = storageOffset;
+      for (int d = 0; d < rank; d++) {
+        offset += indices[d] * strides[d];
+      }
+      final value = storage.getAsDouble(offset);
+      if (value > maxVal) {
+        maxVal = value;
+        maxIdx = i;
+      }
+      _incrementIndices(indices);
+    }
+    return maxIdx;
+  }
+
+  /// Returns the flat index of the minimum value in this tensor.
+  ///
+  /// If multiple elements have the minimum value, the index of the first
+  /// occurrence (in row-major order) is returned.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([3, 1, 4, 1, 5]),
+  ///   [5],
+  /// );
+  /// print(tensor.argmin()); // 1
+  /// ```
+  int argmin() {
+    double minVal = double.infinity;
+    int minIdx = 0;
+    final indices = List<int>.filled(rank, 0);
+
+    for (int i = 0; i < numel; i++) {
+      int offset = storageOffset;
+      for (int d = 0; d < rank; d++) {
+        offset += indices[d] * strides[d];
+      }
+      final value = storage.getAsDouble(offset);
+      if (value < minVal) {
+        minVal = value;
+        minIdx = i;
+      }
+      _incrementIndices(indices);
+    }
+    return minIdx;
+  }
+
   /// Increments multi-dimensional indices in row-major order.
   void _incrementIndices(List<int> indices) {
     for (int d = rank - 1; d >= 0; d--) {
@@ -184,6 +250,56 @@ extension TensorBufferReduce on TensorBuffer {
   /// ```
   TensorBuffer maxAxis(int axis, {bool keepDims = false}) {
     return _reduceAxis(axis, keepDims: keepDims, reduce: _maxReduce);
+  }
+
+  // ============================================================
+  // Argmax / Argmin Axis Reductions
+  // ============================================================
+
+  /// Returns a tensor of indices of maximum values along the specified [axis].
+  ///
+  /// The output dtype is always [DType.int64]. If [keepDims] is true, the
+  /// reduced dimension is retained with size 1.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([3, 1, 4, 1, 5, 9]),
+  ///   [2, 3],
+  /// );
+  /// // Argmax along axis 1: [argmax(3,1,4), argmax(1,5,9)] = [2, 2]
+  /// final result = tensor.argmaxAxis(1);
+  /// print(result.toList()); // [2, 2]
+  /// print(result.dtype); // DType.int64
+  /// ```
+  TensorBuffer argmaxAxis(int axis, {bool keepDims = false}) {
+    return _reduceAxisToIndex(
+      axis,
+      keepDims: keepDims,
+      indexReduce: _argmaxReduce,
+    );
+  }
+
+  /// Returns a tensor of indices of minimum values along the specified [axis].
+  ///
+  /// The output dtype is always [DType.int64]. If [keepDims] is true, the
+  /// reduced dimension is retained with size 1.
+  ///
+  /// ```dart
+  /// final tensor = TensorBuffer.fromFloat32List(
+  ///   Float32List.fromList([3, 1, 4, 1, 5, 9]),
+  ///   [2, 3],
+  /// );
+  /// // Argmin along axis 1: [argmin(3,1,4), argmin(1,5,9)] = [1, 0]
+  /// final result = tensor.argminAxis(1);
+  /// print(result.toList()); // [1, 0]
+  /// print(result.dtype); // DType.int64
+  /// ```
+  TensorBuffer argminAxis(int axis, {bool keepDims = false}) {
+    return _reduceAxisToIndex(
+      axis,
+      keepDims: keepDims,
+      indexReduce: _argminReduce,
+    );
   }
 
   // ============================================================
@@ -394,6 +510,108 @@ extension TensorBufferReduce on TensorBuffer {
     return TensorBuffer.fromFloat32List(outputData, outputShape);
   }
 
+  /// Generic single-axis index-reduction implementation.
+  ///
+  /// Similar to [_reduceAxis] but returns the index of the selected element
+  /// rather than the value. Output dtype is always [DType.int64].
+  TensorBuffer _reduceAxisToIndex(
+    int axis, {
+    required bool keepDims,
+    required int Function(List<double>) indexReduce,
+  }) {
+    // Normalize negative axis
+    final normalizedAxis = axis < 0 ? rank + axis : axis;
+
+    if (normalizedAxis < 0 || normalizedAxis >= rank) {
+      throw IndexOutOfBoundsException(
+        index: axis,
+        min: -rank,
+        max: rank - 1,
+        dimension: 'axis',
+      );
+    }
+
+    // Compute output shape
+    final outputShape = <int>[];
+    for (int d = 0; d < rank; d++) {
+      if (d == normalizedAxis) {
+        if (keepDims) outputShape.add(1);
+      } else {
+        outputShape.add(shape[d]);
+      }
+    }
+
+    // Handle scalar result (1D tensor reduced without keepDims)
+    if (outputShape.isEmpty) {
+      final values = <double>[];
+      final indices = List<int>.filled(rank, 0);
+      for (int i = 0; i < numel; i++) {
+        int offset = storageOffset;
+        for (int d = 0; d < rank; d++) {
+          offset += indices[d] * strides[d];
+        }
+        values.add(storage.getAsDouble(offset));
+        _incrementIndices(indices);
+      }
+      final resultIndex = indexReduce(values);
+      final outputData = Int64List.fromList([resultIndex]);
+      return TensorBuffer(
+        storage: TensorStorage(outputData, DType.int64),
+        shape: [1],
+      );
+    }
+
+    // Create output buffer
+    final outputNumel = outputShape.fold(1, (a, b) => a * b);
+    final outputData = Int64List(outputNumel);
+
+    // Compute reductions
+    final axisSize = shape[normalizedAxis];
+    final outputIndices = List<int>.filled(outputShape.length, 0);
+
+    for (int outIdx = 0; outIdx < outputNumel; outIdx++) {
+      // Collect values along the reduction axis
+      final values = <double>[];
+
+      for (int axisIdx = 0; axisIdx < axisSize; axisIdx++) {
+        // Build input indices from output indices
+        final inputIndices = <int>[];
+        int outDim = 0;
+        for (int d = 0; d < rank; d++) {
+          if (d == normalizedAxis) {
+            inputIndices.add(axisIdx);
+            if (keepDims) outDim++; // Skip the size-1 dimension in output
+          } else {
+            inputIndices.add(outputIndices[outDim]);
+            outDim++;
+          }
+        }
+
+        // Compute offset and get value
+        int offset = storageOffset;
+        for (int d = 0; d < rank; d++) {
+          offset += inputIndices[d] * strides[d];
+        }
+        values.add(storage.getAsDouble(offset));
+      }
+
+      // Apply index reduction and store result
+      outputData[outIdx] = indexReduce(values);
+
+      // Increment output indices
+      for (int d = outputShape.length - 1; d >= 0; d--) {
+        outputIndices[d]++;
+        if (outputIndices[d] < outputShape[d]) break;
+        outputIndices[d] = 0;
+      }
+    }
+
+    return TensorBuffer(
+      storage: TensorStorage(outputData, DType.int64),
+      shape: outputShape,
+    );
+  }
+
   // ============================================================
   // Data Extraction
   // ============================================================
@@ -458,4 +676,28 @@ double _maxReduce(List<double> values) {
     if (v > result) result = v;
   }
   return result;
+}
+
+int _argmaxReduce(List<double> values) {
+  double maxVal = double.negativeInfinity;
+  int maxIdx = 0;
+  for (int i = 0; i < values.length; i++) {
+    if (values[i] > maxVal) {
+      maxVal = values[i];
+      maxIdx = i;
+    }
+  }
+  return maxIdx;
+}
+
+int _argminReduce(List<double> values) {
+  double minVal = double.infinity;
+  int minIdx = 0;
+  for (int i = 0; i < values.length; i++) {
+    if (values[i] < minVal) {
+      minVal = values[i];
+      minIdx = i;
+    }
+  }
+  return minIdx;
 }
