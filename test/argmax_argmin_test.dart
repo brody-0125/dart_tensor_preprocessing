@@ -30,10 +30,9 @@ void main() {
     });
 
     test('single element', () {
-      final tensor = TensorBuffer.fromFloat32List(
-        Float32List.fromList([42]),
-        [1],
-      );
+      final tensor = TensorBuffer.fromFloat32List(Float32List.fromList([42]), [
+        1,
+      ]);
       expect(tensor.argmax(), equals(0));
     });
 
@@ -85,10 +84,9 @@ void main() {
     });
 
     test('single element', () {
-      final tensor = TensorBuffer.fromFloat32List(
-        Float32List.fromList([42]),
-        [1],
-      );
+      final tensor = TensorBuffer.fromFloat32List(Float32List.fromList([42]), [
+        1,
+      ]);
       expect(tensor.argmin(), equals(0));
     });
 
