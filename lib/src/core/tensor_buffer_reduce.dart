@@ -568,6 +568,7 @@ extension TensorBufferReduce on TensorBuffer {
     // Compute reductions
     final axisSize = shape[normalizedAxis];
     final outputIndices = List<int>.filled(outputShape.length, 0);
+    final inputIndices = List<int>.filled(rank, 0);
 
     for (int outIdx = 0; outIdx < outputNumel; outIdx++) {
       // Collect values along the reduction axis
@@ -575,14 +576,13 @@ extension TensorBufferReduce on TensorBuffer {
 
       for (int axisIdx = 0; axisIdx < axisSize; axisIdx++) {
         // Build input indices from output indices
-        final inputIndices = <int>[];
         int outDim = 0;
         for (int d = 0; d < rank; d++) {
           if (d == normalizedAxis) {
-            inputIndices.add(axisIdx);
-            if (keepDims) outDim++; // Skip the size-1 dimension in output
+            inputIndices[d] = axisIdx;
+            if (keepDims) outDim++;
           } else {
-            inputIndices.add(outputIndices[outDim]);
+            inputIndices[d] = outputIndices[outDim];
             outDim++;
           }
         }
