@@ -51,21 +51,17 @@ abstract class ArithmeticOp extends TransformOp
       throw NonContiguousException('$runtimeType.applyInPlace');
     }
     input = ensureContiguous(input);
-    _apply(input);
+    _apply(input, snapshotOther: true);
   }
 
-  void _apply(TensorBuffer tensor) {
+  void _apply(TensorBuffer tensor, {bool snapshotOther = false}) {
+    computeOutputShape(tensor.shape);
     if (scalar != null) {
       _applyScalar(tensor, scalar!);
     } else {
-      final otherContiguous = ensureContiguous(other!);
-      if (tensor.numel != otherContiguous.numel) {
-        throw ShapeMismatchException(
-          actual: otherContiguous.shape,
-          message:
-              'Tensor shapes must match for element-wise operation: ${tensor.shape} vs ${otherContiguous.shape}',
-        );
-      }
+      final otherContiguous = snapshotOther
+          ? other!.clone()
+          : ensureContiguous(other!);
       _applyTensor(tensor, otherContiguous);
     }
   }
@@ -77,7 +73,22 @@ abstract class ArithmeticOp extends TransformOp
   void _applyTensor(TensorBuffer tensor, TensorBuffer other);
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    final operand = other;
+    if (operand == null) return inputShape;
+    var matches = operand.rank == inputShape.length;
+    for (var i = 0; matches && i < inputShape.length; i++) {
+      matches = operand.shape[i] == inputShape[i];
+    }
+    if (!matches) {
+      throw ShapeMismatchException(
+        actual: operand.shape,
+        message:
+            'Tensor operands must have identical shapes; broadcasting is not supported',
+      );
+    }
+    return inputShape;
+  }
 }
 
 /// Adds a scalar or tensor to the input element-wise.

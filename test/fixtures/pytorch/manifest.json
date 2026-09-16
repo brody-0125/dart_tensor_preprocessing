@@ -11,14 +11,14 @@
     "mkl_instructions": "SSE4_2",
     "threads": 1
   },
-  "generator_sha256": "c628008df8e4a2224669ed6f0b56cd3407678e6454e3cf17e94a7cb8c2628c0a",
+  "generator_sha256": "872cc04325eae80661e729c8ef89f1841c7c8b3ca8eb5dbe968efe839eadc333",
   "requirements_sha256": "ed4d13f006d899b6c6682f517c657ee97eaefa5a1c6f9fe1a0cadd5b70534857",
   "requirements_linux_sha256": "bad3b0eaebdef46a522006b2a0abbf609ed52b5e1f81aad5f37f4559cdc6e6f2",
   "files": [
     {
       "path": "operations.golden.json",
-      "sha256": "7e815166dc4230d418b01f91e83cdca4a30713629797cb128d5e31e46a860b93",
-      "cases": 1749
+      "sha256": "9cd419c251f854165fd7f600e59f80b73e05b1f56dd191a2aa6e53f41f833523",
+      "cases": 1803
     }
   ]
 }

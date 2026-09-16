@@ -163110,5 +163110,3671 @@
       1,
       3
     ]
+  },
+  {
+    "name": "binary-add-torch.float32-scalarTrue",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        1.375,
+        1.75,
+        2.25,
+        3.25,
+        4.25,
+        8.25,
+        12.25
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "binary-add-torch.float32-scalarTrue-offset",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        1.375,
+        1.75,
+        2.25,
+        3.25,
+        4.25,
+        8.25,
+        12.25
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        1.375,
+        1.75,
+        2.25,
+        3.25,
+        4.25,
+        8.25,
+        12.25,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-add-torch.float32-scalarTrue-strided",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        1.375,
+        1.75,
+        2.25,
+        3.25,
+        4.25,
+        8.25,
+        12.25
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-add-torch.float32-scalarFalse",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        2.125,
+        0.75,
+        0.0,
+        5.0,
+        3.5,
+        5.0,
+        15.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "binary-add-torch.float32-scalarFalse-offset",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        2.125,
+        0.75,
+        0.0,
+        5.0,
+        3.5,
+        5.0,
+        15.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        2.125,
+        0.75,
+        0.0,
+        5.0,
+        3.5,
+        5.0,
+        15.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-add-torch.float32-scalarFalse-strided",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        2.125,
+        0.75,
+        0.0,
+        5.0,
+        3.5,
+        5.0,
+        15.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-sub-torch.float32-scalarTrue",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.125,
+        -0.75,
+        -0.25,
+        0.75,
+        1.75,
+        5.75,
+        9.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "binary-sub-torch.float32-scalarTrue-offset",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.125,
+        -0.75,
+        -0.25,
+        0.75,
+        1.75,
+        5.75,
+        9.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -1.125,
+        -0.75,
+        -0.25,
+        0.75,
+        1.75,
+        5.75,
+        9.75,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-sub-torch.float32-scalarTrue-strided",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.125,
+        -0.75,
+        -0.25,
+        0.75,
+        1.75,
+        5.75,
+        9.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-sub-torch.float32-scalarFalse",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.875,
+        0.25,
+        2.0,
+        -1.0,
+        2.5,
+        9.0,
+        7.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "binary-sub-torch.float32-scalarFalse-offset",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.875,
+        0.25,
+        2.0,
+        -1.0,
+        2.5,
+        9.0,
+        7.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -1.875,
+        0.25,
+        2.0,
+        -1.0,
+        2.5,
+        9.0,
+        7.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-sub-torch.float32-scalarFalse-strided",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.875,
+        0.25,
+        2.0,
+        -1.0,
+        2.5,
+        9.0,
+        7.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-mul-torch.float32-scalarTrue",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.15625,
+        0.625,
+        1.25,
+        2.5,
+        3.75,
+        8.75,
+        13.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "binary-mul-torch.float32-scalarTrue-offset",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.15625,
+        0.625,
+        1.25,
+        2.5,
+        3.75,
+        8.75,
+        13.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.15625,
+        0.625,
+        1.25,
+        2.5,
+        3.75,
+        8.75,
+        13.75,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-mul-torch.float32-scalarTrue-strided",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.15625,
+        0.625,
+        1.25,
+        2.5,
+        3.75,
+        8.75,
+        13.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-mul-torch.float32-scalarFalse",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.25,
+        0.125,
+        -1.0,
+        6.0,
+        1.5,
+        -14.0,
+        44.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "binary-mul-torch.float32-scalarFalse-offset",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.25,
+        0.125,
+        -1.0,
+        6.0,
+        1.5,
+        -14.0,
+        44.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.25,
+        0.125,
+        -1.0,
+        6.0,
+        1.5,
+        -14.0,
+        44.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-mul-torch.float32-scalarFalse-strided",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.25,
+        0.125,
+        -1.0,
+        6.0,
+        1.5,
+        -14.0,
+        44.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-div-torch.float32-scalarTrue",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.10000000149011612,
+        0.4000000059604645,
+        0.800000011920929,
+        1.600000023841858,
+        2.4000000953674316,
+        5.599999904632568,
+        8.800000190734863
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "binary-div-torch.float32-scalarTrue-offset",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.10000000149011612,
+        0.4000000059604645,
+        0.800000011920929,
+        1.600000023841858,
+        2.4000000953674316,
+        5.599999904632568,
+        8.800000190734863
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.10000000149011612,
+        0.4000000059604645,
+        0.800000011920929,
+        1.600000023841858,
+        2.4000000953674316,
+        5.599999904632568,
+        8.800000190734863,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-div-torch.float32-scalarTrue-strided",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.10000000149011612,
+        0.4000000059604645,
+        0.800000011920929,
+        1.600000023841858,
+        2.4000000953674316,
+        5.599999904632568,
+        8.800000190734863
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-div-torch.float32-scalarFalse",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0625,
+        2.0,
+        -1.0,
+        0.6666666865348816,
+        6.0,
+        -3.5,
+        2.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "binary-div-torch.float32-scalarFalse-offset",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0625,
+        2.0,
+        -1.0,
+        0.6666666865348816,
+        6.0,
+        -3.5,
+        2.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0625,
+        2.0,
+        -1.0,
+        0.6666666865348816,
+        6.0,
+        -3.5,
+        2.75,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-div-torch.float32-scalarFalse-strided",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0625,
+        2.0,
+        -1.0,
+        0.6666666865348816,
+        6.0,
+        -3.5,
+        2.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-pow-torch.float32",
+    "op": "binary_pow",
+    "params": {
+      "op": "binary_pow",
+      "scalar": 1.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.04419417306780815,
+        0.3535533845424652,
+        1.0,
+        2.8284270763397217,
+        5.196152210235596,
+        18.520259857177734,
+        36.482872009277344
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "binary-pow-torch.float32-offset",
+    "op": "binary_pow",
+    "params": {
+      "op": "binary_pow",
+      "scalar": 1.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.04419417306780815,
+        0.3535533845424652,
+        1.0,
+        2.8284270763397217,
+        5.196152210235596,
+        18.520259857177734,
+        36.482872009277344
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.04419417306780815,
+        0.3535533845424652,
+        1.0,
+        2.8284270763397217,
+        5.196152210235596,
+        18.520259857177734,
+        36.482872009277344,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-pow-torch.float32-strided",
+    "op": "binary_pow",
+    "params": {
+      "op": "binary_pow",
+      "scalar": 1.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.04419417306780815,
+        0.3535533845424652,
+        1.0,
+        2.8284270763397217,
+        5.196152210235596,
+        18.520259857177734,
+        36.482872009277344
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-add-torch.float64-scalarTrue",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        1.375,
+        1.75,
+        2.25,
+        3.25,
+        4.25,
+        8.25,
+        12.25
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "binary-add-torch.float64-scalarTrue-offset",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        1.375,
+        1.75,
+        2.25,
+        3.25,
+        4.25,
+        8.25,
+        12.25
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        1.375,
+        1.75,
+        2.25,
+        3.25,
+        4.25,
+        8.25,
+        12.25,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-add-torch.float64-scalarTrue-strided",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        1.375,
+        1.75,
+        2.25,
+        3.25,
+        4.25,
+        8.25,
+        12.25
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-add-torch.float64-scalarFalse",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        2.125,
+        0.75,
+        0.0,
+        5.0,
+        3.5,
+        5.0,
+        15.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "binary-add-torch.float64-scalarFalse-offset",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        2.125,
+        0.75,
+        0.0,
+        5.0,
+        3.5,
+        5.0,
+        15.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        2.125,
+        0.75,
+        0.0,
+        5.0,
+        3.5,
+        5.0,
+        15.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-add-torch.float64-scalarFalse-strided",
+    "op": "binary_add",
+    "params": {
+      "op": "binary_add",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        2.125,
+        0.75,
+        0.0,
+        5.0,
+        3.5,
+        5.0,
+        15.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-sub-torch.float64-scalarTrue",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.125,
+        -0.75,
+        -0.25,
+        0.75,
+        1.75,
+        5.75,
+        9.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "binary-sub-torch.float64-scalarTrue-offset",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.125,
+        -0.75,
+        -0.25,
+        0.75,
+        1.75,
+        5.75,
+        9.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -1.125,
+        -0.75,
+        -0.25,
+        0.75,
+        1.75,
+        5.75,
+        9.75,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-sub-torch.float64-scalarTrue-strided",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.125,
+        -0.75,
+        -0.25,
+        0.75,
+        1.75,
+        5.75,
+        9.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-sub-torch.float64-scalarFalse",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.875,
+        0.25,
+        2.0,
+        -1.0,
+        2.5,
+        9.0,
+        7.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "binary-sub-torch.float64-scalarFalse-offset",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.875,
+        0.25,
+        2.0,
+        -1.0,
+        2.5,
+        9.0,
+        7.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -1.875,
+        0.25,
+        2.0,
+        -1.0,
+        2.5,
+        9.0,
+        7.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-sub-torch.float64-scalarFalse-strided",
+    "op": "binary_sub",
+    "params": {
+      "op": "binary_sub",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.875,
+        0.25,
+        2.0,
+        -1.0,
+        2.5,
+        9.0,
+        7.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-mul-torch.float64-scalarTrue",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.15625,
+        0.625,
+        1.25,
+        2.5,
+        3.75,
+        8.75,
+        13.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "binary-mul-torch.float64-scalarTrue-offset",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.15625,
+        0.625,
+        1.25,
+        2.5,
+        3.75,
+        8.75,
+        13.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.15625,
+        0.625,
+        1.25,
+        2.5,
+        3.75,
+        8.75,
+        13.75,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-mul-torch.float64-scalarTrue-strided",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.15625,
+        0.625,
+        1.25,
+        2.5,
+        3.75,
+        8.75,
+        13.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-mul-torch.float64-scalarFalse",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.25,
+        0.125,
+        -1.0,
+        6.0,
+        1.5,
+        -14.0,
+        44.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "binary-mul-torch.float64-scalarFalse-offset",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.25,
+        0.125,
+        -1.0,
+        6.0,
+        1.5,
+        -14.0,
+        44.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.25,
+        0.125,
+        -1.0,
+        6.0,
+        1.5,
+        -14.0,
+        44.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-mul-torch.float64-scalarFalse-strided",
+    "op": "binary_mul",
+    "params": {
+      "op": "binary_mul",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.25,
+        0.125,
+        -1.0,
+        6.0,
+        1.5,
+        -14.0,
+        44.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-div-torch.float64-scalarTrue",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.1,
+        0.4,
+        0.8,
+        1.6,
+        2.4,
+        5.6,
+        8.8
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "binary-div-torch.float64-scalarTrue-offset",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.1,
+        0.4,
+        0.8,
+        1.6,
+        2.4,
+        5.6,
+        8.8
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.1,
+        0.4,
+        0.8,
+        1.6,
+        2.4,
+        5.6,
+        8.8,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-div-torch.float64-scalarTrue-strided",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "scalar": 1.25
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.1,
+        0.4,
+        0.8,
+        1.6,
+        2.4,
+        5.6,
+        8.8
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-div-torch.float64-scalarFalse",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0625,
+        2.0,
+        -1.0,
+        0.6666666666666666,
+        6.0,
+        -3.5,
+        2.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "binary-div-torch.float64-scalarFalse-offset",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0625,
+        2.0,
+        -1.0,
+        0.6666666666666666,
+        6.0,
+        -3.5,
+        2.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0625,
+        2.0,
+        -1.0,
+        0.6666666666666666,
+        6.0,
+        -3.5,
+        2.75,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-div-torch.float64-scalarFalse-strided",
+    "op": "binary_div",
+    "params": {
+      "op": "binary_div",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          2.0,
+          0.25,
+          -1.0,
+          3.0,
+          0.5,
+          -2.0,
+          4.0
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0625,
+        2.0,
+        -1.0,
+        0.6666666666666666,
+        6.0,
+        -3.5,
+        2.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "binary-pow-torch.float64",
+    "op": "binary_pow",
+    "params": {
+      "op": "binary_pow",
+      "scalar": 1.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.04419417382415922,
+        0.3535533905932738,
+        1.0,
+        2.8284271247461903,
+        5.196152422706632,
+        18.520259177452136,
+        36.4828726939094
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "binary-pow-torch.float64-offset",
+    "op": "binary_pow",
+    "params": {
+      "op": "binary_pow",
+      "scalar": 1.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.04419417382415922,
+        0.3535533905932738,
+        1.0,
+        2.8284271247461903,
+        5.196152422706632,
+        18.520259177452136,
+        36.4828726939094
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.04419417382415922,
+        0.3535533905932738,
+        1.0,
+        2.8284271247461903,
+        5.196152422706632,
+        18.520259177452136,
+        36.4828726939094,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "binary-pow-torch.float64-strided",
+    "op": "binary_pow",
+    "params": {
+      "op": "binary_pow",
+      "scalar": 1.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        7.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.04419417382415922,
+        0.3535533905932738,
+        1.0,
+        2.8284271247461903,
+        5.196152422706632,
+        18.520259177452136,
+        36.4828726939094
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.125,
+        0.0,
+        0.5,
+        0.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        3.0,
+        0.0,
+        7.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
   }
 ]

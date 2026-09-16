@@ -81,6 +81,23 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'binary_add' =>
+      p.containsKey('other')
+          ? AddOp.tensor(fixtureTensor(p['other']))
+          : AddOp(scalar: fixtureNumber(p['scalar'])),
+    'binary_sub' =>
+      p.containsKey('other')
+          ? SubOp.tensor(fixtureTensor(p['other']))
+          : SubOp(scalar: fixtureNumber(p['scalar'])),
+    'binary_mul' =>
+      p.containsKey('other')
+          ? MulOp.tensor(fixtureTensor(p['other']))
+          : MulOp(scalar: fixtureNumber(p['scalar'])),
+    'binary_div' =>
+      p.containsKey('other')
+          ? DivOp.tensor(fixtureTensor(p['other']))
+          : DivOp(scalar: fixtureNumber(p['scalar'])),
+    'binary_pow' => PowOp(exponent: fixtureNumber(p['scalar'])),
     'masked_fill' => MaskedFillOp(
       mask: fixtureTensor(p['mask'] as Map<String, dynamic>),
       value: fixtureNumber(p['value']),

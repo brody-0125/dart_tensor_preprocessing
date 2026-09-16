@@ -66,6 +66,11 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   explicit contiguous preparation and rejection checks for strided reshape.
   Fixed invalid permutation shape inference and mutable operation parameters.
   Local network-inclusive suite: 3,298 passed; static analysis clean.
+  Shape CI runs 35097349704 and 35097354321 passed all gates.
+  Add/Sub/Mul/Div/Pow float32/64 scalar/tensor cases add 54 goldens (1,803 total).
+  Fixed mismatched-shape acceptance and overlapping in-place tensor operands.
+  Local network-inclusive suite: 3,354 passed. Integer/mixed arithmetic dtype
+  contracts remain open; float goldens do not prove integer parity.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

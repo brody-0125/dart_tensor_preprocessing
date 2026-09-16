@@ -406,6 +406,16 @@ def generate():
             ("flatten_op", lambda z: z.flatten(1, 2), {"start": 1, "end": -1}),
         ):
             view_cases(f"shape-{op}-{dtype}", x, fn, {"op": "core_" + op, **params}, inplace=False)
+    for dtype in (torch.float32, torch.float64):
+        x = torch.tensor([0.125, 0.5, 1, 2, 3, 7, 11], dtype=dtype)
+        other = torch.tensor([2, 0.25, -1, 3, 0.5, -2, 4], dtype=dtype)
+        for name, fn in (("add", torch.add), ("sub", torch.sub), ("mul", torch.mul), ("div", torch.div)):
+            for scalar in (True, False):
+                operand = 1.25 if scalar else other
+                view_cases(f"binary-{name}-{dtype}-scalar{scalar}", x,
+                           lambda z, fn=fn, operand=operand: fn(z, operand),
+                           {"op": "binary_" + name, **({"scalar": operand} if scalar else {"other": tensor(other)})})
+        view_cases(f"binary-pow-{dtype}", x, lambda z: torch.pow(z, 1.5), {"op": "binary_pow", "scalar": 1.5})
     return cases
 
 
