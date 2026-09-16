@@ -4,6 +4,121 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('fused integer output follows native storage conversion at bounds', () {
+    final expected = <DType, int>{
+      DType.int8: 25,
+      DType.int16: -999,
+      DType.int32: -999,
+      DType.int64: -999,
+      DType.uint8: 0,
+      DType.uint16: 0,
+      DType.uint32: 4294966297,
+      DType.uint64: -999,
+    };
+    for (final entry in expected.entries) {
+      final result = ResizeNormalizeFusedOp(
+        height: 1,
+        width: 1,
+        mean: [1000],
+        std: [1],
+      )(TensorBuffer.ones([1, 1, 1], dtype: entry.key));
+      expect((result.storage.data as List<int>).single, entry.value);
+    }
+  });
+  test(
+    'fused non-finite statistics propagate for floats and reject integer NaN',
+    () {
+      for (final dtype in [DType.float32, DType.float64]) {
+        final input = TensorBuffer.ones([1, 1, 1], dtype: dtype);
+        final nan = ResizeNormalizeFusedOp(
+          height: 1,
+          width: 1,
+          mean: [double.nan],
+          std: [1],
+        )(input);
+        expect(nan.storage.getAsDouble(0).isNaN, isTrue);
+        final zero = ResizeNormalizeFusedOp(
+          height: 1,
+          width: 1,
+          mean: [0],
+          std: [double.infinity],
+        )(input);
+        expect(zero.storage.getAsDouble(0), 0);
+        final negative = ResizeNormalizeFusedOp(
+          height: 1,
+          width: 1,
+          mean: [0],
+          std: [-2],
+        )(input);
+        expect(negative.storage.getAsDouble(0), -0.5);
+      }
+      final input = TensorBuffer.ones([1, 1, 1], dtype: DType.int64);
+      expect(
+        () => ResizeNormalizeFusedOp(
+          height: 1,
+          width: 1,
+          mean: [double.nan],
+          std: [1],
+        )(input),
+        throwsUnsupportedError,
+      );
+      expect(input.storage.data, [1]);
+    },
+  );
+
+  test('normalization avoids reciprocal overflow across vector tails', () {
+    for (final dtype in [DType.float32, DType.float64]) {
+      for (final length in [1, 4, 9, 128]) {
+        for (final std in [1e-40, 1e-320]) {
+          final result = NormalizeOp(mean: [1], std: [std])(
+            TensorBuffer.ones([1, 1, length], dtype: dtype),
+          );
+          for (var i = 0; i < length; i++) {
+            expect(
+              result.storage.getAsDouble(i),
+              0,
+              reason: '$dtype length=$length std=$std index=$i',
+            );
+          }
+        }
+      }
+    }
+  });
+
+  test('fused division preserves zero with subnormal standard deviation', () {
+    final op = ResizeNormalizeFusedOp(
+      height: 1,
+      width: 1,
+      mean: [1],
+      std: [1e-320],
+    );
+    for (final dtype in [DType.float32, DType.float64, DType.int64]) {
+      final result = op(TensorBuffer.ones([1, 1, 1], dtype: dtype));
+      expect(result.storage.getAsDouble(0), 0);
+    }
+  });
+
+  test('normalization parameters remain immutable after validation', () {
+    for (final fused in [false, true]) {
+      final mean = [0.5];
+      final std = [0.25];
+      final op = fused
+          ? ResizeNormalizeFusedOp(height: 1, width: 1, mean: mean, std: std)
+          : NormalizeOp(mean: mean, std: std);
+      mean[0] = 100;
+      std[0] = 0;
+      final result = op(TensorBuffer.ones([1, 1, 1]));
+      expect(result.storage.getAsDouble(0), 2);
+      if (op is ResizeNormalizeFusedOp) {
+        expect(() => op.std[0] = 0, throwsUnsupportedError);
+        expect(() => op.mean.clear(), throwsUnsupportedError);
+      } else if (op is NormalizeOp) {
+        expect(() => op.std[0] = 0, throwsUnsupportedError);
+        expect(() => op.mean.clear(), throwsUnsupportedError);
+      }
+    }
+  });
+
   group('ResizeNormalizeFusedOp', () {
     group('constructor validation', () {
       test('throws for mismatched mean/std lengths', () {
@@ -155,11 +270,13 @@ void main() {
         expect(op.computeOutputShape([2, 3, 100, 100]), [2, 3, 224, 224]);
       });
 
-      test('computeOutputShape for 2D input returns modified shape', () {
-        // computeOutputShape doesn't validate rank, it just computes
+      test('computeOutputShape rejects unsupported rank', () {
         final op = ResizeNormalizeFusedOp.imagenet(height: 224, width: 224);
         // For 2D, it falls through to 4D branch logic
-        expect(op.computeOutputShape([4, 4]), [4, 4, 224, 224]);
+        expect(
+          () => op.computeOutputShape([4, 4]),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
 
       test('rejects 2D input', () {

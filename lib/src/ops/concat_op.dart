@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
+import '../utils/contiguous_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 
 /// Stacks a sequence of tensors along a new dimension.
@@ -146,7 +147,7 @@ void _stackTensors(
       final outList = output.storage.data as Float32List;
       for (int tensorIdx = 0; tensorIdx < tensors.length; tensorIdx++) {
         final tensor = tensors[tensorIdx];
-        final contiguous = tensor.isContiguous ? tensor : tensor.contiguous();
+        final contiguous = contiguousStorageView(tensor);
         final inList = contiguous.storage.data as Float32List;
 
         for (int srcIdx = 0; srcIdx < numelPerTensor; srcIdx++) {
@@ -167,7 +168,7 @@ void _stackTensors(
       final outList = output.storage.data as Float64List;
       for (int tensorIdx = 0; tensorIdx < tensors.length; tensorIdx++) {
         final tensor = tensors[tensorIdx];
-        final contiguous = tensor.isContiguous ? tensor : tensor.contiguous();
+        final contiguous = contiguousStorageView(tensor);
         final inList = contiguous.storage.data as Float64List;
 
         for (int srcIdx = 0; srcIdx < numelPerTensor; srcIdx++) {
@@ -187,7 +188,7 @@ void _stackTensors(
       // Generic fallback
       for (int tensorIdx = 0; tensorIdx < tensors.length; tensorIdx++) {
         final tensor = tensors[tensorIdx];
-        final contiguous = tensor.isContiguous ? tensor : tensor.contiguous();
+        final contiguous = contiguousStorageView(tensor);
 
         for (int srcIdx = 0; srcIdx < numelPerTensor; srcIdx++) {
           final destIdx = _computeStackDestIndex(
@@ -198,8 +199,8 @@ void _stackTensors(
             outStrides,
             inputRank,
           );
-          final value = contiguous.storage.getAsDouble(srcIdx);
-          output.storage.setFromDouble(destIdx, value);
+          (output.storage.data as List<num>)[destIdx] =
+              (contiguous.storage.data as List<num>)[srcIdx];
         }
       }
   }
@@ -323,12 +324,12 @@ TensorBuffer concat(List<TensorBuffer> tensors, {int axis = 0}) {
   // Optimized copy using linear indexing
   // For axis=0 and contiguous tensors, use bulk copy
   if (normalizedAxis == 0 && tensors.every((t) => t.isContiguous)) {
-    _copyContiguousAxis0(tensors, output);
+    _copyContiguousAxis0(tensors.map(contiguousStorageView).toList(), output);
   } else {
     // General case: use strided copy
     int axisOffset = 0;
     for (final tensor in tensors) {
-      final contiguous = tensor.isContiguous ? tensor : tensor.contiguous();
+      final contiguous = contiguousStorageView(tensor);
       final tensorAxisSize = contiguous.shape[normalizedAxis];
       _copyTensorToConcat(contiguous, output, axisOffset, normalizedAxis);
       axisOffset += tensorAxisSize;
@@ -362,8 +363,8 @@ void _copyContiguousAxis0(List<TensorBuffer> tensors, TensorBuffer output) {
       int offset = 0;
       for (final tensor in tensors) {
         for (int i = 0; i < tensor.numel; i++) {
-          final value = tensor.storage.getAsDouble(i);
-          output.storage.setFromDouble(offset + i, value);
+          (output.storage.data as List<num>)[offset + i] =
+              (tensor.storage.data as List<num>)[i];
         }
         offset += tensor.numel;
       }
@@ -424,8 +425,8 @@ void _copyTensorToConcat(
           final destCoord = (dim == concatAxis) ? coord + axisOffset : coord;
           destIdx += destCoord * destStrides[dim];
         }
-        final value = source.storage.getAsDouble(srcIdx);
-        destination.storage.setFromDouble(destIdx, value);
+        (destination.storage.data as List<num>)[destIdx] =
+            (source.storage.data as List<num>)[srcIdx];
       }
   }
 }

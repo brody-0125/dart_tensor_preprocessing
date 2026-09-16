@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import '../core/dtype.dart';
-import '../core/memory_format.dart';
 import '../core/tensor_buffer.dart';
 
 /// Utilities for working with TypedData views and zero-copy operations.
@@ -104,6 +103,7 @@ extension TensorViewExtension on TensorBuffer {
     return TensorBuffer(
       storage: storage,
       shape: newShape,
+      strides: strides,
       storageOffset: newOffset,
       memoryFormat: memoryFormat,
     );
@@ -161,33 +161,12 @@ extension TensorViewExtension on TensorBuffer {
       throw RangeError('dim $dim out of range for rank $rank');
     }
 
-    final results = <TensorBuffer>[];
-    final dimSize = shape[dim];
-
-    for (int i = 0; i < dimSize; i++) {
-      // Create a view for each index along dim
-      final newShape = [...shape]..removeAt(dim);
-      final newStrides = [...strides]..removeAt(dim);
-
-      // Calculate offset for this slice
-      final sliceOffset = storageOffset + i * strides[dim];
-
-      results.add(
-        TensorBuffer(
-          storage: storage,
-          shape: newShape,
-          strides: newStrides,
-          storageOffset: sliceOffset,
-          memoryFormat: MemoryFormat.contiguous,
-        ),
-      );
-    }
-
-    return results;
+    return [for (var i = 0; i < shape[dim]; i++) select(dim, i)];
   }
 
   /// Selects a single index along a dimension, returning a view with
-  /// reduced rank.
+  /// reduced rank. Selecting from a vector retains shape [1], consistent with
+  /// the package's single-element tensor convention.
   ///
   /// ```dart
   /// final tensor = TensorBuffer.zeros([10, 3, 224, 224]);
@@ -205,6 +184,10 @@ extension TensorViewExtension on TensorBuffer {
 
     final newShape = [...shape]..removeAt(dim);
     final newStrides = [...strides]..removeAt(dim);
+    if (newShape.isEmpty) {
+      newShape.add(1);
+      newStrides.add(1);
+    }
     final newOffset = storageOffset + index * strides[dim];
 
     return TensorBuffer(
@@ -229,7 +212,7 @@ extension TensorViewExtension on TensorBuffer {
     if (dim < 0 || dim >= rank) {
       throw RangeError('dim $dim out of range for rank $rank');
     }
-    if (start < 0 || start + length > shape[dim]) {
+    if (start < 0 || length <= 0 || start > shape[dim] - length) {
       throw RangeError(
         'Invalid narrow range: start=$start, length=$length, dim size=${shape[dim]}',
       );

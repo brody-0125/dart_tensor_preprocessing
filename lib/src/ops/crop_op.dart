@@ -4,6 +4,7 @@ import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
+import 'pad_op.dart';
 
 /// Crops a tensor from the center to the specified dimensions.
 class CenterCropOp extends TransformOp with RequiresContiguous {
@@ -50,15 +51,26 @@ class CenterCropOp extends TransformOp with RequiresContiguous {
     final srcW = rank == 3 ? shape[2] : shape[3];
 
     if (height > srcH || width > srcW) {
-      throw InvalidParameterException(
-        'crop size',
-        '$height x $width',
-        'Cannot be larger than input size $srcH x $srcW',
+      final dh = height > srcH ? height - srcH : 0;
+      final dw = width > srcW ? width - srcW : 0;
+      return apply(
+        PadOp(
+          top: dh ~/ 2,
+          bottom: (dh + 1) ~/ 2,
+          left: dw ~/ 2,
+          right: (dw + 1) ~/ 2,
+        )(contiguous),
       );
     }
 
-    final startY = (srcH - height) ~/ 2;
-    final startX = (srcW - width) ~/ 2;
+    // torchvision uses Python's round-to-even for half-integer centers.
+    int center(int difference) {
+      final lower = difference ~/ 2;
+      return difference.isOdd && lower.isOdd ? lower + 1 : lower;
+    }
+
+    final startY = center(srcH - height);
+    final startX = center(srcW - width);
 
     return rank == 3
         ? _crop3D(contiguous, startY, startX)

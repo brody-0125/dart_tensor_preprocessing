@@ -128,7 +128,7 @@ class BatchNormOp extends TransformOp
       );
     }
 
-    if (eps <= 0) {
+    if (!eps.isFinite || eps <= 0) {
       throw InvalidParameterException(
         'eps',
         eps.toString(),
@@ -193,6 +193,7 @@ class BatchNormOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('BatchNormOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _validateShape(input.shape);
     _batchNorm(input);
   }

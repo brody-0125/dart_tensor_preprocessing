@@ -159,7 +159,7 @@ TensorBuffer _createTestImage() {
   for (int i = 0; i < data.length; i++) {
     data[i] = i % 256 / 255.0;
   }
-  return TensorBuffer.fromFloat32List(data, [3, 224, 224]);
+  return TensorBuffer.fromFloat32List(data, [224, 224, 3]);
 }
 
 /// Runs benchmarks if executed directly.

@@ -50,21 +50,59 @@ abstract class ArithmeticOp extends TransformOp
     if (!input.isContiguous) {
       throw NonContiguousException('$runtimeType.applyInPlace');
     }
-    _apply(input);
+    input = ensureContiguous(input);
+    _apply(input, snapshotOther: true);
   }
 
-  void _apply(TensorBuffer tensor) {
+  void _apply(TensorBuffer tensor, {bool snapshotOther = false}) {
+    computeOutputShape(tensor.shape);
+    // Keep exact integer arithmetic out of the double fallback.
+    final s = scalar;
+    if (tensor.dtype.isInteger &&
+        (this is AddOp || this is SubOp || this is MulOp || this is DivOp) &&
+        (s != null
+            ? s.isFinite &&
+                  s == s.truncateToDouble() &&
+                  s >= -9223372036854775808.0 &&
+                  s < 9223372036854775808.0
+            : other!.dtype.isInteger)) {
+      final values = tensor.storage.data as List<int>;
+      final operand = other == null
+          ? null
+          : (snapshotOther ? other!.clone() : ensureContiguous(other!))
+                    .storage
+                    .data
+                as List<int>;
+      if (this is DivOp && (operand == null ? s == 0 : operand.contains(0))) {
+        throw InvalidParameterException(
+          'divisor',
+          0,
+          'integer division by zero',
+        );
+      }
+      for (var i = 0; i < tensor.numel; i++) {
+        final b = operand == null ? s!.toInt() : operand[i];
+        final value = this is AddOp
+            ? values[i] + b
+            : this is SubOp
+            ? values[i] - b
+            : this is MulOp
+            ? values[i] * b
+            : values[i] ~/ b;
+        values[i] = tensor.dtype == DType.uint8
+            ? value.clamp(0, 255)
+            : tensor.dtype == DType.uint16
+            ? value.clamp(0, 65535)
+            : value;
+      }
+      return;
+    }
     if (scalar != null) {
       _applyScalar(tensor, scalar!);
     } else {
-      final otherContiguous = ensureContiguous(other!);
-      if (tensor.numel != otherContiguous.numel) {
-        throw ShapeMismatchException(
-          actual: otherContiguous.shape,
-          message:
-              'Tensor shapes must match for element-wise operation: ${tensor.shape} vs ${otherContiguous.shape}',
-        );
-      }
+      final otherContiguous = snapshotOther
+          ? other!.clone()
+          : ensureContiguous(other!);
       _applyTensor(tensor, otherContiguous);
     }
   }
@@ -76,7 +114,22 @@ abstract class ArithmeticOp extends TransformOp
   void _applyTensor(TensorBuffer tensor, TensorBuffer other);
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    final operand = other;
+    if (operand == null) return inputShape;
+    var matches = operand.rank == inputShape.length;
+    for (var i = 0; matches && i < inputShape.length; i++) {
+      matches = operand.shape[i] == inputShape[i];
+    }
+    if (!matches) {
+      throw ShapeMismatchException(
+        actual: operand.shape,
+        message:
+            'Tensor operands must have identical shapes; broadcasting is not supported',
+      );
+    }
+    return inputShape;
+  }
 }
 
 /// Adds a scalar or tensor to the input element-wise.
@@ -376,6 +429,7 @@ class PowOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('PowOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _pow(input);
   }
 
@@ -383,25 +437,48 @@ class PowOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     final numel = tensor.numel;
     final exp = exponent;
     final data = tensor.storage.data;
+    if (tensor.dtype.isInteger &&
+        exp.isFinite &&
+        exp >= 0 &&
+        exp < 9223372036854775808.0 &&
+        exp == exp.truncateToDouble()) {
+      final values = data as List<int>;
+      for (var i = 0; i < numel; i++) {
+        final value = math.pow(values[i], exp.toInt()) as int;
+        values[i] = tensor.dtype == DType.uint8
+            ? value.clamp(0, 255)
+            : tensor.dtype == DType.uint16
+            ? value.clamp(0, 65535)
+            : value;
+      }
+      return;
+    }
 
     // Dtype-specialized loops for better performance
     switch (tensor.dtype) {
       case DType.float32:
         final list = data as Float32List;
         for (int i = 0; i < numel; i++) {
-          list[i] = math.pow(list[i], exp).toDouble();
+          list[i] = _power(list[i], exp);
         }
       case DType.float64:
         final list = data as Float64List;
         for (int i = 0; i < numel; i++) {
-          list[i] = math.pow(list[i], exp).toDouble();
+          list[i] = _power(list[i], exp);
         }
       default:
         for (int i = 0; i < numel; i++) {
           final value = tensor.storage.getAsDouble(i);
-          tensor.storage.setFromDouble(i, math.pow(value, exp).toDouble());
+          tensor.storage.setFromDouble(i, _power(value, exp));
         }
     }
+  }
+
+  double _power(double value, double exp) {
+    // PyTorch uses sqrt/rsqrt for these exponents, including -infinity -> NaN.
+    if (exp == 0.5) return math.sqrt(value);
+    if (exp == -0.5) return 1.0 / math.sqrt(value);
+    return math.pow(value, exp).toDouble();
   }
 
   @override

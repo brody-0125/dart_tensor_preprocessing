@@ -1,0 +1,57 @@
+[
+  {
+    "source": "rgb_pytorch",
+    "recipe": {
+      "name": "imagenet",
+      "size": 224,
+      "shortest_edge": 256
+    },
+    "shape": [
+      1,
+      3,
+      224,
+      224
+    ],
+    "dtype": "float32",
+    "file": "rgb_pytorch-imagenet-224.f32.gz",
+    "sha256": "294cecca352457f4b3973a616d9ecd950cb8281195ca94c16c1db8d763251b4b",
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "source": "rgb_pytorch",
+    "recipe": {
+      "name": "clip",
+      "size": 224
+    },
+    "shape": [
+      1,
+      3,
+      224,
+      224
+    ],
+    "dtype": "float32",
+    "file": "rgb_pytorch-clip-224.f32.gz",
+    "sha256": "b2b0dc413c4bcc56e1475e24f3a5e22165f5a13fa67d7af1e31bc661332bfc16",
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "source": "rgb_pytorch",
+    "recipe": {
+      "name": "detection",
+      "size": 640
+    },
+    "shape": [
+      1,
+      3,
+      640,
+      640
+    ],
+    "dtype": "float32",
+    "file": "rgb_pytorch-detection-640.f32.gz",
+    "sha256": "bbc38175c4de56f0bf80a8cc8d0884fcfbe4ce253f067ea746cba5da674de6a8",
+    "atol": 1e-06,
+    "rtol": 1e-05
+  }
+]

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:math' as math;
 
 import '../exceptions/tensor_exceptions.dart';
 import 'dtype.dart';
@@ -52,21 +53,25 @@ class TensorBuffer {
   /// [memoryFormat].
   TensorBuffer({
     required this.storage,
-    required this.shape,
+    required List<int> shape,
     List<int>? strides,
     this.storageOffset = 0,
     this.memoryFormat = MemoryFormat.contiguous,
-  }) : strides = strides ?? computeStrides(shape, memoryFormat) {
+  }) : shape = List.unmodifiable(shape),
+       strides = List.unmodifiable(
+         strides ?? computeStrides(shape, memoryFormat),
+       ) {
     _validateShape();
   }
 
   TensorBuffer._view({
     required this.storage,
-    required this.shape,
-    required this.strides,
+    required List<int> shape,
+    required List<int> strides,
     required this.storageOffset,
     required this.memoryFormat,
-  });
+  }) : shape = List.unmodifiable(shape),
+       strides = List.unmodifiable(strides);
 
   /// The data type of elements in this tensor.
   DType get dtype => storage.dtype;
@@ -143,6 +148,7 @@ class TensorBuffer {
   /// Throws [ShapeMismatchException] if numel doesn't match.
   /// Throws [NonContiguousException] if this tensor is not contiguous.
   TensorBuffer reshape(List<int> newShape) {
+    _validateShapeStatic(newShape);
     final newNumel = newShape.fold(1, (a, b) => a * b);
     if (newNumel != numel) {
       throw ShapeMismatchException(
@@ -168,7 +174,20 @@ class TensorBuffer {
   /// Returns a view with all size-1 dimensions removed.
   ///
   /// If [dim] is specified, only that dimension is squeezed (if it has size 1).
+  /// Negative dimensions are normalized. A single element retains shape [1]
+  /// because rank-zero tensors are not supported.
   TensorBuffer squeeze([int? dim]) {
+    if (dim != null) {
+      dim = dim < 0 ? rank + dim : dim;
+      if (dim < 0 || dim >= rank) {
+        throw IndexOutOfBoundsException(
+          index: dim,
+          min: 0,
+          max: rank - 1,
+          dimension: 'dim',
+        );
+      }
+    }
     final newShape = <int>[];
     final newStrides = <int>[];
 
@@ -182,6 +201,10 @@ class TensorBuffer {
       newStrides.add(strides[i]);
     }
 
+    if (newShape.isEmpty) {
+      newShape.add(1);
+      newStrides.add(1);
+    }
     return TensorBuffer._view(
       storage: storage,
       shape: newShape,
@@ -195,6 +218,7 @@ class TensorBuffer {
   ///
   /// Throws [IndexOutOfBoundsException] if [dim] is out of range.
   TensorBuffer unsqueeze(int dim) {
+    dim = dim < 0 ? rank + dim + 1 : dim;
     if (dim < 0 || dim > rank) {
       throw IndexOutOfBoundsException(
         index: dim,
@@ -249,6 +273,9 @@ class TensorBuffer {
   }
 
   void _copyToContiguous(TypedData dest) {
+    // Copy within the same dtype without routing integers through double.
+    final source = storage.data as List<num>;
+    final target = dest as List<num>;
     final indices = List<int>.filled(rank, 0);
     for (int i = 0; i < numel; i++) {
       int srcOffset = storageOffset;
@@ -256,39 +283,13 @@ class TensorBuffer {
         srcOffset += indices[d] * strides[d];
       }
 
-      final value = storage.getAsDouble(srcOffset);
-      _setTypedDataValue(dest, i, value);
+      target[i] = source[srcOffset];
 
       for (int d = rank - 1; d >= 0; d--) {
         indices[d]++;
         if (indices[d] < shape[d]) break;
         indices[d] = 0;
       }
-    }
-  }
-
-  void _setTypedDataValue(TypedData data, int index, double value) {
-    switch (data) {
-      case final Float32List list:
-        list[index] = value;
-      case final Float64List list:
-        list[index] = value;
-      case final Int8List list:
-        list[index] = value.toInt();
-      case final Int16List list:
-        list[index] = value.toInt();
-      case final Int32List list:
-        list[index] = value.toInt();
-      case final Int64List list:
-        list[index] = value.toInt();
-      case final Uint8List list:
-        list[index] = value.toInt().clamp(0, 255);
-      case final Uint16List list:
-        list[index] = value.toInt().clamp(0, 65535);
-      case final Uint32List list:
-        list[index] = value.toInt();
-      case final Uint64List list:
-        list[index] = value.toInt();
     }
   }
 
@@ -381,7 +382,8 @@ class TensorBuffer {
 
   /// Creates a tensor with random values uniformly distributed in [0, 1).
   ///
-  /// Equivalent to `torch.rand()` in PyTorch.
+  /// Supports float32/float64. Seeds are package-specific and do not reproduce
+  /// PyTorch random sequences. Integer dtypes are rejected.
   ///
   /// ```dart
   /// final tensor = TensorBuffer.random([3, 224, 224]);
@@ -395,7 +397,8 @@ class TensorBuffer {
 
   /// Creates a tensor with random values from a standard normal distribution N(0, 1).
   ///
-  /// Equivalent to `torch.randn()` in PyTorch.
+  /// Supports float32/float64. Seeds are package-specific and do not reproduce
+  /// PyTorch random sequences. Integer dtypes are rejected.
   ///
   /// ```dart
   /// final tensor = TensorBuffer.randn([3, 224, 224]);
@@ -420,7 +423,9 @@ class TensorBuffer {
 
   /// Creates a 1D tensor with evenly spaced values.
   ///
-  /// Equivalent to `torch.linspace()` in PyTorch.
+  /// Computes a double sequence with both endpoints included (start only for
+  /// one step), then truncates integer outputs toward zero. Finite endpoints
+  /// and positive steps are required; integer PyTorch linspace differs.
   ///
   /// ```dart
   /// final tensor = TensorBuffer.linspace(0.0, 1.0, steps: 5);
@@ -435,7 +440,8 @@ class TensorBuffer {
 
   /// Creates a 1D tensor with values in a range with a given step.
   ///
-  /// Equivalent to `torch.arange()` in PyTorch.
+  /// Computes a double sequence excluding the end, then truncates integer
+  /// outputs toward zero. Finite values and a nonempty range are required.
   ///
   /// ```dart
   /// final tensor = TensorBuffer.arange(start: 0.0, end: 5.0);
@@ -471,6 +477,7 @@ class TensorBuffer {
 
   /// Computes strides for a tensor with the given [shape] and [format].
   static List<int> computeStrides(List<int> shape, MemoryFormat format) {
+    _validateShapeStatic(shape);
     final rank = shape.length;
     final strides = List<int>.filled(rank, 0);
 
@@ -504,6 +511,31 @@ class TensorBuffer {
 
   void _validateShape() {
     _validateShapeStatic(shape);
+    if (strides.length != rank || strides.any((s) => s < 0)) {
+      throw InvalidParameterException(
+        'strides',
+        strides,
+        'one nonnegative stride per dimension is required',
+      );
+    }
+    if (storageOffset < 0 || storageOffset >= storage.length) {
+      throw InvalidParameterException(
+        'storageOffset',
+        storageOffset,
+        'offset must be inside storage',
+      );
+    }
+    var last = storageOffset;
+    for (var i = 0; i < rank; i++) {
+      final stride = strides[i];
+      if (stride != 0 && shape[i] - 1 > (storage.length - 1 - last) ~/ stride) {
+        throw InvalidParameterException('shape/strides', [
+          shape,
+          strides,
+        ], 'view extends beyond storage');
+      }
+      last += (shape[i] - 1) * stride;
+    }
   }
 
   /// Static helper to validate shape before tensor creation.

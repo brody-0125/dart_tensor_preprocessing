@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
+import '../utils/contiguous_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import '../utils/tensor_indexing.dart';
 
@@ -49,7 +50,7 @@ List<TensorBuffer> split(
     );
   }
 
-  final contiguous = tensor.isContiguous ? tensor : tensor.contiguous();
+  final contiguous = contiguousStorageView(tensor);
   final shape = contiguous.shape;
   final result = <TensorBuffer>[];
 
@@ -182,7 +183,8 @@ void _copySlice(
           srcIdx += srcCoord * srcStrides[d];
         }
 
-        dstStorage.setFromDouble(dstIdx, srcStorage.getAsDouble(srcIdx));
+        (dstStorage.data as List<num>)[dstIdx] =
+            (srcStorage.data as List<num>)[srcIdx];
       }
   }
 }

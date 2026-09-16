@@ -193,7 +193,7 @@ void main() {
         final tensor = TensorBuffer.zeros([1, 1, 1, 1]);
         final squeezed = tensor.squeeze();
 
-        expect(squeezed.shape, isEmpty);
+        expect(squeezed.shape, [1]);
       });
 
       test('squeeze preserves strides correctly', () {
@@ -241,7 +241,7 @@ void main() {
         final tensor = TensorBuffer.zeros([2, 3]);
 
         expect(
-          () => tensor.unsqueeze(-1),
+          () => tensor.unsqueeze(-4),
           throwsA(isA<IndexOutOfBoundsException>()),
         );
         expect(

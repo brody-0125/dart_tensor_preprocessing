@@ -149,11 +149,11 @@ void main() {
       expect(transposed[[0, 0]], equals(42.0));
     });
 
-    test('single element squeeze removes all dims', () {
+    test('single element squeeze retains rank one', () {
       final tensor = TensorBuffer.ones([1, 1, 1]);
       final squeezed = tensor.squeeze();
 
-      expect(squeezed.shape, isEmpty);
+      expect(squeezed.shape, [1]);
     });
   });
 

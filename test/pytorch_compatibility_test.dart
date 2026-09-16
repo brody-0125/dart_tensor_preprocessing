@@ -353,21 +353,11 @@ void main() {
 
         expect(result.shape, equals([1, 4, 4]));
 
-        // With align_corners mapping: rows 0-2 -> src row 0, row 3 -> src row 1
-        // Cols 0-2 -> src col 0, col 3 -> src col 1
-        expect(result[[0, 0, 0]], equals(0.0));
-        expect(result[[0, 0, 1]], equals(0.0));
-        expect(result[[0, 0, 2]], equals(0.0));
-        expect(result[[0, 0, 3]], equals(1.0));
-
-        expect(result[[0, 1, 0]], equals(0.0));
-        expect(result[[0, 2, 0]], equals(0.0));
-
-        // Source [1,0]=2, [1,1]=3 -> dst row 3
-        expect(result[[0, 3, 0]], equals(2.0));
-        expect(result[[0, 3, 1]], equals(2.0));
-        expect(result[[0, 3, 2]], equals(2.0));
-        expect(result[[0, 3, 3]], equals(3.0));
+        // torch.nn.functional.interpolate(mode='nearest') repeats each pixel 2x.
+        expect(
+          result.dataAsFloat32List,
+          equals([0, 0, 1, 1, 0, 0, 1, 1, 2, 2, 3, 3, 2, 2, 3, 3]),
+        );
       });
 
       /// For 4x4 -> 2x2 downsample with scale=2.0:

@@ -2,9 +2,17 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, 'release/**']
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze:
@@ -17,6 +25,7 @@ jobs:
           sdk: stable
       - run: dart pub get
       - run: dart analyze --fatal-infos
+      - run: dart pub publish --dry-run
 
   format:
     name: Format Check
@@ -27,14 +36,23 @@ jobs:
         with:
           sdk: stable
       - run: dart pub get
-      - run: dart format --set-exit-if-changed .
+      - run: dart format --output=none --set-exit-if-changed .
 
   test:
-    name: Tests (Dart ${{ matrix.sdk }})
-    runs-on: ubuntu-latest
+    name: Tests (${{ matrix.os }}, Dart ${{ matrix.sdk }})
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        sdk: ['3.9.0', 'stable']
+        include:
+          - os: ubuntu-latest
+            sdk: '3.9.0'
+          - os: ubuntu-latest
+            sdk: stable
+          - os: windows-latest
+            sdk: stable
+          - os: macos-latest
+            sdk: stable
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
@@ -42,3 +60,43 @@ jobs:
           sdk: ${{ matrix.sdk }}
       - run: dart pub get
       - run: dart test
+
+  pytorch-network:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - run: dart pub get
+      - run: dart test test/pytorch_network_test.dart
+        env:
+          RUN_PYTORCH_NETWORK_TESTS: '1'
+
+  pytorch-oracle:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/requirements-fixtures-linux.txt
+      - run: python -m pip install --require-hashes -r scripts/requirements-fixtures-linux.txt
+      - name: Install fixed CPU runner
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y qemu-user
+          qemu-x86_64 --version
+      - name: Regenerate on the canonical CPU model
+        run: qemu-x86_64 -cpu Haswell-v4 "$(command -v python)" scripts/generate_pytorch_fixtures.py --network
+        env:
+          PYTORCH_ORACLE_CPU_MODEL: Haswell-v4
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+      - run: git diff --exit-code -- test/fixtures/pytorch
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: regenerated-pytorch-fixtures
+          path: test/fixtures/pytorch

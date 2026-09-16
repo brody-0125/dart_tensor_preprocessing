@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
+import '../utils/contiguous_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import '../utils/tensor_indexing.dart';
 import 'transform_op.dart';
@@ -16,6 +17,9 @@ typedef TopKResult = (TensorBuffer values, TensorBuffer indices);
 /// Selects the k largest or smallest values and their indices along an axis.
 ///
 /// Equivalent to `torch.topk()` in PyTorch and the ONNX `TopK` operator.
+///
+/// NaN ranks above finite values, matching PyTorch. Tied indices have no
+/// guaranteed order.
 ///
 /// The output shape is the same as the input shape, except that the specified
 /// axis dimension is replaced with `k`.
@@ -110,7 +114,7 @@ class TopKOp extends TransformOp {
       );
     }
 
-    final src = input.isContiguous ? input : input.contiguous();
+    final src = contiguousStorageView(input);
 
     final outputShape = List<int>.from(src.shape);
     outputShape[normalizedAxis] = k;
@@ -124,7 +128,7 @@ class TopKOp extends TransformOp {
     final inStrides = TensorIndexer.computeStrides(src.shape);
     final outStrides = TensorIndexer.computeStrides(outputShape);
 
-    final workValues = Float64List(axisSize);
+    final workValues = src.dtype.createBuffer(axisSize) as List<num>;
     final workIndices = Int32List(axisSize);
 
     // Shape with the target axis removed, for iterating over orthogonal slices
@@ -136,30 +140,12 @@ class TopKOp extends TransformOp {
 
     final idxData = indicesOut.storage.data as Int64List;
 
-    final double Function(int) inDataGet;
-    final void Function(int, double) outDataSet;
-    switch (src.dtype) {
-      case DType.float32:
-        final inData = src.storage.data as Float32List;
-        final outData = valuesOut.storage.data as Float32List;
-        inDataGet = (int idx) => inData[idx].toDouble();
-        outDataSet = (int idx, double val) => outData[idx] = val;
-      case DType.float64:
-        final inData = src.storage.data as Float64List;
-        final outData = valuesOut.storage.data as Float64List;
-        inDataGet = (int idx) => inData[idx];
-        outDataSet = (int idx, double val) => outData[idx] = val;
-      default:
-        final inStorage = src.storage;
-        final outStorage = valuesOut.storage;
-        inDataGet = (int idx) => inStorage.getAsDouble(idx);
-        outDataSet = (int idx, double val) =>
-            outStorage.setFromDouble(idx, val);
-    }
+    final inData = src.storage.data as List<num>;
+    final outData = valuesOut.storage.data as List<num>;
 
     _topkLoop(
-      outDataSet: outDataSet,
-      inDataGet: inDataGet,
+      outDataSet: (idx, value) => outData[idx] = value,
+      inDataGet: (idx) => inData[idx],
       idxData: idxData,
       inStrides: inStrides,
       outStrides: outStrides,
@@ -174,15 +160,15 @@ class TopKOp extends TransformOp {
   }
 
   void _topkLoop({
-    required void Function(int idx, double val) outDataSet,
-    required double Function(int idx) inDataGet,
+    required void Function(int idx, num val) outDataSet,
+    required num Function(int idx) inDataGet,
     required Int64List idxData,
     required List<int> inStrides,
     required List<int> outStrides,
     required List<int> outerShape,
     required List<int> outerStrides,
     required int normalizedAxis,
-    required Float64List workValues,
+    required List<num> workValues,
     required Int32List workIndices,
   }) {
     final outerRank = outerShape.length;
@@ -250,7 +236,7 @@ class TopKOp extends TransformOp {
 /// Uses quickselect with median-of-three pivot. Falls back to insertion sort
 /// for small partitions.
 void _introSelect(
-  Float64List values,
+  List<num> values,
   Int32List indices,
   int left,
   int right,
@@ -274,11 +260,11 @@ void _introSelect(
 
     while (true) {
       if (largest) {
-        while (values[++i] > pivot) {}
-        while (j > left && values[--j] < pivot) {}
+        while (values[++i].compareTo(pivot) > 0) {}
+        while (j > left && values[--j].compareTo(pivot) < 0) {}
       } else {
-        while (values[++i] < pivot) {}
-        while (j > left && values[--j] > pivot) {}
+        while (values[++i].compareTo(pivot) < 0) {}
+        while (j > left && values[--j].compareTo(pivot) > 0) {}
       }
       if (i >= j) break;
       _swap(values, indices, i, j);
@@ -297,7 +283,7 @@ void _introSelect(
 /// Insertion sort for small partitions. Sorts in descending order if
 /// [largest] is true, ascending if false.
 void _insertionSort(
-  Float64List values,
+  List<num> values,
   Int32List indices,
   int left,
   int right,
@@ -308,13 +294,13 @@ void _insertionSort(
     final idx = indices[i];
     int j = i - 1;
     if (largest) {
-      while (j >= left && values[j] < val) {
+      while (j >= left && values[j].compareTo(val) < 0) {
         values[j + 1] = values[j];
         indices[j + 1] = indices[j];
         j--;
       }
     } else {
-      while (j >= left && values[j] > val) {
+      while (j >= left && values[j].compareTo(val) > 0) {
         values[j + 1] = values[j];
         indices[j + 1] = indices[j];
         j--;
@@ -326,7 +312,7 @@ void _insertionSort(
 }
 
 void _sortThree(
-  Float64List values,
+  List<num> values,
   Int32List indices,
   int a,
   int b,
@@ -334,17 +320,17 @@ void _sortThree(
   bool largest,
 ) {
   if (largest) {
-    if (values[a] < values[b]) _swap(values, indices, a, b);
-    if (values[a] < values[c]) _swap(values, indices, a, c);
-    if (values[b] < values[c]) _swap(values, indices, b, c);
+    if (values[a].compareTo(values[b]) < 0) _swap(values, indices, a, b);
+    if (values[a].compareTo(values[c]) < 0) _swap(values, indices, a, c);
+    if (values[b].compareTo(values[c]) < 0) _swap(values, indices, b, c);
   } else {
-    if (values[a] > values[b]) _swap(values, indices, a, b);
-    if (values[a] > values[c]) _swap(values, indices, a, c);
-    if (values[b] > values[c]) _swap(values, indices, b, c);
+    if (values[a].compareTo(values[b]) > 0) _swap(values, indices, a, b);
+    if (values[a].compareTo(values[c]) > 0) _swap(values, indices, a, c);
+    if (values[b].compareTo(values[c]) > 0) _swap(values, indices, b, c);
   }
 }
 
-void _swap(Float64List values, Int32List indices, int i, int j) {
+void _swap(List<num> values, Int32List indices, int i, int j) {
   final tmpVal = values[i];
   values[i] = values[j];
   values[j] = tmpVal;

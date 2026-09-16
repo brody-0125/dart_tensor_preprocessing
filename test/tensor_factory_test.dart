@@ -89,7 +89,7 @@ void main() {
 
   group('TensorBuffer.randn', () {
     test('creates tensor with approximately mean 0', () {
-      final tensor = TensorBuffer.randn([1000]);
+      final tensor = TensorBuffer.randn([1000], seed: 123);
 
       double sum = 0;
       for (int i = 0; i < 1000; i++) {
@@ -101,8 +101,8 @@ void main() {
       expect(mean.abs(), lessThan(0.15)); // ~3 * 1/sqrt(1000)
     });
 
-    test('creates tensor with approximately std 1', () {
-      final tensor = TensorBuffer.randn([1000]);
+    test('creates tensor with approximately variance 1', () {
+      final tensor = TensorBuffer.randn([1000], seed: 123);
 
       double sum = 0;
       double sumSq = 0;
@@ -113,10 +113,10 @@ void main() {
       }
       final mean = sum / 1000;
       final variance = (sumSq / 1000) - mean * mean;
-      final std = variance > 0 ? variance : 0;
+      final measuredVariance = variance;
 
-      // Std should be close to 1
-      expect(std, closeTo(1.0, 0.2));
+      // Variance should be close to 1
+      expect(measuredVariance, closeTo(1.0, 0.2));
     });
 
     test('supports seed for reproducibility', () {

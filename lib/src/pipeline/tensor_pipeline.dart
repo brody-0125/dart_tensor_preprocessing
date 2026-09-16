@@ -7,6 +7,7 @@ import '../core/tensor_buffer.dart';
 import '../core/tensor_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import '../ops/transform_op.dart';
+import '../utils/contiguous_storage.dart';
 
 /// A composable sequence of tensor transform operations.
 ///
@@ -16,9 +17,10 @@ import '../ops/transform_op.dart';
 ///
 /// ```dart
 /// final pipeline = TensorPipeline([
+///   ToTensorOp(normalize: true),
 ///   ResizeOp(height: 224, width: 224),
 ///   NormalizeOp.imagenet(),
-///   PermuteOp.hwcToChw(),
+///   UnsqueezeOp.batch(),
 /// ]);
 ///
 /// final result = await pipeline.runAsync(inputTensor);
@@ -153,7 +155,7 @@ class _SerializedTensor {
 }
 
 _SerializedTensor _serializeTensor(TensorBuffer tensor) {
-  final contiguous = tensor.contiguous();
+  final contiguous = contiguousStorageView(tensor);
   final data = contiguous.data;
 
   final buffer = data.buffer;

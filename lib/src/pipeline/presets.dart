@@ -1,10 +1,18 @@
+import '../core/dtype.dart';
+import '../core/tensor_buffer.dart';
+import '../exceptions/tensor_exceptions.dart';
+import '../ops/transform_op.dart';
 import '../ops/normalize_op.dart';
-import '../ops/permute_op.dart';
 import '../ops/resize_op.dart';
 import '../ops/type_cast_op.dart';
 import 'tensor_pipeline.dart';
 
-/// Pre-configured preprocessing pipelines for common ML models.
+/// Pre-configured tensor preprocessing recipes for common ML models.
+///
+/// Inputs are RGB HWC/NHWC: uint8 [0,255] or float32/64 [0,1].
+/// Float input is not divided by 255 again. Outputs are float32 and retain
+/// an existing batch dimension. These tensor recipes do not imply exact
+/// equivalence to every pretrained model's PIL-based processor.
 ///
 /// Use these factory methods to quickly create pipelines that match the
 /// preprocessing requirements of popular model architectures.
@@ -32,11 +40,15 @@ abstract class PipelinePresets {
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
     return TensorPipeline([
-      ResizeShortestOp(shortestEdge: shortestEdge, mode: interpolation),
+      _PresetInput(),
+      ResizeShortestOp(
+        shortestEdge: shortestEdge,
+        mode: interpolation,
+        antialias: true,
+      ),
       CenterCropOp(height: cropSize, width: cropSize),
-      ToTensorOp(normalize: true),
       NormalizeOp.imagenet(),
-      UnsqueezeOp.batch(),
+      _PresetOutput(),
     ], name: 'ImageNet Classification');
   }
 
@@ -47,10 +59,15 @@ abstract class PipelinePresets {
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
     return TensorPipeline([
-      ResizeOp(height: height, width: width, mode: interpolation),
-      ToTensorOp(normalize: true),
+      _PresetInput(),
+      ResizeOp(
+        height: height,
+        width: width,
+        mode: interpolation,
+        antialias: true,
+      ),
       NormalizeOp.imagenet(),
-      UnsqueezeOp.batch(),
+      _PresetOutput(),
     ], name: 'ResNet Classification');
   }
 
@@ -61,9 +78,14 @@ abstract class PipelinePresets {
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
     return TensorPipeline([
-      ResizeOp(height: height, width: width, mode: interpolation),
-      ToTensorOp(normalize: true),
-      UnsqueezeOp.batch(),
+      _PresetInput(),
+      ResizeOp(
+        height: height,
+        width: width,
+        mode: interpolation,
+        antialias: true,
+      ),
+      _PresetOutput(),
     ], name: 'Object Detection');
   }
 
@@ -74,10 +96,15 @@ abstract class PipelinePresets {
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
     return TensorPipeline([
-      ResizeOp(height: height, width: width, mode: interpolation),
-      ToTensorOp(normalize: true),
+      _PresetInput(),
+      ResizeOp(
+        height: height,
+        width: width,
+        mode: interpolation,
+        antialias: true,
+      ),
       NormalizeOp.imagenet(),
-      UnsqueezeOp.batch(),
+      _PresetOutput(),
     ], name: 'Segmentation');
   }
 
@@ -88,10 +115,15 @@ abstract class PipelinePresets {
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
     return TensorPipeline([
-      ResizeOp(height: height, width: width, mode: interpolation),
-      ToTensorOp(normalize: true),
+      _PresetInput(),
+      ResizeOp(
+        height: height,
+        width: width,
+        mode: interpolation,
+        antialias: true,
+      ),
       NormalizeOp.symmetric(),
-      UnsqueezeOp.batch(),
+      _PresetOutput(),
     ], name: 'Face Recognition');
   }
 
@@ -102,10 +134,15 @@ abstract class PipelinePresets {
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
     return TensorPipeline([
-      ResizeOp(height: height, width: width, mode: interpolation),
-      ToTensorOp(normalize: true),
+      _PresetInput(),
+      ResizeOp(
+        height: height,
+        width: width,
+        mode: interpolation,
+        antialias: true,
+      ),
       NormalizeOp.symmetric(),
-      UnsqueezeOp.batch(),
+      _PresetOutput(),
     ], name: 'MobileNet');
   }
 
@@ -115,14 +152,18 @@ abstract class PipelinePresets {
     InterpolationMode interpolation = InterpolationMode.bicubic,
   }) {
     return TensorPipeline([
-      ResizeShortestOp(shortestEdge: size, mode: interpolation),
+      _PresetInput(),
+      ResizeShortestOp(
+        shortestEdge: size,
+        mode: interpolation,
+        antialias: true,
+      ),
       CenterCropOp(height: size, width: size),
-      ToTensorOp(normalize: true),
       NormalizeOp(
         mean: [0.48145466, 0.4578275, 0.40821073],
         std: [0.26862954, 0.26130258, 0.27577711],
       ),
-      UnsqueezeOp.batch(),
+      _PresetOutput(),
     ], name: 'CLIP');
   }
 
@@ -132,10 +173,10 @@ abstract class PipelinePresets {
     InterpolationMode interpolation = InterpolationMode.bilinear,
   }) {
     return TensorPipeline([
-      ResizeOp(height: size, width: size, mode: interpolation),
-      ToTensorOp(normalize: true),
+      _PresetInput(),
+      ResizeOp(height: size, width: size, mode: interpolation, antialias: true),
       NormalizeOp(mean: [0.5, 0.5, 0.5], std: [0.5, 0.5, 0.5]),
-      UnsqueezeOp.batch(),
+      _PresetOutput(),
     ], name: 'ViT');
   }
 
@@ -146,19 +187,18 @@ abstract class PipelinePresets {
     bool normalize = true,
   }) {
     return TensorPipeline([
-      ResizeOp(height: height, width: width),
-      TypeCastOp.toFloat32(),
-      if (normalize) ScaleOp.toUnit(),
-      UnsqueezeOp.batch(),
+      _PresetInput(normalize: normalize),
+      ResizeOp(height: height, width: width, antialias: true),
+      _PresetOutput(toChw: false),
     ], name: 'TFLite');
   }
 
   /// Creates a minimal preprocessing pipeline with just resize and normalize.
   static TensorPipeline minimal({int height = 224, int width = 224}) {
     return TensorPipeline([
-      ResizeOp(height: height, width: width),
-      ToTensorOp(normalize: true),
-      UnsqueezeOp.batch(),
+      _PresetInput(),
+      ResizeOp(height: height, width: width, antialias: true),
+      _PresetOutput(),
     ], name: 'Minimal');
   }
 
@@ -172,25 +212,91 @@ abstract class PipelinePresets {
     bool addBatchDim = true,
     bool toChw = true,
   }) {
-    final ops = <dynamic>[
-      ResizeOp(height: height, width: width, mode: interpolation),
-    ];
-
-    if (toChw) {
-      ops.add(ToTensorOp(normalize: true));
-    } else {
-      ops.add(TypeCastOp.toFloat32());
-      ops.add(ScaleOp.toUnit());
+    if ((mean == null) != (std == null)) {
+      throw InvalidParameterException(
+        'mean/std',
+        '$mean/$std',
+        'Supply both mean and std',
+      );
     }
+    return TensorPipeline([
+      _PresetInput(),
+      ResizeOp(
+        height: height,
+        width: width,
+        mode: interpolation,
+        antialias: true,
+      ),
+      if (mean != null && std != null) NormalizeOp(mean: mean, std: std),
+      _PresetOutput(toChw: toChw, addBatchDim: addBatchDim),
+    ], name: 'Custom');
+  }
+}
 
-    if (mean != null && std != null) {
-      ops.add(NormalizeOp(mean: mean, std: std));
+class _PresetInput extends TransformOp {
+  final bool normalize;
+  _PresetInput({this.normalize = true});
+
+  @override
+  String get name => 'RGB input';
+
+  @override
+  TensorBuffer apply(TensorBuffer input) {
+    computeOutputShape(input.shape);
+    if (input.dtype != DType.uint8 &&
+        input.dtype != DType.float32 &&
+        input.dtype != DType.float64) {
+      throw InvalidParameterException(
+        'dtype',
+        input.dtype,
+        'Presets accept uint8 or floating-point RGB',
+      );
     }
+    return ToTensorOp(normalize: normalize && input.dtype == DType.uint8)(
+      input,
+    );
+  }
 
-    if (addBatchDim) {
-      ops.add(UnsqueezeOp.batch());
+  @override
+  List<int> computeOutputShape(List<int> inputShape) {
+    if ((inputShape.length != 3 && inputShape.length != 4) ||
+        inputShape.last != 3) {
+      throw ShapeMismatchException(
+        actual: inputShape,
+        message: 'Presets require RGB HWC or NHWC input',
+      );
     }
+    return ToTensorOp().computeOutputShape(inputShape);
+  }
+}
 
-    return TensorPipeline(ops.cast(), name: 'Custom');
+class _PresetOutput extends TransformOp {
+  final bool toChw;
+  final bool addBatchDim;
+  _PresetOutput({this.toChw = true, this.addBatchDim = true});
+
+  @override
+  String get name => 'Image output';
+
+  @override
+  TensorBuffer apply(TensorBuffer input) {
+    var output = input;
+    if (!toChw) {
+      output = output
+          .transpose(output.rank == 3 ? [1, 2, 0] : [0, 2, 3, 1])
+          .contiguous();
+    }
+    return addBatchDim && output.rank == 3 ? output.unsqueeze(0) : output;
+  }
+
+  @override
+  List<int> computeOutputShape(List<int> inputShape) {
+    var shape = inputShape;
+    if (!toChw) {
+      shape = shape.length == 3
+          ? [shape[1], shape[2], shape[0]]
+          : [shape[0], shape[2], shape[3], shape[1]];
+    }
+    return addBatchDim && shape.length == 3 ? [1, ...shape] : shape;
   }
 }

@@ -1,0 +1,106 @@
+# PyTorch oracle fixtures
+
+The manifest currently contains 5,201 offline cases. Factory/cast cases cover
+all ten destination dtypes, using explicit double-sequence truncation and
+legacy cast-rounding/clamping recipes where those differ from native torch
+integer kernels. Squeeze/unsqueeze include offsets, non-contiguous storage,
+negative axes and the package's single-element `[1]` convention.
+
+Each operation case occupies one line in a standard JSON array. This keeps
+case-level diffs visible without expanding each tensor element onto a separate
+line. The generator uses the same deterministic encoding as the checked-in
+file; manifests hash the encoded bytes. Large network outputs remain gzip
+binary fixtures. Do not pretty-print the operation corpus with indent=2.
+
+Generate on canonical Ubuntu 24.04 x86_64 with Python 3.12, qemu-user
+(Haswell-v4 CPU model), and the wheel hash lock:
+
+```sh
+python -m pip install --require-hashes -r scripts/requirements-fixtures-linux.txt
+PYTORCH_ORACLE_CPU_MODEL=Haswell-v4 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 qemu-x86_64 -cpu Haswell-v4 "$(command -v python)" scripts/generate_pytorch_fixtures.py --network
+dart test test/pytorch_golden_test.dart
+RUN_PYTORCH_NETWORK_TESTS=1 dart test test/pytorch_network_test.dart
+```
+
+The Linux lock records exact wheel URLs and SHA-256 for all 13 dependencies.
+For local investigations on other platforms, install the same versions with
+`python -m pip install -r scripts/requirements-fixtures.txt`; those platforms
+are not the canonical byte-for-byte regeneration environment.
+
+On PowerShell set `$env:RUN_PYTORCH_NETWORK_TESTS='1'` before the Dart command.
+`--output DIRECTORY` regenerates into another directory for inspection. Omitting
+`--network` regenerates only the offline operation/preset goldens.
+
+The oracle is CPU PyTorch 2.10.0 + torchvision 0.25.0 with one thread and `ATEN_CPU_CAPABILITY=default` to avoid runner-dependent
+AVX2/AVX512 kernel selection. `MKL_CBWR=COMPATIBLE` and
+`MKL_ENABLE_INSTRUCTIONS=SSE4_2` also constrain MKL's independent unary VML
+path (see [ATen VML](https://github.com/pytorch/pytorch/blob/v2.10.0/aten/src/ATen/cpu/vml.h)
+and [Intel reproducibility](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2023-1/get-started-with-conditional-num-reproducibility.html)). The
+generator checks every pinned Python distribution version. Manifest hashes bind
+the generator, both dependency locks, and JSON payload; non-finite numbers use explicit
+strings. Tests compare shape, dtype, and every element, including non-finite
+classification. Float32 uses atol 1e-6 / rtol 1e-5, Float64 1e-12 / 1e-10.
+Integer values can use strings to preserve values above 2^53.
+
+The corpus covers activations (including offset in-place aliases and
+extreme values), GELU/GLU, unary math/trigonometry, softmax,
+resize modes/antialias/align-corners, center crop, and
+all preset recipes for RGB uint8/float32 and HWC/NHWC. Presets also run in forced
+isolates and synchronous fallback. It is not yet a full audit of every public
+operation; remaining core/casting, color, augmentation and optimized-path coverage are being
+expanded before 1.0.0. Normalization covers Batch (inference), Instance, Group,
+Layer, RMS, Lp and per-channel normalization with float32/64, CHW/NCHW,
+plain/affine/constant inputs, epsilon clamping, offset in-place sentinels,
+non-contiguous views and Lp non-finite values. Random factories have separate
+mathematical regression tests; matching PyTorch RNG seeds is not a contract.
+RoundOp retains documented half-away rounding, expressed using torch
+copysign/floor/abs; it does not claim torch.round half-to-even semantics.
+All ordinary operations also assert computed output shape and input preservation.
+
+Network sources are PNG test assets from `pytorch/vision` at the commit in
+`network-manifest.json`. The repository uses BSD-3-Clause; the manifest links the
+license and source; the full upstream notice is retained in
+`TORCHVISION_LICENSE` alongside the derived network golden tensors. The PyTorch logo is used solely as an upstream test image,
+without implying endorsement. Original PNGs are cached only under `.dart_tool`
+and are not redistributed by this package. Offline synthetic pixels are created
+by the generator. Network tests always download originals and verify both the
+encoded SHA-256 and decoded-pixel SHA-256 before preprocessing. Grayscale and
+RGBA fixtures verify explicit RGB-contract rejection.
+
+Full ImageNet 224, CLIP 224 and direct-resize detection 640 outputs are stored as
+gzip-compressed little-endian float32, with hashes over the decompressed bytes.
+These are explicit tensor recipes, not generic compatibility claims for all
+weights or Pillow/Transformers processors. The network ImageNet recipe uses the public default shortest edge 256
+and crop 224. Small offline cases use `size + 2` to exercise resize/crop on
+non-square inputs.
+
+CI regenerates goldens and fails on a diff. Review differences against upstream
+behavior; never refresh goldens solely to make the Dart result pass.
+
+Canonical byte-for-byte regeneration runs on Linux x86_64 in CI. The first
+canonical corpus was generated by GitHub Actions run 35088570316. Windows CPU
+regeneration differs in a few last bits (all observed changes were within the
+same published tolerances); use a separate --output directory when investigating
+cross-platform behavior, rather than replacing canonical goldens with Windows
+output. Dart tests on all platforms consume the same Linux goldens.
+
+The expanded math corpus was independently regenerated identically in Linux
+runs 35091267984 and 35091276630. The dense float64 GELU case differed from
+Windows at 52 values, by at most 4.64e-16; no tolerance was changed.
+
+A later same-commit run exposed one-ULP sqrt differences despite ATen DEFAULT.
+MKL flags alone did not eliminate all CPU-dependent last bits. The canonical
+job therefore runs the pinned Python wheels through QEMU Haswell-v4; its
+canonical results were regenerated byte-for-byte identically in independent
+runs 35092487771 and 35092491682. Native --output investigations
+record cpu_model=native-investigation in their manifest.
+
+Core/index fixtures now compare exact int64 values above 2^53 through clone,
+contiguous, transpose, reshape, gather/slice/stack/concat/split/chunk/where,
+masked fill, tile/repeat/roll and top-k. Reduction cases cover dtypes, promoted
+integer sums, keepDims, multiple axes, NaN/ties, adjacent int64 values and overflow.
+Global value reductions explicitly use a double-valued recipe; scalar tensor
+results are reshaped to [1] to express the package contract. Tied top-k indices
+are not required to match PyTorch's unspecified order; their gathered values
+and uniqueness are checked instead. The compact corpus regenerated exactly in Linux CI runs 35105035766 and
+35105027891. Later release candidates must repeat this gate.

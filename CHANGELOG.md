@@ -5,6 +5,134 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-09-16
+
+### Fixed
+
+- SIMD binary kernels validate input/output lengths in release builds before
+  modifying the output.
+
+- SimdOps.copy uses native typed-list copying to preserve overlapping views
+  and rejects unequal lengths outside debug builds.
+
+- Mutation dtype dispatch rejects strided destinations rather than silently
+  changing a temporary contiguous copy. Pair dispatch still accepts strided input.
+
+- BufferPool ignores duplicate returns of an already pooled buffer, preventing
+  the same object from being lent to two callers simultaneously.
+
+- SIMD normalization falls back to direct division when its reciprocal
+  overflows or underflows, including vector blocks and scalar tails.
+
+- Fused normalization divides directly by std, avoiding reciprocal overflow
+  and incorrect NaN for a zero numerator with a subnormal standard deviation.
+
+- Normalize and fused resize/normalize defensively freeze mean/std lists so
+  later caller mutations cannot bypass validation or change pipeline results.
+
+- Fused resize/normalize validates rank and channel count during shape inference.
+
+- RandomErasing rejects non-finite parameters and validates inferred rank;
+  document package-specific sampling and uniform random fill.
+
+- PositionalEncoding rejects non-finite/non-positive bases and validates shape
+  inference; clarify additive encoding versus rotary or learned embeddings.
+
+- All PadOp modes preserve exact integer values and validate inferred rank.
+
+- Symmetric reflection now repeats safely for kernels/padding larger than the
+  input. GaussianBlur avoids sigma-square underflow, rejects non-finite sigma,
+  validates inferred rank and preserves exact integer identity for kernel size 1.
+
+- RandomCrop preserves integer values without converting through double and
+  rejects invalid rank/oversized crops consistently during shape inference.
+
+- Horizontal/vertical flips preserve exact integer storage instead of converting
+  through double. Random flips reject non-finite probabilities, and every flip
+  validates rank consistently during execution and shape inference.
+
+- Hue half-turns use an exact complementary-channel formula, preventing
+  normalized integer channels from truncating 1 to 0 due to HSV roundoff.
+  Color adjustment/jitter reject non-finite factors and validate shape inference.
+
+- RGB/grayscale/HSV output shape inference now rejects invalid ranks and
+  channel counts consistently with execution.
+
+- Clip preserves integer values already inside the bounds without rounding them
+  through double, including int64 values above 2^53.
+
+- Float32 ScaleOp subtracts offset before scaling, preventing severe cancellation
+  from its previous expanded formula. Atan2 validates full shapes and snapshots
+  overlapping in-place operands. Clip rejects NaN bounds explicitly.
+
+- Integer division and nonnegative integer powers no longer lose precision
+  through double conversion. Integer division truncates toward zero and rejects
+  zero divisors before mutation. Fractional operand behavior remains explicit
+  double arithmetic followed by integer truncation and destination conversion.
+
+- Preserve exact integer add/subtract/multiply for integer tensor operands and
+  integral signed-64-bit scalar operands, avoiding double conversion above 2^53.
+- Pow exponents 0.5/-0.5 use sqrt/reciprocal-sqrt semantics, including NaN for
+  negative infinity, matching the pinned PyTorch reference.
+
+- Binary arithmetic rejects tensor operands with different shapes even when
+  element counts match. In-place tensor arithmetic snapshots the other operand
+  so overlapping views use original values throughout the calculation.
+
+- PermuteOp shape inference rejects duplicate/out-of-range axes, consistent
+  with execution. PermuteOp/ReshapeOp copy their parameter lists so external
+  mutation cannot invalidate a previously validated operation.
+
+- LayoutConvertOp now always performs its documented directional NCHW/NHWC
+  permutation, agreeing with shape inference and round-trip conversion.
+  Physical channels-last strides no longer cause conversion to be skipped.
+  sliceFirst preserves existing strides instead of reinterpreting layout metadata.
+
+- Vector select/unbind now return aliased [1] tensors instead of failing on
+  rank-zero construction. Unbind reuses select and preserves memory metadata.
+  Narrow rejects empty, negative and overflowing ranges before constructing views.
+
+- Copy and freeze shape/stride metadata, validate storage spans and nonnegative
+  strides, and reject invalid reshape dimensions. Squeeze/unsqueeze now agree
+  with computed shapes for negative axes; single-element squeeze retains [1]
+  instead of creating an unusable rank-zero view. See the migration notes.
+
+- Allocate eye/linspace/arange using the requested dtype; reject non-finite or
+  empty sequences explicitly. Document double-sequence integer truncation.
+- Preserve exact integer sources in TypeCastOp, including values beyond 2^53;
+  retain the documented legacy rounding, clamping and wrapping rules.
+
+- Bound contiguous storage kernels to the tensor's offset and element count,
+  including in-place operations, indexing, concatenation and isolate transport.
+- Correct preset HWC/NHWC input order; preserve existing batches and avoid
+  dividing floating-point image inputs by 255 twice.
+- Fix Tanh overflow and unseeded random calls reusing time-based seeds.
+- Improve exact GELU error-function accuracy for float64.
+- Preserve exact int64/uint64 values in clone and strided contiguous copies,
+  and exact integer values through gather/slice/stack/concat/split/where/tile/roll/top-k.
+- Preserve axis reduction dtypes, promote integer sums to int64, and reject
+  integer axis means. Select argmin/argmax without converting integers to double;
+  propagate NaN in extrema and rank NaN consistently in top-k.
+- Accumulate repeated roll dimensions and validate gather index dtype/shape.
+- Allocate float64 random output correctly; keep uniform output below one after
+  float32 rounding, and use standard Box-Muller math without truncated tails.
+- Match PyTorch Lp normalization's max(norm, eps) denominator; propagate NaN
+  for the infinity norm, and reject invalid epsilon/order parameters.
+- Match PyTorch nearest coordinates, bicubic coefficient/border handling,
+  area adaptive-average bins and torchvision shortest-edge size truncation.
+- Match torchvision center-crop rounding and zero padding for oversized crops.
+- Accept numeric masks independently of the selected tensor's dtype.
+
+### Added
+
+- Floating-point bilinear/bicubic antialias resize, used by image presets.
+- Pinned PyTorch/torchvision CPU golden generator and independent full-value
+  tests, including remote PNG fixtures with encoded/decoded checksums.
+- Linux/Windows/macOS Dart checks and separate network/oracle CI jobs.
+
+These changes alter incorrect 0.9.0 outputs. See the migration notes in README.
+The 1.0.0 release is pending the remaining compatibility audit and release gates.
+
 ## [0.9.0] - 2026-04-05
 
 ### Added

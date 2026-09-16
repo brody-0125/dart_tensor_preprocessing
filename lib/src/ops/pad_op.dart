@@ -8,7 +8,8 @@ enum PadMode {
   /// Pads with a constant value.
   constant,
 
-  /// Pads with reflection of tensor boundary.
+  /// Pads with edge-inclusive symmetric reflection, repeated as needed.
+  /// This differs from PyTorch reflect padding, which excludes the edge.
   reflect,
 
   /// Pads with replication of edge values.
@@ -206,8 +207,8 @@ class PadOp extends TransformOp with RequiresContiguous {
         for (int col = 0; col < w; col++) {
           final inputIdx = inputOffset + row * w + col;
           final outputIdx = outputOffset + row * output.shape[2] + col;
-          final val = input.storage.getAsDouble(inputIdx);
-          output.storage.setFromDouble(outputIdx, val);
+          (output.storage.data as List<num>)[outputIdx] =
+              (input.storage.data as List<num>)[inputIdx];
         }
       }
     }
@@ -242,8 +243,8 @@ class PadOp extends TransformOp with RequiresContiguous {
           for (int col = 0; col < w; col++) {
             final inputIdx = inputOffset + row * w + col;
             final outputIdx = outputOffset + row * output.shape[3] + col;
-            final val = input.storage.getAsDouble(inputIdx);
-            output.storage.setFromDouble(outputIdx, val);
+            (output.storage.data as List<num>)[outputIdx] =
+                (input.storage.data as List<num>)[inputIdx];
           }
         }
       }
@@ -263,8 +264,8 @@ class PadOp extends TransformOp with RequiresContiguous {
           if (inRow >= 0 && inRow < h && inCol >= 0 && inCol < w) {
             final inputIdx = ch * h * w + inRow * w + inCol;
             final outputIdx = ch * outH * outW + outRow * outW + outCol;
-            final val = input.storage.getAsDouble(inputIdx);
-            output.storage.setFromDouble(outputIdx, val);
+            (output.storage.data as List<num>)[outputIdx] =
+                (input.storage.data as List<num>)[inputIdx];
           }
         }
       }
@@ -295,8 +296,8 @@ class PadOp extends TransformOp with RequiresContiguous {
                   ch * outH * outW +
                   outRow * outW +
                   outCol;
-              final val = input.storage.getAsDouble(inputIdx);
-              output.storage.setFromDouble(outputIdx, val);
+              (output.storage.data as List<num>)[outputIdx] =
+                  (input.storage.data as List<num>)[inputIdx];
             }
           }
         }
@@ -316,8 +317,8 @@ class PadOp extends TransformOp with RequiresContiguous {
 
           final inputIdx = ch * h * w + inRow * w + inCol;
           final outputIdx = ch * outH * outW + outRow * outW + outCol;
-          final val = input.storage.getAsDouble(inputIdx);
-          output.storage.setFromDouble(outputIdx, val);
+          (output.storage.data as List<num>)[outputIdx] =
+              (input.storage.data as List<num>)[inputIdx];
         }
       }
     }
@@ -345,8 +346,8 @@ class PadOp extends TransformOp with RequiresContiguous {
                 ch * outH * outW +
                 outRow * outW +
                 outCol;
-            final val = input.storage.getAsDouble(inputIdx);
-            output.storage.setFromDouble(outputIdx, val);
+            (output.storage.data as List<num>)[outputIdx] =
+                (input.storage.data as List<num>)[inputIdx];
           }
         }
       }
@@ -365,8 +366,8 @@ class PadOp extends TransformOp with RequiresContiguous {
 
           final inputIdx = ch * h * w + inRow * w + inCol;
           final outputIdx = ch * outH * outW + outRow * outW + outCol;
-          final val = input.storage.getAsDouble(inputIdx);
-          output.storage.setFromDouble(outputIdx, val);
+          (output.storage.data as List<num>)[outputIdx] =
+              (input.storage.data as List<num>)[inputIdx];
         }
       }
     }
@@ -394,8 +395,8 @@ class PadOp extends TransformOp with RequiresContiguous {
                 ch * outH * outW +
                 outRow * outW +
                 outCol;
-            final val = input.storage.getAsDouble(inputIdx);
-            output.storage.setFromDouble(outputIdx, val);
+            (output.storage.data as List<num>)[outputIdx] =
+                (input.storage.data as List<num>)[inputIdx];
           }
         }
       }
@@ -404,6 +405,7 @@ class PadOp extends TransformOp with RequiresContiguous {
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
     if (inputShape.length == 3) {
       // [C, H, W] -> [C, H + top + bottom, W + left + right]
       final c = inputShape[0];

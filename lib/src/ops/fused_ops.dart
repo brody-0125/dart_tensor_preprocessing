@@ -14,6 +14,11 @@ import 'transform_op.dart';
 /// normalize steps.
 ///
 /// Supports 3D `[C, H, W]` and 4D `[N, C, H, W]` inputs.
+/// Interpolation and normalization use double arithmetic before storing in the
+/// input dtype. Integer outputs follow TensorStorage truncation/clamp/wrap
+/// rules; integers above 2^53 may lose precision. This is not PyTorch's native
+/// integer normalization. Negative nonzero std is allowed. Non-finite statistics
+/// propagate for floating outputs; non-finite integer writes throw.
 ///
 /// ## Complexity
 ///
@@ -43,10 +48,11 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
   ResizeNormalizeFusedOp({
     required this.height,
     required this.width,
-    required this.mean,
-    required this.std,
+    required List<double> mean,
+    required List<double> std,
     this.alignCorners = false,
-  }) {
+  }) : mean = List<double>.unmodifiable(mean),
+       std = List<double>.unmodifiable(std) {
     if (height <= 0 || width <= 0) {
       throw InvalidParameterException(
         'height/width',
@@ -110,22 +116,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     final shape = contiguous.shape;
     final rank = shape.length;
 
-    if (rank != 3 && rank != 4) {
-      throw ShapeMismatchException(
-        actual: shape,
-        message:
-            'ResizeNormalizeFusedOp requires 3D [C,H,W] or 4D [N,C,H,W] tensor',
-      );
-    }
-
-    final channels = rank == 3 ? shape[0] : shape[1];
-    if (channels != mean.length) {
-      throw ShapeMismatchException(
-        actual: shape,
-        message:
-            'Tensor has $channels channels, but mean/std has ${mean.length}',
-      );
-    }
+    _validateShape(shape);
 
     final outputShape = computeOutputShape(shape);
     final output = TensorBuffer.uninitialized(outputShape, dtype: input.dtype);
@@ -162,7 +153,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
           final srcOffset = ch * channelSize;
           final dstOffset = ch * outChannelSize;
           final m = mean[ch];
-          final invStd = 1.0 / std[ch];
+          final stdValue = std[ch];
 
           _bilinearNormalizeFloat32(
             inList,
@@ -174,7 +165,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             scaleY,
             scaleX,
             m,
-            invStd,
+            stdValue,
           );
         }
       default:
@@ -182,7 +173,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
           final srcOffset = ch * channelSize;
           final dstOffset = ch * outChannelSize;
           final m = mean[ch];
-          final invStd = 1.0 / std[ch];
+          final stdValue = std[ch];
 
           _bilinearNormalizeGeneric(
             input,
@@ -194,7 +185,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             scaleY,
             scaleX,
             m,
-            invStd,
+            stdValue,
           );
         }
     }
@@ -227,7 +218,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             final srcOffset = batch * batchSize + ch * channelSize;
             final dstOffset = batch * outBatchSize + ch * outChannelSize;
             final m = mean[ch];
-            final invStd = 1.0 / std[ch];
+            final stdValue = std[ch];
 
             _bilinearNormalizeFloat32(
               inList,
@@ -239,7 +230,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
               scaleY,
               scaleX,
               m,
-              invStd,
+              stdValue,
             );
           }
         }
@@ -249,7 +240,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             final srcOffset = batch * batchSize + ch * channelSize;
             final dstOffset = batch * outBatchSize + ch * outChannelSize;
             final m = mean[ch];
-            final invStd = 1.0 / std[ch];
+            final stdValue = std[ch];
 
             _bilinearNormalizeGeneric(
               input,
@@ -261,7 +252,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
               scaleY,
               scaleX,
               m,
-              invStd,
+              stdValue,
             );
           }
         }
@@ -278,7 +269,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     double scaleY,
     double scaleX,
     double mean,
-    double invStd,
+    double stdValue,
   ) {
     const blockSize = 64;
 
@@ -317,8 +308,8 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
                 v10 * oneMinusFx * fy +
                 v11 * fx * fy;
 
-            // Fused normalize: (resized - mean) / std = (resized - mean) * invStd
-            outList[dstOffset + y * width + x] = (resized - mean) * invStd;
+            // Divide directly: reciprocal overflow would turn a zero numerator into NaN.
+            outList[dstOffset + y * width + x] = (resized - mean) / stdValue;
           }
         }
       }
@@ -335,7 +326,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     double scaleY,
     double scaleX,
     double mean,
-    double invStd,
+    double stdValue,
   ) {
     const blockSize = 64;
 
@@ -377,7 +368,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
 
             output.storage.setFromDouble(
               dstOffset + y * width + x,
-              (resized - mean) * invStd,
+              (resized - mean) / stdValue,
             );
           }
         }
@@ -385,8 +376,28 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     }
   }
 
+  void _validateShape(List<int> shape) {
+    if (shape.length != 3 && shape.length != 4) {
+      throw ShapeMismatchException(
+        actual: shape,
+        message:
+            'ResizeNormalizeFusedOp requires 3D [C,H,W] or 4D [N,C,H,W] tensor',
+      );
+    }
+
+    final channels = shape.length == 3 ? shape[0] : shape[1];
+    if (channels != mean.length) {
+      throw ShapeMismatchException(
+        actual: shape,
+        message:
+            'Tensor has $channels channels, but mean/std has ${mean.length}',
+      );
+    }
+  }
+
   @override
   List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
     if (inputShape.length == 3) {
       return [inputShape[0], height, width];
     }

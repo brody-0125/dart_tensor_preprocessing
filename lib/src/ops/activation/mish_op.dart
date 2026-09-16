@@ -42,6 +42,7 @@ class MishOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('MishOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _mish(input);
   }
 

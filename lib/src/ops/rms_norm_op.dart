@@ -128,7 +128,7 @@ class RMSNormOp extends TransformOp with InPlaceTransform, RequiresContiguous {
       );
     }
 
-    if (eps <= 0) {
+    if (!eps.isFinite || eps <= 0) {
       throw InvalidParameterException(
         'eps',
         eps.toString(),
@@ -162,6 +162,7 @@ class RMSNormOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('RMSNormOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _validateShape(input.shape);
     _rmsNorm(input);
   }

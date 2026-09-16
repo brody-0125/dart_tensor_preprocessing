@@ -19,7 +19,7 @@ class ClipOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   /// Creates a clip operation with the given [min] and [max] bounds.
   ClipOp({required this.min, required this.max}) {
-    if (min >= max) {
+    if (min.isNaN || max.isNaN || min >= max) {
       throw InvalidParameterException(
         'min/max',
         'min=$min, max=$max',
@@ -58,6 +58,7 @@ class ClipOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('ClipOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _clip(input);
   }
 
@@ -74,10 +75,15 @@ class ClipOp extends TransformOp with InPlaceTransform, RequiresContiguous {
         // SIMD-optimized path for Float64 (aligned data only, else scalar fallback)
         SimdOps.clipF64(data as Float64List, min, max);
       default:
-        // Fallback for integer types
+        // Preserve unchanged integer values without converting through double.
+        final values = data as List<int>;
         for (int i = 0; i < numel; i++) {
-          final value = tensor.storage.getAsDouble(i);
-          tensor.storage.setFromDouble(i, value.clamp(min, max));
+          final value = values[i];
+          if (value.compareTo(min) < 0) {
+            tensor.storage.setFromDouble(i, min);
+          } else if (value.compareTo(max) > 0) {
+            tensor.storage.setFromDouble(i, max);
+          }
         }
     }
   }

@@ -149,8 +149,8 @@ class SliceOp extends TransformOp {
       if (dim == input.rank) {
         // Copy single element
         final inputOffset = _computeLinearIndex(input, inputIndices);
-        final val = input.storage.getAsDouble(inputOffset);
-        output.storage.setFromDouble(outputOffset, val);
+        (output.storage.data as List<num>)[outputOffset] =
+            (input.storage.data as List<num>)[inputOffset];
         outputOffset++;
         return;
       }

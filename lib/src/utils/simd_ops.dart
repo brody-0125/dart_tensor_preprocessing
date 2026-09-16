@@ -110,7 +110,9 @@ class SimdOps {
   ///
   /// **Complexity:** O(n) where n = a.length
   static void add(Float32List a, Float32List b, Float32List out) {
-    assert(a.length == b.length && b.length == out.length);
+    if (a.length != b.length || a.length != out.length) {
+      throw ArgumentError('Input and output lengths must match');
+    }
     final length = a.length;
     if (length == 0) return;
 
@@ -165,7 +167,9 @@ class SimdOps {
   ///
   /// **Complexity:** O(n) where n = a.length
   static void subtract(Float32List a, Float32List b, Float32List out) {
-    assert(a.length == b.length && b.length == out.length);
+    if (a.length != b.length || a.length != out.length) {
+      throw ArgumentError('Input and output lengths must match');
+    }
     final length = a.length;
     if (length == 0) return;
 
@@ -220,7 +224,9 @@ class SimdOps {
   ///
   /// **Complexity:** O(n) where n = a.length
   static void divide(Float32List a, Float32List b, Float32List out) {
-    assert(a.length == b.length && b.length == out.length);
+    if (a.length != b.length || a.length != out.length) {
+      throw ArgumentError('Input and output lengths must match');
+    }
     final length = a.length;
     if (length == 0) return;
 
@@ -275,7 +281,9 @@ class SimdOps {
   ///
   /// **Complexity:** O(n) where n = a.length
   static void multiply(Float32List a, Float32List b, Float32List out) {
-    assert(a.length == b.length && b.length == out.length);
+    if (a.length != b.length || a.length != out.length) {
+      throw ArgumentError('Input and output lengths must match');
+    }
     final length = a.length;
     if (length == 0) return;
 
@@ -414,6 +422,14 @@ class SimdOps {
   static void normalize(Float32List data, double mean, double std) {
     final length = data.length;
     if (length == 0) return;
+    // A reciprocal may overflow or underflow even when division is defined.
+    final reciprocal = Float32x4.splat(1.0 / std).x;
+    if (!reciprocal.isFinite || reciprocal == 0) {
+      for (var i = 0; i < length; i++) {
+        data[i] = (data[i] - mean) / std;
+      }
+      return;
+    }
 
     final mean4 = Float32x4.splat(mean);
     final invStd4 = Float32x4.splat(1.0 / std);
@@ -445,47 +461,14 @@ class SimdOps {
     }
   }
 
-  /// Fast memory copy using SIMD.
+  /// Copies equally sized arrays, including overlapping typed views.
   ///
-  /// More efficient than standard list copy for large Float32 arrays.
-  ///
-  /// **Complexity:** O(n) where n = src.length
+  /// Uses the runtime's typed-list copy implementation.
   static void copy(Float32List src, Float32List dst) {
-    assert(src.length == dst.length);
-    final length = src.length;
-    if (length == 0) return;
-
-    final simdLength = length ~/ 4 * 4;
-
-    final allAligned =
-        src.offsetInBytes % 16 == 0 && dst.offsetInBytes % 16 == 0;
-
-    if (allAligned) {
-      final srcView = Float32x4List.view(
-        src.buffer,
-        src.offsetInBytes,
-        simdLength ~/ 4,
-      );
-      final dstView = Float32x4List.view(
-        dst.buffer,
-        dst.offsetInBytes,
-        simdLength ~/ 4,
-      );
-      for (var i = 0; i < srcView.length; i++) {
-        dstView[i] = srcView[i];
-      }
-    } else {
-      for (var i = 0; i < simdLength; i += 4) {
-        dst[i] = src[i];
-        dst[i + 1] = src[i + 1];
-        dst[i + 2] = src[i + 2];
-        dst[i + 3] = src[i + 3];
-      }
+    if (src.length != dst.length) {
+      throw ArgumentError('Source and destination lengths must match');
     }
-
-    for (var i = simdLength; i < length; i++) {
-      dst[i] = src[i];
-    }
+    dst.setRange(0, src.length, src);
   }
 
   /// Fills array with a constant value using SIMD.
@@ -755,6 +738,14 @@ class SimdOps {
   static void normalizeF64(Float64List data, double mean, double std) {
     final length = data.length;
     if (length == 0) return;
+    // A reciprocal may overflow or underflow even when division is defined.
+    final reciprocal = 1.0 / std;
+    if (!reciprocal.isFinite || reciprocal == 0) {
+      for (var i = 0; i < length; i++) {
+        data[i] = (data[i] - mean) / std;
+      }
+      return;
+    }
 
     final simdLength = length ~/ 2 * 2;
 

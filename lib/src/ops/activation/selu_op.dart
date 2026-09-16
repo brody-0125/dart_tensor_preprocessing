@@ -53,6 +53,7 @@ class SELUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('SELUOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _selu(input);
   }
 

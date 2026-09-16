@@ -24,7 +24,9 @@ class NormalizeOp extends TransformOp
   final List<double> std;
 
   /// Creates a normalize operation with the given [mean] and [std].
-  NormalizeOp({required this.mean, required this.std}) {
+  NormalizeOp({required List<double> mean, required List<double> std})
+    : mean = List<double>.unmodifiable(mean),
+      std = List<double>.unmodifiable(std) {
     if (mean.length != std.length) {
       throw InvalidParameterException(
         'mean/std',
@@ -90,6 +92,7 @@ class NormalizeOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('NormalizeOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _validateShape(input.shape);
     _normalize(input);
   }
@@ -282,23 +285,22 @@ class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('ScaleOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _scale(input);
   }
 
   void _scale(TensorBuffer tensor) {
     final s = scale;
     final o = offset;
-    // (value - offset) / scale = value * invScale + bias
-    // where invScale = 1/scale and bias = -offset/scale
+    // Subtract before dividing to avoid cancellation from separately rounded bias.
     final invScale = 1.0 / s;
-    final bias = -o / s;
 
     DTypeDispatcher.dispatchVoid(
       tensor,
       onFloat32: (list, numel) {
         // Use SIMD acceleration for Float32
+        SimdOps.subtractScalar(list, o);
         SimdOps.multiplyScalar(list, invScale);
-        SimdOps.addScalar(list, bias);
       },
       onFloat64: (list, numel) {
         for (int i = 0; i < numel; i++) {

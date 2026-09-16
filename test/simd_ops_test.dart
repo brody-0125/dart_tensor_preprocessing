@@ -4,6 +4,47 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('binary kernels reject unequal lengths before writing output', () {
+    for (final operation in [
+      SimdOps.add,
+      SimdOps.subtract,
+      SimdOps.multiply,
+      SimdOps.divide,
+    ]) {
+      for (final lengths in [
+        [4, 3, 4],
+        [4, 4, 3],
+        [3, 4, 4],
+      ]) {
+        final a = Float32List(lengths[0]);
+        final b = Float32List(lengths[1]);
+        final out = Float32List.fromList(List.filled(lengths[2], 77));
+        expect(() => operation(a, b, out), throwsArgumentError);
+        expect(out, everyElement(77));
+      }
+    }
+  });
+
+  test('copy handles overlapping aligned and unaligned views', () {
+    for (final shift in [1, 4]) {
+      for (final backwards in [false, true]) {
+        final data = Float32List.fromList(
+          List.generate(16, (i) => i.toDouble()),
+        );
+        final sourceStart = backwards ? shift : 0;
+        final destinationStart = backwards ? 0 : shift;
+        final expected = data.toList();
+        final original = data.sublist(sourceStart, sourceStart + 9);
+        expected.setRange(destinationStart, destinationStart + 9, original);
+        SimdOps.copy(
+          Float32List.sublistView(data, sourceStart, sourceStart + 9),
+          Float32List.sublistView(data, destinationStart, destinationStart + 9),
+        );
+        expect(data, expected);
+      }
+    }
+  });
+
   group('SimdOps', () {
     group('multiplyScalar', () {
       test('multiplies all elements by scalar', () {

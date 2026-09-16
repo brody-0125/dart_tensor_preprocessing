@@ -261,12 +261,13 @@ void main() {
 
   group('LayoutConvertOp', () {
     test('converts to NCHW', () {
-      // Note: This doesn't change shape, just ensures contiguity
+      // Logical NHWC axes must be permuted even when storage says contiguous.
       final tensor = TensorBuffer.zeros([1, 3, 224, 224]);
       final transposed = tensor.transpose([0, 2, 3, 1]); // Make NHWC-like
       final op = LayoutConvertOp.toNchw();
       final result = op(transposed);
 
+      expect(result.shape, [1, 3, 224, 224]);
       expect(result.isContiguous, isTrue);
     });
 

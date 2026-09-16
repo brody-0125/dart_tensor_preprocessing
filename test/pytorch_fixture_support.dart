@@ -1,0 +1,678 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math' as math;
+import 'dart:typed_data';
+
+import 'package:crypto/crypto.dart';
+import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
+import 'package:test/test.dart';
+
+double fixtureNumber(dynamic value) =>
+    value is num ? value.toDouble() : double.parse(value as String);
+
+TensorBuffer fixtureTensor(Map<String, dynamic> fixture) {
+  final dtype = DType.values.byName(fixture['dtype'] as String);
+  final data = dtype.createBuffer((fixture['values'] as List).length);
+  final storage = TensorStorage(data, dtype);
+  final values = fixture['values'] as List;
+  for (var i = 0; i < values.length; i++) {
+    if (data is List<int>) {
+      (data as List<int>)[i] = int.parse(values[i].toString());
+    } else {
+      storage.setFromDouble(i, fixtureNumber(values[i]));
+    }
+  }
+  return TensorBuffer(
+    storage: storage,
+    shape: (fixture['shape'] as List).cast<int>(),
+  );
+}
+
+void expectFixture(
+  TensorBuffer actual,
+  Map<String, dynamic> expected, {
+  required double atol,
+  required double rtol,
+}) {
+  expect(actual.shape, expected['shape'], reason: 'shape');
+  expect(actual.dtype.name, expected['dtype'], reason: 'dtype');
+  final values = expected['values'] as List;
+  expect(actual.numel, values.length);
+  var maxAbs = 0.0;
+  var maxRel = 0.0;
+  String? first;
+  for (var i = 0; i < actual.numel; i++) {
+    var remainder = i;
+    var offset = actual.storageOffset;
+    final coords = List<int>.filled(actual.rank, 0);
+    for (var d = actual.rank - 1; d >= 0; d--) {
+      coords[d] = remainder % actual.shape[d];
+      remainder ~/= actual.shape[d];
+      offset += coords[d] * actual.strides[d];
+    }
+    final data = actual.storage.data;
+    if (data is List<int>) {
+      expect(
+        (data as List<int>)[offset],
+        int.parse(values[i].toString()),
+        reason: '$coords',
+      );
+      continue;
+    }
+    final a = actual.storage.getAsDouble(offset);
+    final e = fixtureNumber(values[i]);
+    final error = (a - e).abs();
+    final matches = e.isNaN
+        ? a.isNaN
+        : e.isInfinite
+        ? a == e
+        : a.isFinite && error <= atol + rtol * e.abs();
+    if (error.isFinite) {
+      maxAbs = math.max(maxAbs, error);
+      maxRel = math.max(maxRel, error / math.max(e.abs(), 1e-300));
+    }
+    if (!matches) first ??= '$coords expected $e, actual $a';
+  }
+  expect(first, isNull, reason: '$first; max abs=$maxAbs, max rel=$maxRel');
+}
+
+TransformOp fixtureOperation(Map<String, dynamic> c) {
+  final p = c['params'] as Map<String, dynamic>;
+  List<double>? numbers(String key) =>
+      (p[key] as List?)?.map(fixtureNumber).toList();
+  return switch (c['op']) {
+    'fused' => ResizeNormalizeFusedOp(
+      height: p['size'][0] as int,
+      width: p['size'][1] as int,
+      mean: [0.25, -0.5],
+      std: [0.5, 2],
+      alignCorners: p['align'] as bool,
+    ),
+    'erase' => RandomErasingOp(
+      probability: p['variant'] == 'skip' ? 0 : 1,
+      scaleRange: p['variant'] == 'full' ? (1, 1) : (0.2, 0.2),
+      ratioRange: p['variant'] == 'full'
+          ? (0.8, 0.8)
+          : p['variant'] == 'impossible'
+          ? (100, 100)
+          : (1, 1),
+      value: 7,
+      seed: p['seed'] as int,
+    ),
+    'positional' => PositionalEncodingOp(
+      dModel: p['dim'] as int,
+      maxLen: p['max_len'] as int,
+      base: fixtureNumber(p['base']),
+    ),
+    'pad' => PadOp(
+      top: p['pads'][0] as int,
+      bottom: p['pads'][1] as int,
+      left: p['pads'][2] as int,
+      right: p['pads'][3] as int,
+      mode: PadMode.values.byName(p['mode'] as String),
+      value: fixtureNumber(p['value']),
+    ),
+    'blur' => GaussianBlurOp(
+      kernelSize: p['kernel'] as int,
+      sigma: fixtureNumber(p['sigma']),
+    ),
+    'random_crop' => RandomCropOp(
+      height: p['height'] as int,
+      width: p['width'] as int,
+      seed: p['seed'] as int,
+    ),
+    'flip' =>
+      p['probability'] == null
+          ? (p['direction'] == 'horizontal'
+                ? HorizontalFlipOp()
+                : VerticalFlipOp())
+          : (p['direction'] == 'horizontal'
+                ? RandomHorizontalFlipOp(
+                    probability: fixtureNumber(p['probability']),
+                    seed: 41,
+                  )
+                : RandomVerticalFlipOp(
+                    probability: fixtureNumber(p['probability']),
+                    seed: 41,
+                  )),
+    'jitter_fixed' => ColorJitterOp(
+      brightness: 0.2,
+      contrast: 0.3,
+      saturation: 0.4,
+      hue: 0.1,
+      seed: p['seed'] as int,
+    ),
+    'adjust_brightness' => AdjustBrightnessOp(
+      factor: fixtureNumber(p['factor']),
+    ),
+    'adjust_contrast' => AdjustContrastOp(factor: fixtureNumber(p['factor'])),
+    'adjust_saturation' => AdjustSaturationOp(
+      factor: fixtureNumber(p['factor']),
+    ),
+    'adjust_hue' => AdjustHueOp(factor: fixtureNumber(p['factor'])),
+    'jitter_zero' => ColorJitterOp(
+      brightness: 0,
+      contrast: 0,
+      saturation: 0,
+      hue: 0,
+      seed: 41,
+    ),
+    'grayscale' => RgbToGrayscaleOp(),
+    'rgb_hsv' => RgbToHsvOp(),
+    'hsv_rgb' => HsvToRgbOp(),
+    'to_tensor' => ToTensorOp(normalize: p['normalize'] as bool),
+    'to_image' => ToImageOp(denormalize: p['denormalize'] as bool),
+    'clip' => ClipOp(
+      min: fixtureNumber(p['min']),
+      max: fixtureNumber(p['max']),
+    ),
+    'scale' => ScaleOp(
+      scale: fixtureNumber(p['scale']),
+      offset: fixtureNumber(p['offset']),
+    ),
+    'atan2_scalar' => Atan2Op(scalar: fixtureNumber(p['scalar'])),
+    'atan2_tensor' => Atan2Op.tensor(fixtureTensor(p['other'])),
+    'binary_add' =>
+      p.containsKey('other')
+          ? AddOp.tensor(fixtureTensor(p['other']))
+          : AddOp(scalar: fixtureNumber(p['scalar'])),
+    'binary_sub' =>
+      p.containsKey('other')
+          ? SubOp.tensor(fixtureTensor(p['other']))
+          : SubOp(scalar: fixtureNumber(p['scalar'])),
+    'binary_mul' =>
+      p.containsKey('other')
+          ? MulOp.tensor(fixtureTensor(p['other']))
+          : MulOp(scalar: fixtureNumber(p['scalar'])),
+    'binary_div' =>
+      p.containsKey('other')
+          ? DivOp.tensor(fixtureTensor(p['other']))
+          : DivOp(scalar: fixtureNumber(p['scalar'])),
+    'binary_pow' => PowOp(exponent: fixtureNumber(p['scalar'])),
+    'masked_fill' => MaskedFillOp(
+      mask: fixtureTensor(p['mask'] as Map<String, dynamic>),
+      value: fixtureNumber(p['value']),
+    ),
+    'tile' => TileOp(reps: (p['reps'] as List).cast<int>()),
+    'repeat' => RepeatOp(sizes: (p['reps'] as List).cast<int>()),
+    'roll' => RollOp(
+      shifts: (p['shifts'] as List).cast<int>(),
+      dims: (p['dims'] as List?)?.cast<int>(),
+    ),
+    'slice' => SliceOp(
+      (p['slices'] as List)
+          .map(
+            (s) =>
+                s == null ? null : (s[0] as int?, s[1] as int?, s[2] as int?),
+          )
+          .toList(),
+    ),
+    'gather' => GatherOp(
+      dim: p['dim'] as int,
+      index: fixtureTensor(p['index'] as Map<String, dynamic>),
+    ),
+    'where' => WhereOp(
+      condition: fixtureTensor(p['mask'] as Map<String, dynamic>),
+      y: fixtureTensor(p['other'] as Map<String, dynamic>),
+    ),
+    'neg' => NegOp(),
+    'sqrt' => SqrtOp(),
+    'exp' => ExpOp(),
+    'log' => LogOp(),
+    'floor' => FloorOp(),
+    'ceil' => CeilOp(),
+    'round' => RoundOp(),
+    'sin' => SinOp(),
+    'cos' => CosOp(),
+    'tan' => TanOp(),
+    'asin' => AsinOp(),
+    'acos' => AcosOp(),
+    'atan' => AtanOp(),
+    'gelu' => GELUOp(approximate: p['approximate'] as String),
+    'glu' => GLUOp(dim: p['dim'] as int),
+    'batch_norm' => BatchNormOp(
+      runningMean: numbers('mean')!,
+      runningVar: numbers('variance')!,
+      weight: numbers('weight'),
+      bias: numbers('bias'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'instance_norm' => InstanceNormOp(
+      numFeatures: p['channels'] as int,
+      weight: numbers('weight'),
+      bias: numbers('bias'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'group_norm' => GroupNormOp(
+      numChannels: p['channels'] as int,
+      numGroups: p['groups'] as int,
+      weight: numbers('weight'),
+      bias: numbers('bias'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'layer_norm' => LayerNormOp(
+      normalizedShape: (p['shape'] as List).cast<int>(),
+      weight: numbers('weight'),
+      bias: numbers('bias'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'rms_norm' => RMSNormOp(
+      normalizedShape: (p['shape'] as List).cast<int>(),
+      weight: numbers('weight'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'normalize' => NormalizeOp(mean: numbers('mean')!, std: numbers('std')!),
+    'lp_normalize' => LpNormalizeOp(
+      p: fixtureNumber(p['p']),
+      dim: p['dim'] as int,
+      eps: fixtureNumber(p['eps']),
+    ),
+    'tanh' => TanhOp(),
+    'sigmoid' => SigmoidOp(),
+    'relu' => ReLUOp(),
+    'leaky_relu' => LeakyReLUOp(),
+    'silu' => SiLUOp(),
+    'mish' => MishOp(),
+    'hardsigmoid' => HardsigmoidOp(),
+    'hardswish' => HardswishOp(),
+    'elu' => ELUOp(),
+    'selu' => SELUOp(),
+    'abs' => AbsOp(),
+    'softmax' => SoftmaxOp(axis: p['axis'] as int),
+    'center_crop' => CenterCropOp(
+      height: p['height'] as int,
+      width: p['width'] as int,
+    ),
+    'resize_shortest' => ResizeShortestOp(shortestEdge: p['size'] as int),
+    'resize' => ResizeOp(
+      height: p['height'] as int,
+      width: p['width'] as int,
+      mode: InterpolationMode.values.byName(p['mode'] as String),
+      antialias: p['antialias'] as bool? ?? false,
+      alignCorners: p['align_corners'] as bool? ?? false,
+    ),
+    _ => throw StateError('Unknown fixture operation: ${c['op']}'),
+  };
+}
+
+TensorBuffer fixtureCoreOperation(Map<String, dynamic> c, TensorBuffer input) {
+  final p = c['params'] as Map<String, dynamic>;
+  switch (c['op']) {
+    case 'core_identity':
+    case 'core_contiguous_op':
+    case 'core_permute_op':
+    case 'core_reshape_op':
+    case 'core_flatten_op':
+      final op = switch (c['op']) {
+        'core_identity' => IdentityOp(),
+        'core_contiguous_op' => ContiguousOp(),
+        'core_permute_op' => PermuteOp((p['axes'] as List).cast<int>()),
+        'core_reshape_op' => ReshapeOp((p['shape'] as List).cast<int>()),
+        _ => FlattenOp(startDim: p['start'] as int, endDim: p['end'] as int),
+      };
+      final needsContiguous =
+          c['op'] == 'core_reshape_op' || c['op'] == 'core_flatten_op';
+      if (needsContiguous && !input.isContiguous) {
+        expect(() => op(input), throwsA(isA<NonContiguousException>()));
+      }
+      final prepared = needsContiguous ? input.contiguous() : input;
+      final result = op(prepared);
+      expect(result.shape, op.computeOutputShape(input.shape));
+      if (c['op'] == 'core_identity') expect(identical(result, input), isTrue);
+      return result;
+    case 'core_layout':
+      final force = p['contiguous'] as bool;
+      final op = p['target'] == 'nhwc'
+          ? LayoutConvertOp.toNhwc(forceContiguous: force)
+          : LayoutConvertOp.toNchw(forceContiguous: force);
+      final result = op(input);
+      expect(result.shape, op.computeOutputShape(input.shape));
+      if (force) {
+        expect(result.isContiguous, isTrue);
+      } else {
+        expect(identical(result.storage, input.storage), isTrue);
+      }
+      final inverse = p['target'] == 'nhwc'
+          ? LayoutConvertOp.toNchw(forceContiguous: force)
+          : LayoutConvertOp.toNhwc(forceContiguous: force);
+      expectFixture(
+        inverse(result),
+        c['input'] as Map<String, dynamic>,
+        atol: 0,
+        rtol: 0,
+      );
+      return result;
+    case 'core_select':
+      final result = input.select(p['axis'] as int, p['index'] as int);
+      expect(identical(result.storage, input.storage), isTrue);
+      return result;
+    case 'core_unbind':
+      final parts = input.unbind(p['axis'] as int);
+      expect(parts.length, p['parts']);
+      expect(
+        parts.every((part) => identical(part.storage, input.storage)),
+        isTrue,
+      );
+      return parts[p['index'] as int];
+    case 'core_narrow':
+      final result = input.narrow(
+        p['axis'] as int,
+        p['start'] as int,
+        p['length'] as int,
+      );
+      expect(identical(result.storage, input.storage), isTrue);
+      return result;
+    case 'core_squeeze':
+    case 'core_unsqueeze':
+      final op = c['op'] == 'core_squeeze'
+          ? SqueezeOp(p['axis'] as int?)
+          : UnsqueezeOp(p['axis'] as int);
+      final result = op(input);
+      expect(result.shape, op.computeOutputShape(input.shape));
+      expect(identical(result.storage, input.storage), isTrue);
+      return result;
+    case 'core_cast':
+      return TypeCastOp(DType.values.byName(p['dtype'] as String))(input);
+    case 'core_factory':
+      return switch (p['factory']) {
+        'zeros' => TensorBuffer.zeros(
+          (p['shape'] as List).cast<int>(),
+          dtype: input.dtype,
+        ),
+        'ones' => TensorBuffer.ones(
+          (p['shape'] as List).cast<int>(),
+          dtype: input.dtype,
+        ),
+        'uninitialized' => TensorBuffer.uninitialized(
+          (p['shape'] as List).cast<int>(),
+          dtype: input.dtype,
+        ),
+        'full' => TensorBuffer.full(
+          (p['shape'] as List).cast<int>(),
+          fillValue: fixtureNumber(p['value']),
+          dtype: input.dtype,
+        ),
+        'eye' => TensorBuffer.eye(
+          p['n'] as int,
+          m: p['m'] as int,
+          dtype: input.dtype,
+        ),
+        'linspace' => TensorBuffer.linspace(
+          fixtureNumber(p['start']),
+          fixtureNumber(p['end']),
+          steps: p['steps'] as int,
+          dtype: input.dtype,
+        ),
+        'arange' => TensorBuffer.arange(
+          start: fixtureNumber(p['start']),
+          end: fixtureNumber(p['end']),
+          step: fixtureNumber(p['step']),
+          dtype: input.dtype,
+        ),
+        _ => throw StateError('Unknown factory'),
+      };
+    case 'core_reduce':
+      final keep = p['keep'] as bool? ?? false;
+      final axes = (p['axes'] as List?)?.cast<int>();
+      if (axes != null) {
+        return switch (p['reduction']) {
+          'sum' => input.sumAxes(axes, keepDims: keep),
+          'mean' => input.meanAxes(axes, keepDims: keep),
+          'min' => input.minAxes(axes, keepDims: keep),
+          'max' => input.maxAxes(axes, keepDims: keep),
+          _ => throw StateError('Unknown multi-axis reduction'),
+        };
+      }
+      final axis = p['axis'] as int?;
+      if (axis != null) {
+        return switch (p['reduction']) {
+          'sum' => input.sumAxis(axis, keepDims: keep),
+          'mean' => input.meanAxis(axis, keepDims: keep),
+          'min' => input.minAxis(axis, keepDims: keep),
+          'max' => input.maxAxis(axis, keepDims: keep),
+          'argmin' => input.argminAxis(axis, keepDims: keep),
+          'argmax' => input.argmaxAxis(axis, keepDims: keep),
+          _ => throw StateError('Unknown axis reduction'),
+        };
+      }
+      final num value = switch (p['reduction']) {
+        'sum' => input.sum(),
+        'mean' => input.mean(),
+        'min' => input.min(),
+        'max' => input.max(),
+        'argmin' => input.argmin(),
+        'argmax' => input.argmax(),
+        _ => throw StateError('Unknown scalar reduction'),
+      };
+      return TensorBuffer(
+        storage: value is int
+            ? TensorStorage(Int64List.fromList([value]), DType.int64)
+            : TensorStorage(
+                Float64List.fromList([value.toDouble()]),
+                DType.float64,
+              ),
+        shape: [1],
+      );
+    case 'core_clone':
+      return input.clone();
+    case 'core_contiguous':
+      return input.contiguous();
+    case 'core_transpose':
+      return input.transpose((p['axes'] as List).cast<int>());
+    case 'core_reshape':
+      return input.contiguous().reshape((p['shape'] as List).cast<int>());
+    case 'core_stack':
+      return stack([
+        input,
+        fixtureTensor(p['other'] as Map<String, dynamic>),
+      ], dim: p['axis'] as int);
+    case 'core_concat':
+      return concat([
+        input,
+        fixtureTensor(p['other'] as Map<String, dynamic>),
+      ], axis: p['axis'] as int);
+    case 'core_split':
+    case 'core_chunk':
+      final parts = c['op'] == 'core_split'
+          ? split(input, (p['sizes'] as List).cast<int>(), dim: p['dim'] as int)
+          : chunk(input, p['chunks'] as int, dim: p['dim'] as int);
+      expect(parts.length, p['count']);
+      return parts[p['part'] as int];
+    case 'core_topk':
+      final op = TopKOp(
+        k: p['k'] as int,
+        axis: p['axis'] as int,
+        largest: p['largest'] as bool,
+      );
+      final result = op.applyTopK(input);
+      expect(op.computeOutputShape(input.shape), result.$1.shape);
+      if (p['indices'] == false) {
+        expectFixture(
+          GatherOp(dim: p['axis'] as int, index: result.$2)(input),
+          c['expected'] as Map<String, dynamic>,
+          atol: fixtureNumber(c['atol']),
+          rtol: fixtureNumber(c['rtol']),
+        );
+      }
+      return p['indices'] == true ? result.$2 : result.$1;
+    default:
+      throw StateError('Unknown core fixture: ${c['op']}');
+  }
+}
+
+TensorPipeline fixturePipeline(Map<String, dynamic> p) {
+  final size = p['size'] as int;
+  return switch (p['name']) {
+    'imagenet' => PipelinePresets.imagenetClassification(
+      shortestEdge: p['shortest_edge'] as int? ?? size + 2,
+      cropSize: size,
+    ),
+    'resnet' => PipelinePresets.resnetClassification(height: size, width: size),
+    'detection' => PipelinePresets.objectDetection(height: size, width: size),
+    'segmentation' => PipelinePresets.segmentation(height: size, width: size),
+    'face' => PipelinePresets.faceRecognition(height: size, width: size),
+    'mobilenet' => PipelinePresets.mobileNet(height: size, width: size),
+    'clip' => PipelinePresets.clip(size: size),
+    'vit' => PipelinePresets.vit(size: size),
+    'tflite' || 'tflite_raw' => PipelinePresets.tflite(
+      height: size,
+      width: size,
+      normalize: p['name'] != 'tflite_raw',
+    ),
+    'minimal' => PipelinePresets.minimal(height: size, width: size),
+    'custom' || 'custom_hwc' || 'custom_unbatched' => PipelinePresets.custom(
+      height: size,
+      width: size,
+      mean: [0.5, 0.5, 0.5],
+      std: [0.5, 0.5, 0.5],
+      toChw: p['name'] != 'custom_hwc',
+      addBatchDim: p['name'] != 'custom_unbatched',
+    ),
+    _ => throw StateError('Unknown fixture preset: ${p['name']}'),
+  };
+}
+
+void registerPytorchFixtures(String directory) {
+  final manifest =
+      jsonDecode(File('$directory/manifest.json').readAsStringSync())
+          as Map<String, dynamic>;
+  for (final entry in manifest['files'] as List) {
+    final cases =
+        jsonDecode(File('$directory/${entry['path']}').readAsStringSync())
+            as List;
+    test('fixture integrity: ${entry['path']}', () {
+      for (final source in {
+        'scripts/generate_pytorch_fixtures.py': 'generator_sha256',
+        'scripts/requirements-fixtures.txt': 'requirements_sha256',
+        'scripts/requirements-fixtures-linux.txt': 'requirements_linux_sha256',
+      }.entries) {
+        final normalized = File(
+          source.key,
+        ).readAsStringSync().replaceAll('\r\n', '\n');
+        expect(
+          sha256.convert(utf8.encode(normalized)).toString(),
+          manifest[source.value],
+          reason: source.key,
+        );
+      }
+      expect(cases.length, entry['cases']);
+      expect(
+        sha256
+            .convert(File('$directory/${entry['path']}').readAsBytesSync())
+            .toString(),
+        entry['sha256'],
+      );
+    });
+    for (final raw in cases) {
+      final c = raw as Map<String, dynamic>;
+      test(c['name'] as String, () async {
+        final base = fixtureTensor(
+          (c['base'] ?? c['input']) as Map<String, dynamic>,
+        );
+        final input = c.containsKey('base')
+            ? TensorBuffer(
+                storage: base.storage,
+                shape: ((c['input'] as Map)['shape'] as List).cast<int>(),
+                storageOffset: c['offset'] as int,
+                strides: (c['strides'] as List?)?.cast<int>(),
+              )
+            : base;
+        final atol = fixtureNumber(c['atol']);
+        final rtol = fixtureNumber(c['rtol']);
+        if (c['op'] == 'preset') {
+          final pipeline = fixturePipeline(c['params'] as Map<String, dynamic>);
+          expect(
+            pipeline.computeOutputShape(input.shape),
+            (c['expected'] as Map)['shape'],
+          );
+          for (final actual in [
+            pipeline.run(input),
+            await pipeline.runAsync(input, isolateThreshold: 0),
+            await pipeline.runAsync(input, isolateThreshold: 1000000),
+          ]) {
+            expectFixture(
+              actual,
+              c['expected'] as Map<String, dynamic>,
+              atol: atol,
+              rtol: rtol,
+            );
+          }
+          expectFixture(
+            input,
+            c['input'] as Map<String, dynamic>,
+            atol: 0,
+            rtol: 0,
+          );
+          return;
+        }
+        if ((c['op'] as String).startsWith('core_')) {
+          expectFixture(
+            fixtureCoreOperation(c, input),
+            c['expected'] as Map<String, dynamic>,
+            atol: atol,
+            rtol: rtol,
+          );
+          expectFixture(
+            base,
+            (c['base'] ?? c['input']) as Map<String, dynamic>,
+            atol: 0,
+            rtol: 0,
+          );
+          return;
+        }
+        final op = fixtureOperation(c);
+        expect(
+          op.computeOutputShape(input.shape),
+          (c['expected'] as Map)['shape'],
+        );
+        // Reuse independent goldens for representative pipeline transport paths.
+        if (c['op'] == 'fused' &&
+            c.containsKey('base') &&
+            (c['params'] as Map)['size'].toString() == '[2, 3]' &&
+            (c['params'] as Map)['align'] == false &&
+            [DType.float32, DType.float64, DType.int64].contains(input.dtype)) {
+          final pipeline = TensorPipeline([IdentityOp(), op, ContiguousOp()]);
+          for (final output in [
+            pipeline(input),
+            await pipeline.runAsync(input, isolateThreshold: 0),
+            await pipeline.runAsync(input, isolateThreshold: 1000000),
+          ]) {
+            expectFixture(
+              output,
+              c['expected'] as Map<String, dynamic>,
+              atol: atol,
+              rtol: rtol,
+            );
+          }
+        }
+        final TensorBuffer result;
+        if (c['inplace'] == true) {
+          (op as InPlaceTransform).applyInPlace(input);
+          result = input;
+        } else {
+          result = op(input);
+          expectFixture(
+            base,
+            (c['base'] ?? c['input']) as Map<String, dynamic>,
+            atol: 0,
+            rtol: 0,
+          );
+        }
+        expectFixture(
+          result,
+          c['expected'] as Map<String, dynamic>,
+          atol: atol,
+          rtol: rtol,
+        );
+        if (c.containsKey('expected_base')) {
+          expectFixture(
+            base,
+            c['expected_base'] as Map<String, dynamic>,
+            atol: atol,
+            rtol: rtol,
+          );
+        }
+      });
+    }
+  }
+}

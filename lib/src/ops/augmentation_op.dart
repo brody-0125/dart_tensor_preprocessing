@@ -98,8 +98,8 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
           for (int col = 0; col < width; col++) {
             final inputIdx = ch * h * w + (startH + row) * w + (startW + col);
             final outputIdx = ch * height * width + row * width + col;
-            final val = input.storage.getAsDouble(inputIdx);
-            output.storage.setFromDouble(outputIdx, val);
+            (output.storage.data as List<num>)[outputIdx] =
+                (input.storage.data as List<num>)[inputIdx];
           }
         }
       }
@@ -134,8 +134,8 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
                   ch * height * width +
                   row * width +
                   col;
-              final val = input.storage.getAsDouble(inputIdx);
-              output.storage.setFromDouble(outputIdx, val);
+              (output.storage.data as List<num>)[outputIdx] =
+                  (input.storage.data as List<num>)[inputIdx];
             }
           }
         }
@@ -147,6 +147,13 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    if (height > inputShape[inputShape.length - 2] || width > inputShape.last) {
+      throw InvalidParameterException('crop size', [
+        height,
+        width,
+      ], 'Crop size cannot exceed input dimensions');
+    }
     if (inputShape.length == 3) {
       return [inputShape[0], height, width]; // [C, H, W]
     } else {
@@ -183,7 +190,7 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
         'Kernel size must be odd and >= 1',
       );
     }
-    if (this.sigma <= 0) {
+    if (!this.sigma.isFinite || this.sigma <= 0) {
       throw InvalidParameterException(
         'sigma',
         this.sigma.toString(),
@@ -214,6 +221,7 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
     _validateShape(contiguous.shape);
 
     // Pre-compute 1D Gaussian kernel
+    if (kernelSize == 1) return contiguous.clone();
     final kernel = _computeGaussianKernel();
 
     // Apply separable convolution
@@ -242,7 +250,8 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
     // Compute 1D Gaussian
     for (int i = 0; i < kernelSize; i++) {
       final x = (i - radius).toDouble();
-      kernel[i] = exp(-(x * x) / (2 * sigma * sigma));
+      final normalized = x / sigma;
+      kernel[i] = exp(-0.5 * normalized * normalized);
       sum += kernel[i];
     }
 
@@ -421,7 +430,10 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    return inputShape;
+  }
 }
 
 // ============================================================================
@@ -464,7 +476,10 @@ class HorizontalFlipOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    return inputShape;
+  }
 }
 
 /// Deterministically flips a tensor top-to-bottom (vertical flip).
@@ -503,7 +518,10 @@ class VerticalFlipOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    return inputShape;
+  }
 }
 
 /// Randomly flips a tensor left-to-right with configurable probability.
@@ -537,7 +555,7 @@ class RandomHorizontalFlipOp extends TransformOp with RequiresContiguous {
   /// [probability] defaults to 0.5, matching PyTorch's default.
   /// [seed] can be provided for deterministic behavior.
   RandomHorizontalFlipOp({this.probability = 0.5, this.seed}) {
-    if (probability < 0.0 || probability > 1.0) {
+    if (!probability.isFinite || probability < 0.0 || probability > 1.0) {
       throw InvalidParameterException(
         'probability',
         probability.toString(),
@@ -570,7 +588,10 @@ class RandomHorizontalFlipOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    return inputShape;
+  }
 }
 
 /// Randomly flips a tensor top-to-bottom with configurable probability.
@@ -603,7 +624,7 @@ class RandomVerticalFlipOp extends TransformOp with RequiresContiguous {
   /// [probability] defaults to 0.5, matching PyTorch's default.
   /// [seed] can be provided for deterministic behavior.
   RandomVerticalFlipOp({this.probability = 0.5, this.seed}) {
-    if (probability < 0.0 || probability > 1.0) {
+    if (!probability.isFinite || probability < 0.0 || probability > 1.0) {
       throw InvalidParameterException(
         'probability',
         probability.toString(),
@@ -636,7 +657,10 @@ class RandomVerticalFlipOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    return inputShape;
+  }
 }
 
 // ============================================================================
@@ -692,10 +716,8 @@ TensorBuffer _flipHorizontal(TensorBuffer input) {
             for (int col = 0; col < w; col++) {
               final srcIdx = ch * h * w + row * w + (w - 1 - col);
               final dstIdx = ch * h * w + row * w + col;
-              output.storage.setFromDouble(
-                dstIdx,
-                input.storage.getAsDouble(srcIdx),
-              );
+              (output.storage.data as List<int>)[dstIdx] =
+                  (input.storage.data as List<int>)[srcIdx];
             }
           }
         }
@@ -746,10 +768,8 @@ TensorBuffer _flipHorizontal(TensorBuffer input) {
                 final srcIdx =
                     batch * c * h * w + ch * h * w + row * w + (w - 1 - col);
                 final dstIdx = batch * c * h * w + ch * h * w + row * w + col;
-                output.storage.setFromDouble(
-                  dstIdx,
-                  input.storage.getAsDouble(srcIdx),
-                );
+                (output.storage.data as List<int>)[dstIdx] =
+                    (input.storage.data as List<int>)[srcIdx];
               }
             }
           }
@@ -801,10 +821,8 @@ TensorBuffer _flipVertical(TensorBuffer input) {
             for (int col = 0; col < w; col++) {
               final srcIdx = ch * h * w + (h - 1 - row) * w + col;
               final dstIdx = ch * h * w + row * w + col;
-              output.storage.setFromDouble(
-                dstIdx,
-                input.storage.getAsDouble(srcIdx),
-              );
+              (output.storage.data as List<int>)[dstIdx] =
+                  (input.storage.data as List<int>)[srcIdx];
             }
           }
         }
@@ -857,10 +875,8 @@ TensorBuffer _flipVertical(TensorBuffer input) {
                 final srcIdx =
                     batch * c * h * w + ch * h * w + (h - 1 - row) * w + col;
                 final dstIdx = batch * c * h * w + ch * h * w + row * w + col;
-                output.storage.setFromDouble(
-                  dstIdx,
-                  input.storage.getAsDouble(srcIdx),
-                );
+                (output.storage.data as List<int>)[dstIdx] =
+                    (input.storage.data as List<int>)[srcIdx];
               }
             }
           }

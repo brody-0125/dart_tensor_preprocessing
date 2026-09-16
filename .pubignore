@@ -25,8 +25,15 @@ CLAUDE.md
 .git/
 .gitignore
 
-# Tests (optional - uncomment if you don't want to publish tests)
-# test/
+# Development-only oracles and fixtures remain available in the repository.
+test/
+scripts/
+pubspec.lock
 
 # Examples (optional - uncomment if examples are large)
 # example/
+
+# Repository-only release audit and benchmark material
+benchmark/
+RELEASE_CHECKLIST.md
+.gitattributes

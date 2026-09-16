@@ -42,6 +42,7 @@ class SiLUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('SiLUOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _silu(input);
   }
 
@@ -118,6 +119,7 @@ class HardswishOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('HardswishOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _hardswish(input);
   }
 

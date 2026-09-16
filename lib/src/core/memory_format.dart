@@ -1,17 +1,17 @@
 /// Defines the memory layout format for tensor data.
 ///
-/// Different frameworks use different memory layouts for image tensors:
-/// - PyTorch/ONNX typically uses NCHW ([contiguous])
-/// - TensorFlow typically uses NHWC ([channelsLast])
+/// Controls default physical strides, not the names of logical axes.
+/// Channels-last storage retains logical CHW/NCHW shape, like PyTorch.
+/// Use an explicit permutation to change shape to HWC/NHWC.
 enum MemoryFormat {
-  /// Row-major NCHW layout (batch, channels, height, width).
+  /// Row-major storage for the supplied logical shape.
   ///
   /// This is the default format used by PyTorch and ONNX models.
   contiguous,
 
-  /// Channels-last NHWC layout (batch, height, width, channels).
+  /// Channels-last physical storage for a logical CHW/NCHW shape.
   ///
-  /// This is the default format used by TensorFlow and Dart's image library.
+  /// The channel dimension has stride one; logical axes are unchanged.
   channelsLast,
 }
 

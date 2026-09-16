@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
+import '../utils/contiguous_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
 
@@ -53,6 +54,7 @@ class MaskedFillOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('MaskedFillOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _validateShapes(input);
     _maskedFill(input);
   }
@@ -80,21 +82,21 @@ class MaskedFillOp extends TransformOp
   }
 
   void _maskedFill(TensorBuffer tensor) {
-    final maskContiguous = mask.isContiguous ? mask : mask.contiguous();
+    final maskContiguous = contiguousStorageView(mask);
     final numel = tensor.numel;
     final fillVal = value;
 
     switch (tensor.dtype) {
       case DType.float32:
         final data = tensor.storage.data as Float32List;
-        final maskData = maskContiguous.storage.data as Float32List;
+        final maskData = maskContiguous.storage.data as List<num>;
         for (int i = 0; i < numel; i++) {
           if (maskData[i] != 0) data[i] = fillVal;
         }
 
       case DType.float64:
         final data = tensor.storage.data as Float64List;
-        final maskData = maskContiguous.storage.data as Float64List;
+        final maskData = maskContiguous.storage.data as List<num>;
         for (int i = 0; i < numel; i++) {
           if (maskData[i] != 0) data[i] = fillVal;
         }

@@ -13,10 +13,8 @@ import 'transform_op.dart';
 ///
 /// ## Formula
 ///
-/// - L2: `x / sqrt(sum(x^2) + eps)`
-/// - L1: `x / (sum(|x|) + eps)`
-/// - Linf: `x / (max(|x|) + eps)`
-/// - General p: `x / (sum(|x|^p)^(1/p) + eps)`
+/// `x / max(norm(x, p), eps)`, matching PyTorch `F.normalize`.
+/// Supports positive p (including infinity) and finite positive eps.
 ///
 /// ```dart
 /// final result = LpNormalizeOp.l2(dim: -1)(tensor);
@@ -33,7 +31,18 @@ class LpNormalizeOp extends TransformOp
   final double eps;
 
   /// Creates an Lp normalization operation.
-  LpNormalizeOp({this.p = 2.0, this.dim = -1, this.eps = 1e-12});
+  LpNormalizeOp({this.p = 2.0, this.dim = -1, this.eps = 1e-12}) {
+    if (p.isNaN || p <= 0) {
+      throw InvalidParameterException('p', p, 'Must be positive');
+    }
+    if (!eps.isFinite || eps <= 0) {
+      throw InvalidParameterException(
+        'eps',
+        eps,
+        'Must be finite and positive',
+      );
+    }
+  }
 
   /// Creates an L2 normalization operation.
   factory LpNormalizeOp.l2({int dim = -1, double eps = 1e-12}) =>
@@ -70,6 +79,7 @@ class LpNormalizeOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('LpNormalizeOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _normalize(input);
   }
 
@@ -126,7 +136,7 @@ class LpNormalizeOp extends TransformOp
             idx += indices[d] * strides[d];
           }
           final absVal = data[idx].abs();
-          if (absVal > norm) norm = absVal;
+          norm = math.max(norm, absVal);
         }
       } else if (p == 2.0) {
         for (int a = 0; a < axisSize; a++) {
@@ -161,7 +171,7 @@ class LpNormalizeOp extends TransformOp
       }
 
       // Normalize
-      final invNorm = 1.0 / (norm + eps);
+      final invNorm = 1.0 / math.max(norm, eps);
       for (int a = 0; a < axisSize; a++) {
         indices[axis] = a;
         int idx = 0;
@@ -202,7 +212,7 @@ class LpNormalizeOp extends TransformOp
             idx += indices[d] * strides[d];
           }
           final absVal = data[idx].abs();
-          if (absVal > norm) norm = absVal;
+          norm = math.max(norm, absVal);
         }
       } else if (p == 2.0) {
         for (int a = 0; a < axisSize; a++) {
@@ -236,7 +246,7 @@ class LpNormalizeOp extends TransformOp
         norm = math.pow(norm, 1.0 / p).toDouble();
       }
 
-      final invNorm = 1.0 / (norm + eps);
+      final invNorm = 1.0 / math.max(norm, eps);
       for (int a = 0; a < axisSize; a++) {
         indices[axis] = a;
         int idx = 0;
@@ -277,7 +287,7 @@ class LpNormalizeOp extends TransformOp
             idx += indices[d] * strides[d];
           }
           final absVal = storage.getAsDouble(idx).abs();
-          if (absVal > norm) norm = absVal;
+          norm = math.max(norm, absVal);
         }
       } else if (p == 2.0) {
         for (int a = 0; a < axisSize; a++) {
@@ -311,7 +321,7 @@ class LpNormalizeOp extends TransformOp
         norm = math.pow(norm, 1.0 / p).toDouble();
       }
 
-      final invNorm = 1.0 / (norm + eps);
+      final invNorm = 1.0 / math.max(norm, eps);
       for (int a = 0; a < axisSize; a++) {
         indices[axis] = a;
         int idx = 0;

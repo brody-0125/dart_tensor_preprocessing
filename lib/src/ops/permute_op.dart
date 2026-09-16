@@ -11,7 +11,7 @@ class PermuteOp extends TransformOp {
   final List<int> dims;
 
   /// Creates a permute operation with the given dimension order.
-  PermuteOp(this.dims) {
+  PermuteOp(List<int> dims) : dims = List.unmodifiable(dims) {
     if (dims.isEmpty) {
       throw InvalidParameterException(
         'dims',
@@ -59,11 +59,29 @@ class PermuteOp extends TransformOp {
       );
     }
 
+    final seen = <int>{};
+    for (final d in dims) {
+      if (d < 0 || d >= inputShape.length) {
+        throw IndexOutOfBoundsException(
+          index: d,
+          min: 0,
+          max: inputShape.length - 1,
+          dimension: 'axis',
+        );
+      }
+      if (!seen.add(d)) {
+        throw InvalidParameterException('dims', dims, 'Duplicate axis: $d');
+      }
+    }
     return [for (final d in dims) inputShape[d]];
   }
 }
 
 /// Converts a tensor between memory layout formats (NCHW/NHWC).
+///
+/// This explicitly permutes logical axes: toNhwc expects NCHW input and
+/// toNchw expects NHWC input. Physical memoryFormat does not identify logical
+/// axis names and is never used to infer or skip the conversion.
 class LayoutConvertOp extends TransformOp {
   /// The target memory format.
   final MemoryFormat targetFormat;
@@ -100,11 +118,9 @@ class LayoutConvertOp extends TransformOp {
       );
     }
 
-    if (input.memoryFormat == targetFormat) {
-      return forceContiguous ? input.contiguous() : input;
-    }
-
-    final permutation = input.memoryFormat.permuteToOther;
+    final permutation = targetFormat == MemoryFormat.channelsLast
+        ? [0, 2, 3, 1]
+        : [0, 3, 1, 2];
     var result = input.transpose(permutation);
 
     if (forceContiguous) {
@@ -193,7 +209,7 @@ class SqueezeOp extends TransformOp {
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {
-    final d = dim;
+    final d = dim == null ? null : (dim! < 0 ? inputShape.length + dim! : dim!);
     if (d != null) {
       if (d < 0 || d >= inputShape.length) {
         throw IndexOutOfBoundsException(
@@ -206,9 +222,14 @@ class SqueezeOp extends TransformOp {
       if (inputShape[d] != 1) {
         return inputShape;
       }
-      return [...inputShape.sublist(0, d), ...inputShape.sublist(d + 1)];
+      final output = [
+        ...inputShape.sublist(0, d),
+        ...inputShape.sublist(d + 1),
+      ];
+      return output.isEmpty ? [1] : output;
     } else {
-      return inputShape.where((dim) => dim != 1).toList();
+      final output = inputShape.where((dim) => dim != 1).toList();
+      return output.isEmpty ? [1] : output;
     }
   }
 }
@@ -221,7 +242,15 @@ class ReshapeOp extends TransformOp {
   final List<int> targetShape;
 
   /// Creates a reshape operation to [targetShape].
-  ReshapeOp(this.targetShape) {
+  ReshapeOp(List<int> targetShape)
+    : targetShape = List.unmodifiable(targetShape) {
+    if (targetShape.isEmpty) {
+      throw InvalidParameterException(
+        'targetShape',
+        targetShape,
+        'rank-zero tensors are not supported',
+      );
+    }
     int negativeCount = 0;
     for (final dim in targetShape) {
       if (dim == -1) {
@@ -265,6 +294,12 @@ class ReshapeOp extends TransformOp {
     }
 
     if (negativeIdx == -1) {
+      if (product != numel) {
+        throw ShapeMismatchException(
+          actual: targetShape,
+          message: 'Reshape must preserve the element count',
+        );
+      }
       return targetShape;
     }
 

@@ -8,7 +8,9 @@ library;
 import 'dart:typed_data';
 
 import '../core/dtype.dart';
+import '../exceptions/tensor_exceptions.dart';
 import '../core/tensor_buffer.dart';
+import 'contiguous_storage.dart';
 
 /// Utility for dispatching operations based on tensor dtype.
 ///
@@ -54,6 +56,7 @@ class DTypeDispatcher {
     required R Function(Float64List data, int numel) onFloat64,
     required R Function(TensorBuffer tensor) fallback,
   }) {
+    tensor = contiguousStorageView(tensor);
     final numel = tensor.numel;
     switch (tensor.dtype) {
       case DType.float32:
@@ -68,12 +71,16 @@ class DTypeDispatcher {
   /// Dispatches void operations (in-place modifications).
   ///
   /// Convenience method for operations that don't return a value.
+  /// Strided destinations are rejected instead of silently mutating a copy.
   static void dispatchVoid(
     TensorBuffer tensor, {
     required void Function(Float32List data, int numel) onFloat32,
     required void Function(Float64List data, int numel) onFloat64,
     required void Function(TensorBuffer tensor) fallback,
   }) {
+    if (!tensor.isContiguous) {
+      throw const NonContiguousException('DTypeDispatcher.dispatchVoid');
+    }
     dispatch<void>(
       tensor,
       onFloat32: onFloat32,
@@ -95,6 +102,11 @@ class DTypeDispatcher {
     onFloat64,
     required R Function(TensorBuffer input, TensorBuffer output) fallback,
   }) {
+    if (!output.isContiguous) {
+      throw const NonContiguousException('DTypeDispatcher.dispatchPair output');
+    }
+    input = contiguousStorageView(input);
+    output = contiguousStorageView(output);
     if (input.dtype != output.dtype) {
       return fallback(input, output);
     }

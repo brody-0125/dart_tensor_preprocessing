@@ -106,7 +106,7 @@ class InstanceNormOp extends TransformOp
       );
     }
 
-    if (eps <= 0) {
+    if (!eps.isFinite || eps <= 0) {
       throw InvalidParameterException(
         'eps',
         eps.toString(),
@@ -137,6 +137,7 @@ class InstanceNormOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('InstanceNormOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _validateShape(input.shape);
     _instanceNorm(input);
   }

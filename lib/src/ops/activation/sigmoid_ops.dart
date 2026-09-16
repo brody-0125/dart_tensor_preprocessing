@@ -175,27 +175,24 @@ class TanhOp extends TransformOp with InPlaceTransform, RequiresContiguous {
   }
 
   void _tanh(TensorBuffer tensor) {
-    // tanh(x) = (exp(2x) - 1) / (exp(2x) + 1)
+    // Use exp(-2|x|) to avoid overflow and preserve the sign near zero.
     DTypeDispatcher.dispatchVoid(
       tensor,
       onFloat32: (list, numel) {
         for (int i = 0; i < numel; i++) {
-          final exp2x = math.exp(2 * list[i]);
-          list[i] = (exp2x - 1) / (exp2x + 1);
+          list[i] = _stableTanh(list[i]);
         }
       },
       onFloat64: (list, numel) {
         for (int i = 0; i < numel; i++) {
-          final exp2x = math.exp(2 * list[i]);
-          list[i] = (exp2x - 1) / (exp2x + 1);
+          list[i] = _stableTanh(list[i]);
         }
       },
       fallback: (t) {
         final n = t.numel;
         for (int i = 0; i < n; i++) {
           final value = t.storage.getAsDouble(i);
-          final exp2x = math.exp(2 * value);
-          t.storage.setFromDouble(i, (exp2x - 1) / (exp2x + 1));
+          t.storage.setFromDouble(i, _stableTanh(value));
         }
       },
     );
@@ -203,4 +200,12 @@ class TanhOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   @override
   List<int> computeOutputShape(List<int> inputShape) => inputShape;
+}
+
+// For tiny inputs tanh(x) rounds to x, avoiding cancellation in 1 - exp(-2x).
+double _stableTanh(double x) {
+  if (x.abs() < 1e-8) return x;
+  final e = math.exp(-2 * x.abs());
+  final magnitude = (1 - e) / (1 + e);
+  return x.isNegative ? -magnitude : magnitude;
 }

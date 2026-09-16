@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "oracle": {
+    "torch": "2.10.0+cpu",
+    "torchvision": "0.25.0+cpu",
+    "python": "3.12",
+    "device": "cpu",
+    "cpu_model": "Haswell-v4",
+    "capability": "DEFAULT",
+    "mkl_cbwr": "COMPATIBLE",
+    "mkl_instructions": "SSE4_2",
+    "threads": 1
+  },
+  "generator_sha256": "0d7f17407103c4691f7c6df3d5c73e26ee2a2ef93da647292664867267232925",
+  "requirements_sha256": "ed4d13f006d899b6c6682f517c657ee97eaefa5a1c6f9fe1a0cadd5b70534857",
+  "requirements_linux_sha256": "bad3b0eaebdef46a522006b2a0abbf609ed52b5e1f81aad5f37f4559cdc6e6f2",
+  "files": [
+    {
+      "path": "operations.golden.json",
+      "sha256": "8beda389dbd2fc0cb46c8c3bced07c8b22c7a698e82c3a0fa0f4d61fd02035d7",
+      "cases": 5201
+    }
+  ]
+}
