@@ -665,6 +665,22 @@ def generate():
                     view_cases(f'pad-{dtype}-{batched}-{mode}-{pads}', x,
                                lambda z, mode=mode, pads=pads: padded(z, mode, pads),
                                {'op': 'pad', 'mode': mode, 'pads': pads, 'value': 7}, inplace=False)
+    def positional(z, base):
+        length, dim = z.shape[-2:]
+        position = torch.arange(length, dtype=torch.float64).unsqueeze(1)
+        exponent = (torch.arange(dim) // 2).double() * 2 / dim
+        angle = position / torch.pow(base, exponent)
+        encoding = torch.where(torch.arange(dim) % 2 == 0, angle.sin(), angle.cos())
+        return (z.double() + encoding).to(z.dtype)
+    for dtype in (torch.float32, torch.float64, torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8, torch.uint16, torch.uint32, torch.uint64):
+        for prefix in ((), (2,), (2, 2)):
+            for dim in (1, 5, 8):
+                shape = (*prefix, 7, dim)
+                x = (torch.arange(math.prod(shape)).reshape(shape) % 17 + 2).to(dtype)
+                for base in (2.0, 10000.0):
+                    view_cases(f'positional-{dtype}-{prefix}-{dim}-{base}', x,
+                               lambda z, base=base: positional(z, base),
+                               {'op': 'positional', 'dim': dim, 'max_len': 9, 'base': base})
     return cases
 
 

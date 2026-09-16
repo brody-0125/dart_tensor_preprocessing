@@ -81,6 +81,11 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'positional' => PositionalEncodingOp(
+      dModel: p['dim'] as int,
+      maxLen: p['max_len'] as int,
+      base: fixtureNumber(p['base']),
+    ),
     'pad' => PadOp(
       top: p['pads'][0] as int,
       bottom: p['pads'][1] as int,

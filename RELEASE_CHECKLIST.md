@@ -176,3 +176,9 @@ batch/view variants and padding beyond dimensions. Reproduced 144 integer
 precision failures before fixing eight copy paths. Network-inclusive suite:
 5,573 passed, plus a separate invalid-rank regression; static analysis clean.
 GaussianBlur CI 35102092956/35102099683 passed all gates.
+
+Positional encoding: 540 independent torch sin/cos cases (4,553 total), all ten
+dtypes, odd/even model dimensions, rank 2/3/4 and offset/in-place/strided inputs.
+Fixed base and inferred-shape validation; corrected RoPE/Embedding claims.
+Network-inclusive full suite: 6,114 passed before the additional parameter
+regression; that regression passed separately.

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- PositionalEncoding rejects non-finite/non-positive bases and validates shape
+  inference; clarify additive encoding versus rotary or learned embeddings.
+
 - All PadOp modes preserve exact integer values and validate inferred rank.
 
 - Symmetric reflection now repeats safely for kernels/padding larger than the

@@ -3,6 +3,29 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('positional encoding validates base and inferred shape', () {
+    for (final base in [0.0, -1.0, double.nan, double.infinity]) {
+      expect(
+        () => PositionalEncodingOp(dModel: 3, maxLen: 4, base: base),
+        throwsA(isA<InvalidParameterException>()),
+      );
+    }
+    final op = PositionalEncodingOp(dModel: 3, maxLen: 4);
+    for (final shape in [
+      [3],
+      [2, 4],
+    ]) {
+      expect(
+        () => op.computeOutputShape(shape),
+        throwsA(isA<ShapeMismatchException>()),
+      );
+    }
+    expect(
+      () => op.computeOutputShape([5, 3]),
+      throwsA(isA<InvalidParameterException>()),
+    );
+  });
+
   test('padding shape inference rejects unsupported ranks', () {
     for (final mode in PadMode.values) {
       final op = PadOp.all(2, mode: mode);

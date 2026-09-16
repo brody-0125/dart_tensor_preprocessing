@@ -17,8 +17,9 @@ import 'transform_op.dart';
 /// ```
 ///
 /// This is used in Transformer models to inject position information into
-/// the input embeddings. Also used in Rotary Position Embedding (RoPE)
-/// for modern LLMs like LLaMA and Gemma.
+/// the input embeddings. This additive encoding is not rotary embedding.
+/// Integer inputs use double addition followed by storage conversion; large
+/// integer values may lose precision. Use floating embeddings for this operation.
 ///
 /// The input tensor must have at least 2 dimensions, with the last two
 /// dimensions interpreted as [seq_len, d_model]. The operation adds
@@ -58,6 +59,13 @@ class PositionalEncodingOp extends TransformOp
     if (maxLen <= 0) {
       throw InvalidParameterException('maxLen', maxLen, 'Must be positive');
     }
+    if (!base.isFinite || base <= 0) {
+      throw InvalidParameterException(
+        'base',
+        base,
+        'Must be finite and positive',
+      );
+    }
     _precompute();
   }
 
@@ -81,7 +89,7 @@ class PositionalEncodingOp extends TransformOp
   OperationCapabilities get capabilities => const OperationCapabilities(
     supportsInPlace: true,
     requiresContiguous: true,
-    pytorchEquivalent: 'torch.nn.Embedding (positional)',
+    pytorchEquivalent: 'sinusoidal torch sin/cos recipe',
   );
 
   @override
@@ -101,32 +109,8 @@ class PositionalEncodingOp extends TransformOp
   }
 
   void _addEncoding(TensorBuffer tensor) {
-    if (tensor.rank < 2) {
-      throw ShapeMismatchException(
-        actual: tensor.shape,
-        message:
-            'PositionalEncodingOp requires at least 2D input [... , seq_len, d_model], '
-            'got shape ${tensor.shape}',
-      );
-    }
-
+    _validateShape(tensor.shape);
     final seqLen = tensor.shape[tensor.rank - 2];
-    final dim = tensor.shape[tensor.rank - 1];
-
-    if (dim != dModel) {
-      throw ShapeMismatchException(
-        actual: tensor.shape,
-        message: 'Last dimension ($dim) must match dModel ($dModel)',
-      );
-    }
-
-    if (seqLen > maxLen) {
-      throw InvalidParameterException(
-        'seqLen',
-        seqLen,
-        'Sequence length exceeds maxLen ($maxLen)',
-      );
-    }
 
     // Compute number of batches (all dimensions except last two)
     final batchSize = tensor.rank > 2
@@ -163,6 +147,38 @@ class PositionalEncodingOp extends TransformOp
     }
   }
 
+  void _validateShape(List<int> shape) {
+    if (shape.length < 2) {
+      throw ShapeMismatchException(
+        actual: shape,
+        message:
+            'PositionalEncodingOp requires at least 2D input [... , seq_len, d_model], '
+            'got shape $shape',
+      );
+    }
+
+    final seqLen = shape[shape.length - 2];
+    final dim = shape[shape.length - 1];
+
+    if (dim != dModel) {
+      throw ShapeMismatchException(
+        actual: shape,
+        message: 'Last dimension ($dim) must match dModel ($dModel)',
+      );
+    }
+
+    if (seqLen > maxLen) {
+      throw InvalidParameterException(
+        'seqLen',
+        seqLen,
+        'Sequence length exceeds maxLen ($maxLen)',
+      );
+    }
+  }
+
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    return List<int>.of(inputShape);
+  }
 }
