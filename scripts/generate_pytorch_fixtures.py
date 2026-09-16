@@ -7,8 +7,12 @@ import gzip
 import io
 import importlib.metadata
 import sys
+import os
 from urllib.request import urlopen
 from pathlib import Path
+
+# Select the same kernel family on AVX2/AVX512 GitHub-hosted runners.
+os.environ["ATEN_CPU_CAPABILITY"] = "default"
 
 import torch
 import torchvision
@@ -166,13 +170,14 @@ def main():
     assert torch.__version__.split("+")[0] == "2.10.0", torch.__version__
     assert torchvision.__version__.split("+")[0] == "0.25.0", torchvision.__version__
     torch.set_num_threads(1)
+    assert torch.backends.cpu.get_cpu_capability() == "DEFAULT"
     torch.use_deterministic_algorithms(True)
     cases = generate()
     args.output.mkdir(parents=True, exist_ok=True)
     raw = (json.dumps(cases, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode()
     (args.output / "operations.golden.json").write_bytes(raw)
     manifest = {"schema_version": 1,
-                "oracle": {"torch": "2.10.0+cpu", "torchvision": "0.25.0+cpu", "python": "3.12", "device": "cpu", "threads": 1},
+                "oracle": {"torch": "2.10.0+cpu", "torchvision": "0.25.0+cpu", "python": "3.12", "device": "cpu", "capability": "DEFAULT", "threads": 1},
                 "generator_sha256": hashlib.sha256(Path(__file__).read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
                 "requirements_sha256": hashlib.sha256((ROOT / "scripts/requirements-fixtures.txt").read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
                 "files": [{"path": "operations.golden.json", "sha256": hashlib.sha256(raw).hexdigest(),
