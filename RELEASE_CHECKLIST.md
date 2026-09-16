@@ -206,3 +206,7 @@ normalization and integer cast passes. Out-of-range/non-finite cases remain open
 Fused numerical edge: std=1e-320 with resized==mean produced NaN instead of
 zero because the reciprocal overflowed. Reproduced before fixing direct division;
 float32/float64/int64 regression covers the corrected result.
+
+SIMD normalization reproduces the same reciprocal overflow for subnormal std.
+Guarded direct-division fallback now covers float32/64, scalar/vector paths and
+tails at lengths 1/4/9/128; standard-range SIMD behavior remains unchanged.

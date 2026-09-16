@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- SIMD normalization falls back to direct division when its reciprocal
+  overflows or underflows, including vector blocks and scalar tails.
+
 - Fused normalization divides directly by std, avoiding reciprocal overflow
   and incorrect NaN for a zero numerator with a subnormal standard deviation.
 

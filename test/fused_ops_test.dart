@@ -4,6 +4,25 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('normalization avoids reciprocal overflow across vector tails', () {
+    for (final dtype in [DType.float32, DType.float64]) {
+      for (final length in [1, 4, 9, 128]) {
+        for (final std in [1e-40, 1e-320]) {
+          final result = NormalizeOp(mean: [1], std: [std])(
+            TensorBuffer.ones([1, 1, length], dtype: dtype),
+          );
+          for (var i = 0; i < length; i++) {
+            expect(
+              result.storage.getAsDouble(i),
+              0,
+              reason: '$dtype length=$length std=$std index=$i',
+            );
+          }
+        }
+      }
+    }
+  });
+
   test('fused division preserves zero with subnormal standard deviation', () {
     final op = ResizeNormalizeFusedOp(
       height: 1,

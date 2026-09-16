@@ -414,6 +414,14 @@ class SimdOps {
   static void normalize(Float32List data, double mean, double std) {
     final length = data.length;
     if (length == 0) return;
+    // A reciprocal may overflow or underflow even when division is defined.
+    final reciprocal = Float32x4.splat(1.0 / std).x;
+    if (!reciprocal.isFinite || reciprocal == 0) {
+      for (var i = 0; i < length; i++) {
+        data[i] = (data[i] - mean) / std;
+      }
+      return;
+    }
 
     final mean4 = Float32x4.splat(mean);
     final invStd4 = Float32x4.splat(1.0 / std);
@@ -755,6 +763,14 @@ class SimdOps {
   static void normalizeF64(Float64List data, double mean, double std) {
     final length = data.length;
     if (length == 0) return;
+    // A reciprocal may overflow or underflow even when division is defined.
+    final reciprocal = 1.0 / std;
+    if (!reciprocal.isFinite || reciprocal == 0) {
+      for (var i = 0; i < length; i++) {
+        data[i] = (data[i] - mean) / std;
+      }
+      return;
+    }
 
     final simdLength = length ~/ 2 * 2;
 
