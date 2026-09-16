@@ -13,7 +13,7 @@ import '../transform_op.dart';
 ///
 /// Supports two modes:
 /// - `approximate: 'none'` (default): Exact GELU using error function
-/// - `approximate: 'tanh'`: Fast approximation (PyTorch default)
+/// - `approximate: 'tanh'`: Fast approximation (opt-in in PyTorch)
 ///
 /// ## Formulas
 ///
@@ -141,31 +141,27 @@ class GELUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     }
   }
 
-  /// Approximation of the error function using Abramowitz and Stegun formula.
+  /// Error-function series, NIST DLMF 7.6.2:
+  /// https://dlmf.nist.gov/7.6.E2
+  /// Positive terms avoid cancellation in the ordinary alternating series.
   static double _erf(double x) {
-    // Constants for approximation
-    const a1 = 0.254829592;
-    const a2 = -0.284496736;
-    const a3 = 1.421413741;
-    const a4 = -1.453152027;
-    const a5 = 1.061405429;
-    const p = 0.3275911;
-
-    final sign = x < 0 ? -1.0 : 1.0;
-    final absX = x.abs();
-
-    final t = 1.0 / (1.0 + p * absX);
-    final t2 = t * t;
-    final t3 = t2 * t;
-    final t4 = t3 * t;
-    final t5 = t4 * t;
-
-    final y =
-        1.0 -
-        (a1 * t + a2 * t2 + a3 * t3 + a4 * t4 + a5 * t5) *
-            math.exp(-absX * absX);
-
-    return sign * y;
+    if (x.isNaN) return x;
+    final a = x.abs();
+    // erfc(6) is below half a double ULP at one.
+    if (a >= 6) return x.isNegative ? -1.0 : 1.0;
+    var term = a;
+    var sum = a;
+    final twiceSquare = 2 * a * a;
+    for (var n = 1; n < 200; n++) {
+      term *= twiceSquare / (2 * n + 1);
+      sum += term;
+      if (term <= sum * 1e-17) break;
+    }
+    final value = math.min(
+      1.0,
+      2 / math.sqrt(math.pi) * math.exp(-a * a) * sum,
+    );
+    return x.isNegative ? -value : value;
   }
 
   /// Fast tanh implementation.

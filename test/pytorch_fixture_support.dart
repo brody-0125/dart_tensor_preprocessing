@@ -80,6 +80,21 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'neg' => NegOp(),
+    'sqrt' => SqrtOp(),
+    'exp' => ExpOp(),
+    'log' => LogOp(),
+    'floor' => FloorOp(),
+    'ceil' => CeilOp(),
+    'round' => RoundOp(),
+    'sin' => SinOp(),
+    'cos' => CosOp(),
+    'tan' => TanOp(),
+    'asin' => AsinOp(),
+    'acos' => AcosOp(),
+    'atan' => AtanOp(),
+    'gelu' => GELUOp(approximate: p['approximate'] as String),
+    'glu' => GLUOp(dim: p['dim'] as int),
     'batch_norm' => BatchNormOp(
       runningMean: numbers('mean')!,
       runningVar: numbers('variance')!,
@@ -237,12 +252,22 @@ void registerPytorchFixtures(String directory) {
           return;
         }
         final op = fixtureOperation(c);
+        expect(
+          op.computeOutputShape(input.shape),
+          (c['expected'] as Map)['shape'],
+        );
         final TensorBuffer result;
         if (c['inplace'] == true) {
           (op as InPlaceTransform).applyInPlace(input);
           result = input;
         } else {
           result = op(input);
+          expectFixture(
+            base,
+            (c['base'] ?? c['input']) as Map<String, dynamic>,
+            atol: 0,
+            rtol: 0,
+          );
         }
         expectFixture(
           result,

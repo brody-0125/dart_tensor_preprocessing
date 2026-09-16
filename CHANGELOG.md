@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Correct preset HWC/NHWC input order; preserve existing batches and avoid
   dividing floating-point image inputs by 255 twice.
 - Fix Tanh overflow and unseeded random calls reusing time-based seeds.
+- Improve exact GELU error-function accuracy for float64.
 - Preserve exact int64/uint64 values in clone and strided contiguous copies.
 - Allocate float64 random output correctly; keep uniform output below one after
   float32 rounding, and use standard Box-Muller math without truncated tails.

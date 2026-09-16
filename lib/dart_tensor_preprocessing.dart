@@ -16,9 +16,9 @@
 ///
 /// // Create a preprocessing pipeline
 /// final pipeline = TensorPipeline([
-///   ResizeOp(height: 224, width: 224),
+///   ToTensorOp(normalize: true),
+///   ResizeOp(height: 224, width: 224, antialias: true),
 ///   NormalizeOp.imagenet(),
-///   PermuteOp.hwcToChw(),
 /// ]);
 ///
 /// // Run synchronously

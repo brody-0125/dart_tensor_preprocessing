@@ -100,7 +100,7 @@ def generate():
 
     # Normalization: independent torch calls, affine parameters, CHW/NCHW,
     # constant inputs, offset mutation sentinels and non-contiguous views.
-    def norm_cases(name, x, fn, params):
+    def view_cases(name, x, fn, params):
         y = fn(x)
         add(name, params["op"], x, y, params)
         base = torch.cat((x.new_tensor([-777, -555]), x.flatten(), x.new_tensor([-333])))
@@ -108,8 +108,12 @@ def generate():
         base[2:-1] = y.flatten()
         add(name + "-offset", params["op"], x, y, params, base=before,
             offset=2, inplace=True, expected_base=tensor(base))
-        backing = x.transpose(-1, -2).contiguous()
-        view = backing.transpose(-1, -2)
+        if x.ndim == 1:
+            backing = torch.stack((x, torch.zeros_like(x)), dim=-1)
+            view = backing[:, 0]
+        else:
+            backing = x.transpose(-1, -2).contiguous()
+            view = backing.transpose(-1, -2)
         add(name + "-strided", params["op"], view, fn(view), params,
             base=tensor(backing), offset=0, strides=list(view.stride()))
 
@@ -147,12 +151,12 @@ def generate():
                     ("layer_norm", lambda z: F.layer_norm(z, [2, 3], layer_weight, layer_bias, eps), layer_kw),
                     ("rms_norm", lambda z: F.rms_norm(z, [2, 3], layer_weight, eps), layer_kw)])
                 for op, fn, params in recipes:
-                    norm_cases(f"{op}-{dtype}-batch{batched}-{variant}", x, fn, {**params, "op": op})
+                    view_cases(f"{op}-{dtype}-batch{batched}-{variant}", x, fn, {**params, "op": op})
         for order in (1.0, 2.0, 3.0, float("inf")):
             for axis in (0, -1):
                 x = torch.tensor([[0, 0, 0], [0.01, -0.02, 0.03], [3, -4, 5]], dtype=dtype)
                 params = {"op": "lp_normalize", "p": encode_number(order), "dim": axis, "eps": 0.125}
-                norm_cases(f"lp-{dtype}-p{order}-dim{axis}", x,
+                view_cases(f"lp-{dtype}-p{order}-dim{axis}", x,
                            lambda z: F.normalize(z, p=order, dim=axis, eps=0.125), params)
 
     for dtype in (torch.float32, torch.float64):
@@ -161,6 +165,34 @@ def generate():
             add(f"lp-special-{dtype}-{order}", "lp_normalize", x,
                 F.normalize(x, p=order, dim=-1, eps=0.125),
                 {"p": encode_number(order), "dim": -1, "eps": 0.125})
+
+    unary = {"neg": torch.neg, "sqrt": torch.sqrt, "exp": torch.exp,
+             "log": torch.log, "floor": torch.floor, "ceil": torch.ceil,
+             "sin": torch.sin, "cos": torch.cos, "tan": torch.tan,
+             "asin": torch.asin, "acos": torch.acos, "atan": torch.atan}
+    for dtype in (torch.float32, torch.float64):
+        x = torch.tensor([-1000, -3, -2.5, -1, -0.5, -1e-8, -0.0, 0.0, 1e-8, 0.5, 1, 2.5, 3, 1000], dtype=dtype)
+        for op, fn in unary.items():
+            view_cases(f"{op}-{dtype}-views", x, fn, {"op": op})
+            special = torch.tensor([float("-inf"), float("inf"), float("nan")], dtype=dtype)
+            add(f"{op}-{dtype}-special", op, special, fn(special))
+        for approximate in ("none", "tanh"):
+            view_cases(f"gelu-{dtype}-{approximate}", x,
+                       lambda z: F.gelu(z, approximate=approximate),
+                       {"op": "gelu", "approximate": approximate})
+        dense = torch.arange(-400, 401, dtype=dtype) / 40
+        add(f"gelu-dense-{dtype}", "gelu", dense, F.gelu(dense), {"approximate": "none"})
+        for approximate in ("none", "tanh"):
+            special = torch.tensor([float("-inf"), float("inf"), float("nan")], dtype=dtype)
+            add(f"gelu-special-{dtype}-{approximate}", "gelu", special,
+                F.gelu(special, approximate=approximate), {"approximate": approximate})
+        for axis in (0, -1):
+            z = torch.tensor([[-1000, -1, 1, 1000], [3, 1, -2, -3]], dtype=dtype)
+            add(f"glu-{dtype}-dim{axis}", "glu", z, F.glu(z, dim=axis), {"dim": axis})
+        # RoundOp deliberately retains its documented half-away-from-zero rule.
+        view_cases(f"round-half-away-{dtype}", x,
+                   lambda z: torch.copysign(torch.floor(torch.abs(z) + 0.5), z),
+                   {"op": "round"})
 
     for dtype in (torch.float32, torch.float64):
         x = torch.arange(45, dtype=dtype).reshape(3, 3, 5) / 7

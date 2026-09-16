@@ -29,12 +29,13 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
 
 ## Required before 1.0.0
 
-- [ ] Map every public API to oracle cases or an explicit supported-contract limit.
+- [ ] Finish the public API map in COMPATIBILITY.md: all 84 concrete transforms
+  are inventoried, with pending rows remaining explicit release gates.
 - [x] Expand normalization goldens: Batch/Layer/Group/Instance/RMS/Lp, affine,
   epsilon, constant inputs, invalid axes/shapes, in-place view sentinels.
   Float32/64 coverage adds 270 cases (431 total), including non-contiguous
   views and Lp non-finite inputs. Fix Lp denominator and validate epsilon/order.
-  Newly added values await canonical Linux regeneration review.
+  Canonical Linux regeneration passed in runs 35090715234 and 35090718980.
 - [ ] Expand core/indexing/reduction goldens: transpose/reshape/clone/contiguous,
   integer precision, scalar/empty restrictions, dtype conversion, sum/mean/min/max,
   argmin/max/topk (including ties), gather/slice/split/concat/repeat/tile/roll/where.
@@ -42,6 +43,9 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported
   dtypes, non-finite edge cases, non-contiguous input, and invalid parameters.
+  Unary math/trig, GELU/GLU and documented half-away RoundOp now add 124 cases
+  (555 total); positional/binary arithmetic/remaining edge contracts are pending.
+  Exact GELU float64 accuracy is fixed and checked on an 801-point dense grid.
 - [ ] Compare fused operations and SIMD/scalar tails against independent PyTorch.
 - [x] Fix random factories' float64 allocation and Box-Muller math; reject
   integer dtype, exclude the uniform endpoint after float32 rounding, skip
