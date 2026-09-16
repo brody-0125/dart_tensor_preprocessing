@@ -81,6 +81,9 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'grayscale' => RgbToGrayscaleOp(),
+    'rgb_hsv' => RgbToHsvOp(),
+    'hsv_rgb' => HsvToRgbOp(),
     'to_tensor' => ToTensorOp(normalize: p['normalize'] as bool),
     'to_image' => ToImageOp(denormalize: p['denormalize'] as bool),
     'clip' => ClipOp(

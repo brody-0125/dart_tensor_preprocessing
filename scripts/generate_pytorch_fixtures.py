@@ -22,6 +22,7 @@ import torchvision
 import numpy as np
 from PIL import Image
 from torchvision.transforms import functional as TV
+from torchvision.transforms import _functional_tensor as TVT
 from torch.nn import functional as F
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -518,6 +519,22 @@ def generate():
                         return torch.copysign(torch.floor(y.abs() + 0.5), y).clamp(0, 255).to(torch.uint8)
                     view_cases(f'to-image-{dtype}-{channels}-{batched}-{denormalize}', x, to_image,
                                {'op': 'to_image', 'denormalize': denormalize}, inplace=False)
+    for dtype in (torch.float32, torch.float64, torch.uint8, torch.int64):
+        for batched in (False, True):
+            for variant in ('primary', 'gradient'):
+                x = torch.tensor([[0, 1, 1, 0, 0, 1, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1], [0, 1, 0, 0, 1, 0, 1, 1]], dtype=dtype).reshape(3, 2, 4)
+                if variant == 'gradient':
+                    x = (torch.arange(24).reshape(3, 2, 4) % 11).to(dtype)
+                    if dtype.is_floating_point:
+                        x = x / 10
+                    else:
+                        x = x % 2
+                if batched:
+                    x = torch.stack((x, x.flip(-1)))
+                work = lambda z: z if z.is_floating_point() else z.float()
+                for op, fn in (('grayscale', TV.rgb_to_grayscale), ('rgb_hsv', TVT._rgb2hsv), ('hsv_rgb', TVT._hsv2rgb)):
+                    view_cases(f'color-{op}-{dtype}-{batched}-{variant}', x,
+                               lambda z, fn=fn: fn(work(z)), {'op': op}, inplace=False)
     return cases
 
 

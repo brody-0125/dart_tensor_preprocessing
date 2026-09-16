@@ -99,6 +99,11 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   recipes. No implementation change was required for these valid inputs.
   Local network-inclusive suite passed 3,875 tests before one invalid-rank
   regression was added; that regression is verified separately.
+  Image conversion CI 35099624249/35099627341 passed all gates.
+  RGB/grayscale/HSV adds 144 cases (2,465 total): normalized float32/64 and
+  promoted uint8/int64 inputs, primaries/ties/gradients, batch/view variants.
+  Fixed shape-inference rank/channel validation; full local network suite:
+  4,021 passed, static analysis clean. Color adjustment/augmentation remains pending.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

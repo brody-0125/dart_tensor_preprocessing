@@ -7,6 +7,14 @@ source of truth for the named case prefixes below.
 
 ## Established contracts
 
+- RGB/HSV conversion expects finite normalized channels in [0,1], as stated
+  in its API documentation. Integer inputs are converted numerically to float32
+  without dividing by 255; integer HSV tests therefore use binary channel values.
+  Grayscale uses BT.601 coefficients and promotes integer input to float32.
+  `color-*` covers primaries, black/white/ties, gradients, batches, offsets and
+  non-contiguous input. HSV references call the pinned torchvision 0.25.0
+  `_functional_tensor._rgb2hsv/_hsv2rgb` implementations directly.
+
 - ToTensor explicitly maps HWC/NHWC to CHW/NCHW and outputs float32. Its
   normalize flag divides all input dtypes by 255, including floating inputs;
   this is distinct from preset handling of already-normalized floats.
@@ -123,7 +131,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `HardsigmoidOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `hardsigmoid` |
 | `HardswishOp` | [lib/src/ops/activation/swish_ops.dart](lib/src/ops/activation/swish_ops.dart) | `hardswish` |
 | `HorizontalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
-| `HsvToRgbOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | **Pending independent oracle / contract audit** |
+| `HsvToRgbOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | color-* goldens: float32/64, integer promotion, normalized domain, batch/offset/strided inputs and invalid rank/channel contracts |
 | `IdentityOp` | [lib/src/ops/transform_op.dart](lib/src/ops/transform_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `InstanceNormOp` | [lib/src/ops/instance_norm_op.dart](lib/src/ops/instance_norm_op.dart) | `instance_norm` |
 | `LayerNormOp` | [lib/src/ops/layer_norm_op.dart](lib/src/ops/layer_norm_op.dart) | `layer_norm` |
@@ -151,8 +159,8 @@ coverage beyond those cases remains subject to the release checklist.
 | `ResizeNormalizeFusedOp` | [lib/src/ops/fused_ops.dart](lib/src/ops/fused_ops.dart) | **Pending independent oracle / contract audit** |
 | `ResizeOp` | [lib/src/ops/resize_op.dart](lib/src/ops/resize_op.dart) | `resize / resize-aa` |
 | `ResizeShortestOp` | [lib/src/ops/resize_op.dart](lib/src/ops/resize_op.dart) | `shortest` |
-| `RgbToGrayscaleOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | **Pending independent oracle / contract audit** |
-| `RgbToHsvOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | **Pending independent oracle / contract audit** |
+| `RgbToGrayscaleOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | color-* goldens: float32/64, integer promotion, normalized domain, batch/offset/strided inputs and invalid rank/channel contracts |
+| `RgbToHsvOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | color-* goldens: float32/64, integer promotion, normalized domain, batch/offset/strided inputs and invalid rank/channel contracts |
 | `RollOp` | [lib/src/ops/roll_op.dart](lib/src/ops/roll_op.dart) | `index-*roll (including repeated axes)` |
 | `RoundOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `round-half-away (deliberate difference from torch.round)` |
 | `SELUOp` | [lib/src/ops/activation/selu_op.dart](lib/src/ops/activation/selu_op.dart) | `selu` |

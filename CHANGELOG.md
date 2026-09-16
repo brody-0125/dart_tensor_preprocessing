@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- RGB/grayscale/HSV output shape inference now rejects invalid ranks and
+  channel counts consistently with execution.
+
 - Clip preserves integer values already inside the bounds without rounding them
   through double, including int64 values above 2^53.
 

@@ -7,6 +7,16 @@ import '../utils/validation_utils.dart';
 import 'color_jitter_op.dart' show rgbToHsv, hsvToRgb;
 import 'transform_op.dart';
 
+void _validateColorInputShape(List<int> shape, String name) {
+  if ((shape.length != 3 && shape.length != 4) ||
+      shape[shape.length == 3 ? 0 : 1] != 3) {
+    throw ShapeMismatchException(
+      actual: shape,
+      message: '$name requires CHW/NCHW input with exactly 3 channels',
+    );
+  }
+}
+
 // ============================================================================
 // RgbToGrayscaleOp
 // ============================================================================
@@ -156,6 +166,7 @@ class RgbToGrayscaleOp extends TransformOp with RequiresContiguous {
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {
+    _validateColorInputShape(inputShape, name);
     if (inputShape.length == 3) {
       return [1, inputShape[1], inputShape[2]];
     } else if (inputShape.length == 4) {
@@ -318,7 +329,10 @@ class RgbToHsvOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateColorInputShape(inputShape, name);
+    return inputShape;
+  }
 }
 
 // ============================================================================
@@ -471,5 +485,8 @@ class HsvToRgbOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateColorInputShape(inputShape, name);
+    return inputShape;
+  }
 }
