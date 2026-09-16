@@ -51,6 +51,10 @@ class BufferPool {
 
   /// Releases a buffer back to the pool for reuse.
   ///
+  /// The caller must stop using the buffer and all its aliases after release.
+  /// Releasing the same object again while it is pooled is ignored; distinct
+  /// views of the same backing memory must not be released separately.
+  ///
   /// The buffer will only be pooled if:
   /// - The bucket hasn't reached [maxBuffersPerBucket]
   /// - The buffer dtype can be determined
@@ -61,7 +65,7 @@ class BufferPool {
     final bucket = dtypePools[bucketSize] ??= [];
 
     // Limit pool size to prevent unbounded memory growth
-    if (bucket.length < maxBuffersPerBucket) {
+    if (bucket.length < maxBuffersPerBucket && !bucket.contains(buffer)) {
       bucket.add(buffer);
     }
   }

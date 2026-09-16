@@ -221,3 +221,9 @@ Fixture review-size correction: operations JSON changed from 834,349 to 5,203
 lines (12,712,023 to 5,631,250 bytes), one case per line. Decoded data equality
 verified for all 5,201 cases; generator and manifest updated together. Full
 network-inclusive suite: 6,770 passed. No case or expectation was removed.
+
+BufferPool audit found duplicate release enqueued the same object twice.
+A bucket-local duplicate check (maximum eight entries) fixes double lending;
+regression reproduces the failure and checks independent acquired buffers.
+Ownership transfer and the prohibition on separately releasing aliases are
+now explicit in the API documentation.

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- BufferPool ignores duplicate returns of an already pooled buffer, preventing
+  the same object from being lent to two callers simultaneously.
+
 - SIMD normalization falls back to direct division when its reciprocal
   overflows or underflows, including vector blocks and scalar tails.
 

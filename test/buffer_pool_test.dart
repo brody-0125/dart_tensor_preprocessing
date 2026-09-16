@@ -4,6 +4,20 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('duplicate release does not lend the same buffer twice', () {
+    final pool = BufferPool.create();
+    final original = pool.acquireFloat32(4);
+    pool.release(original);
+    pool.release(original);
+    expect(pool.pooledCount, 1);
+    final first = pool.acquireFloat32(4);
+    final second = pool.acquireFloat32(4);
+    first[0] = 7;
+    second[0] = 9;
+    expect(first[0], 7);
+    expect(identical(first, second), isFalse);
+  });
+
   group('BufferPool', () {
     late BufferPool pool;
 
