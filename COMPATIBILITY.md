@@ -97,7 +97,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `IdentityOp` | [lib/src/ops/transform_op.dart](lib/src/ops/transform_op.dart) | **Pending independent oracle / contract audit** |
 | `InstanceNormOp` | [lib/src/ops/instance_norm_op.dart](lib/src/ops/instance_norm_op.dart) | `instance_norm` |
 | `LayerNormOp` | [lib/src/ops/layer_norm_op.dart](lib/src/ops/layer_norm_op.dart) | `layer_norm` |
-| `LayoutConvertOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
+| `LayoutConvertOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | `layout-*`: float32/64/int32/int64, offset/strided input, both directions and forceContiguous settings, independent values and round trips; physical channels-last regression |
 | `LeakyReLUOp` | [lib/src/ops/activation/relu_ops.dart](lib/src/ops/activation/relu_ops.dart) | `leaky_relu` |
 | `LogOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `log` |
 | `LpNormalizeOp` | [lib/src/ops/lp_normalize_op.dart](lib/src/ops/lp_normalize_op.dart) | `lp / lp-special` |

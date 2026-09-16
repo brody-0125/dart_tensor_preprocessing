@@ -57,6 +57,10 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   View increment CI runs 35095978514 and 35095984086 passed all gates.
   Select/unbind/narrow add 48 cases (1,641 total); vector selection retains [1]
   and shared exact integer storage. Local network-inclusive suite: 3,188 passed.
+  CI runs 35096599370 and 35096602375 passed all gates.
+  Layout conversion adds 48 cases (1,689 total): both logical directions,
+  view/copy modes and physical channels-last regression. Fixed skipped NCHW
+  conversion and sliceFirst stride reinterpretation. Local full suite: 3,237 passed.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

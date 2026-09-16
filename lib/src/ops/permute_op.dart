@@ -64,6 +64,10 @@ class PermuteOp extends TransformOp {
 }
 
 /// Converts a tensor between memory layout formats (NCHW/NHWC).
+///
+/// This explicitly permutes logical axes: toNhwc expects NCHW input and
+/// toNchw expects NHWC input. Physical memoryFormat does not identify logical
+/// axis names and is never used to infer or skip the conversion.
 class LayoutConvertOp extends TransformOp {
   /// The target memory format.
   final MemoryFormat targetFormat;
@@ -100,11 +104,9 @@ class LayoutConvertOp extends TransformOp {
       );
     }
 
-    if (input.memoryFormat == targetFormat) {
-      return forceContiguous ? input.contiguous() : input;
-    }
-
-    final permutation = input.memoryFormat.permuteToOther;
+    final permutation = targetFormat == MemoryFormat.channelsLast
+        ? [0, 2, 3, 1]
+        : [0, 3, 1, 2];
     var result = input.transpose(permutation);
 
     if (forceContiguous) {

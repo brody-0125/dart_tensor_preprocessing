@@ -4,6 +4,52 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test(
+    'logical conversion is independent of physical channels-last strides',
+    () {
+      final raw = Float64List.fromList(List.generate(24, (i) => i.toDouble()));
+      final x = TensorBuffer(
+        storage: TensorStorage(raw, DType.float64),
+        shape: [1, 2, 3, 4],
+        memoryFormat: MemoryFormat.channelsLast,
+      );
+      final y = LayoutConvertOp.toNhwc(forceContiguous: false)(x);
+      expect(y.shape, [1, 3, 4, 2]);
+      expect(y.isContiguous, isTrue);
+      expect(y.toList(), raw);
+      expect(y.sliceFirst(0, 1).strides, y.strides);
+      expect(y.sliceFirst(0, 1).toList(), raw);
+      final restored = LayoutConvertOp.toNchw()(y);
+      expect(restored.shape, x.shape);
+      expect(restored.toList(), [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        22,
+        1,
+        3,
+        5,
+        7,
+        9,
+        11,
+        13,
+        15,
+        17,
+        19,
+        21,
+        23,
+      ]);
+    },
+  );
+
   test('vector selection and unbind retain exact aliased single elements', () {
     final raw = Int64List.fromList([
       -7,

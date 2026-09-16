@@ -190,6 +190,28 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
 TensorBuffer fixtureCoreOperation(Map<String, dynamic> c, TensorBuffer input) {
   final p = c['params'] as Map<String, dynamic>;
   switch (c['op']) {
+    case 'core_layout':
+      final force = p['contiguous'] as bool;
+      final op = p['target'] == 'nhwc'
+          ? LayoutConvertOp.toNhwc(forceContiguous: force)
+          : LayoutConvertOp.toNchw(forceContiguous: force);
+      final result = op(input);
+      expect(result.shape, op.computeOutputShape(input.shape));
+      if (force) {
+        expect(result.isContiguous, isTrue);
+      } else {
+        expect(identical(result.storage, input.storage), isTrue);
+      }
+      final inverse = p['target'] == 'nhwc'
+          ? LayoutConvertOp.toNchw(forceContiguous: force)
+          : LayoutConvertOp.toNhwc(forceContiguous: force);
+      expectFixture(
+        inverse(result),
+        c['input'] as Map<String, dynamic>,
+        atol: 0,
+        rtol: 0,
+      );
+      return result;
     case 'core_select':
       final result = input.select(p['axis'] as int, p['index'] as int);
       expect(identical(result.storage, input.storage), isTrue);

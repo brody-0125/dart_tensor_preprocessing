@@ -385,6 +385,15 @@ def generate():
                        {"op": "core_unsqueeze", "axis": axis}, inplace=False)
         view_cases(f"squeeze-single-{dtype}", x.flatten()[:1].reshape(1, 1),
                    lambda z: z.squeeze().reshape(1), {"op": "core_squeeze"}, inplace=False)
+    for dtype in (torch.float32, torch.float64, torch.int32, torch.int64):
+        x = torch.arange(24, dtype=dtype).reshape(1, 2, 3, 4)
+        if dtype == torch.int64:
+            x += 9007199254740993
+        for target, axes in (("nhwc", (0, 2, 3, 1)), ("nchw", (0, 3, 1, 2))):
+            for contiguous in (False, True):
+                view_cases(f"layout-{dtype}-{target}-{contiguous}", x,
+                           lambda z, axes=axes: z.permute(axes),
+                           {"op": "core_layout", "target": target, "contiguous": contiguous}, inplace=False)
     return cases
 
 

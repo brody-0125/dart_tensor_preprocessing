@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- LayoutConvertOp now always performs its documented directional NCHW/NHWC
+  permutation, agreeing with shape inference and round-trip conversion.
+  Physical channels-last strides no longer cause conversion to be skipped.
+  sliceFirst preserves existing strides instead of reinterpreting layout metadata.
+
 - Vector select/unbind now return aliased [1] tensors instead of failing on
   rank-zero construction. Unbind reuses select and preserves memory metadata.
   Narrow rejects empty, negative and overflowing ranges before constructing views.

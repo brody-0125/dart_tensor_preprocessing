@@ -103,6 +103,7 @@ extension TensorViewExtension on TensorBuffer {
     return TensorBuffer(
       storage: storage,
       shape: newShape,
+      strides: strides,
       storageOffset: newOffset,
       memoryFormat: memoryFormat,
     );

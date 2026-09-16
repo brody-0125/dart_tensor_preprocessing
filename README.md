@@ -289,6 +289,12 @@ PyTorch dtype, input rank or option is supported.
 
 ### Migration toward 1.0.0
 
+`LayoutConvertOp.toNhwc()` explicitly expects NCHW input; `toNchw()` expects
+NHWC input. Both always permute logical axes, independently of physical
+`memoryFormat`. Previously toNchw could silently skip conversion. Physical
+channels-last storage retains logical CHW/NCHW shape; it does not label a tensor
+as logically HWC/NHWC. Use PermuteOp or these directional helpers for axis changes.
+
 Tensor shapes and strides are now immutable copies. Constructors reject views
 outside storage, negative strides and inconsistent stride counts. Zero strides
 remain valid for read-only broadcast views. Rank-zero and empty tensors remain
