@@ -81,6 +81,14 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'pad' => PadOp(
+      top: p['pads'][0] as int,
+      bottom: p['pads'][1] as int,
+      left: p['pads'][2] as int,
+      right: p['pads'][3] as int,
+      mode: PadMode.values.byName(p['mode'] as String),
+      value: fixtureNumber(p['value']),
+    ),
     'blur' => GaussianBlurOp(
       kernelSize: p['kernel'] as int,
       sigma: fixtureNumber(p['sigma']),

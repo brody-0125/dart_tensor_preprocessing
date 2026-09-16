@@ -635,6 +635,36 @@ def generate():
                     view_cases(f'blur-{dtype}-{batched}-{h}-{w}-{kernel}-{sigma}', x,
                                lambda z, kernel=kernel, sigma=sigma: symmetric_blur(z, kernel, sigma),
                                {'op': 'blur', 'kernel': kernel, 'sigma': sigma}, inplace=False)
+    def padded(z, mode, pads):
+        top, bottom, left, right = pads
+        if mode == 'constant':
+            shape = list(z.shape)
+            shape[-2] += top + bottom
+            shape[-1] += left + right
+            y = torch.full(shape, 7, dtype=z.dtype)
+            y[..., top:top+z.shape[-2], left:left+z.shape[-1]] = z
+            return y
+        def indices(size, before, after):
+            i = torch.arange(-before, size + after)
+            if mode == 'reflect':
+                i = i % (2 * size)
+                return torch.where(i < size, i, 2 * size - 1 - i)
+            return i.clamp(0, size - 1) if mode == 'replicate' else i % size
+        # Integer indexing uses int64 for unsigned dtypes unsupported by index_select.
+        y = z.to(torch.int64) if z.dtype in (torch.uint16, torch.uint32, torch.uint64) else z
+        return y.index_select(-2, indices(z.shape[-2], top, bottom)).index_select(-1, indices(z.shape[-1], left, right)).to(z.dtype)
+    for dtype in (torch.float32, torch.float64, torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8, torch.uint16, torch.uint32, torch.uint64):
+        for batched in (False, True):
+            shape = (2, 2, 1, 3) if batched else (2, 1, 3)
+            x = torch.arange(math.prod(shape)).reshape(shape)
+            if dtype in (torch.int64, torch.uint64):
+                x += 9007199254740993
+            x = x.to(dtype)
+            for mode in ('constant', 'reflect', 'replicate', 'circular'):
+                for pads in ((0, 0, 0, 0), (1, 2, 2, 1), (4, 3, 7, 5)):
+                    view_cases(f'pad-{dtype}-{batched}-{mode}-{pads}', x,
+                               lambda z, mode=mode, pads=pads: padded(z, mode, pads),
+                               {'op': 'pad', 'mode': mode, 'pads': pads, 'value': 7}, inplace=False)
     return cases
 
 

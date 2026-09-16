@@ -3,6 +3,20 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('padding shape inference rejects unsupported ranks', () {
+    for (final mode in PadMode.values) {
+      final op = PadOp.all(2, mode: mode);
+      expect(
+        () => op.computeOutputShape([2, 3]),
+        throwsA(isA<ShapeMismatchException>()),
+      );
+      expect(
+        () => op(TensorBuffer.ones([2, 3])),
+        throwsA(isA<ShapeMismatchException>()),
+      );
+    }
+  });
+
   test(
     'blur validates sigma and shape and preserves exact identity kernels',
     () {

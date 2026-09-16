@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- All PadOp modes preserve exact integer values and validate inferred rank.
+
 - Symmetric reflection now repeats safely for kernels/padding larger than the
   input. GaussianBlur avoids sigma-square underflow, rejects non-finite sigma,
   validates inferred rank and preserves exact integer identity for kernel size 1.

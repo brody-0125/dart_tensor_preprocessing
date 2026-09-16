@@ -170,3 +170,9 @@ ATen/MKL flags. The oracle job now uses Ubuntu 24.04 and QEMU Haswell-v4;
 independent runs 35092487771 and 35092491682 regenerated identical files.
 Reviewed and adopted six sqrt cases with one-ULP changes within unchanged
 tolerances; all other cases and network payloads stayed identical. Native Dart CI remains unchanged.
+
+Padding increment: 720 independent cases (4,013 total), all ten dtypes, modes,
+batch/view variants and padding beyond dimensions. Reproduced 144 integer
+precision failures before fixing eight copy paths. Network-inclusive suite:
+5,573 passed, plus a separate invalid-rank regression; static analysis clean.
+GaussianBlur CI 35102092956/35102099683 passed all gates.

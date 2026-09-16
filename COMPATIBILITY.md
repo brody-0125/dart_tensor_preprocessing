@@ -161,7 +161,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `MulOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | binary-*/integer-* goldens: floating, integer, mixed/fractional recipes, non-finite values, offsets/strides and in-place boundaries; explicit dtype contract above |
 | `NegOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `neg` |
 | `NormalizeOp` | [lib/src/ops/normalize_op.dart](lib/src/ops/normalize_op.dart) | `normalize / preset` |
-| `PadOp` | [lib/src/ops/pad_op.dart](lib/src/ops/pad_op.dart) | **Pending independent oracle / contract audit** |
+| `PadOp` | [lib/src/ops/pad_op.dart](lib/src/ops/pad_op.dart) | `pad-*`: all ten dtypes, CHW/NCHW, zero/asymmetric/oversized padding and offset/strided views. Constant=7; replicate/circular use torch index selection; reflect is edge-inclusive periodic symmetric padding, intentionally different from PyTorch reflect. Integer copies remain exact above 2^53. |
 | `PermuteOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `PositionalEncodingOp` | [lib/src/ops/positional_encoding_op.dart](lib/src/ops/positional_encoding_op.dart) | **Pending independent oracle / contract audit** |
 | `PowOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | binary-*/integer-* goldens: floating, integer, mixed/fractional recipes, non-finite values, offsets/strides and in-place boundaries; explicit dtype contract above |
