@@ -92,8 +92,9 @@ source of truth for the named case prefixes below.
   finite positive epsilon. Lp supports positive p, including infinity, and
   divides by max(norm, eps). Integer normalization behavior is still under audit.
 - Resize nearest means PyTorch nearest, not nearest-exact. Bilinear/bicubic
-  antialias is supported for float32/64. Lanczos has no torchvision Tensor
-  counterpart and requires a separate documented compatibility decision.
+  antialias is supported for float32/64. Lanczos is the package
+  Lanczos3 implementation with native regression coverage; torchvision Tensor
+  resize does not support it. No PyTorch or Pillow parity is claimed for Lanczos.
 - `RoundOp` deliberately rounds half away from zero, unlike torch.round's
   half-to-even rule. Its expected values use torch copysign/floor/abs to express
   that documented contract, not a claim of torch.round equivalence.

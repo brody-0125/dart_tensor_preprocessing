@@ -101,4 +101,5 @@ integer sums, keepDims, multiple axes, NaN/ties, adjacent int64 values and overf
 Global value reductions explicitly use a double-valued recipe; scalar tensor
 results are reshaped to [1] to express the package contract. Tied top-k indices
 are not required to match PyTorch's unspecified order; their gathered values
-and uniqueness are checked instead. New cases await fixed-CPU regeneration review.
+and uniqueness are checked instead. The compact corpus regenerated exactly in Linux CI runs 35105035766 and
+35105027891. Later release candidates must repeat this gate.

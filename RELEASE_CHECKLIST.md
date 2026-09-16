@@ -272,3 +272,9 @@ copy overlap and reciprocal/length defects have dedicated regressions.
 The public compatibility map now has no unfinished operation/utility rows;
 release-wide checklist reconciliation, docs/package checks and final release
 commit gates remain outstanding.
+
+Pre-release packaging audit (still 0.9.0): example/example.dart runs to completion.
+Publish dry-run initially passed with zero warnings at 135 KB, but included
+repository-only benchmarks and this historical ledger. Added explicit exclusions;
+final version must repeat package validation. Lanczos is explicitly native-only
+compatibility, with no PyTorch/Pillow parity claim.
