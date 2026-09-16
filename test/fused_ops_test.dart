@@ -4,6 +4,19 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('fused division preserves zero with subnormal standard deviation', () {
+    final op = ResizeNormalizeFusedOp(
+      height: 1,
+      width: 1,
+      mean: [1],
+      std: [1e-320],
+    );
+    for (final dtype in [DType.float32, DType.float64, DType.int64]) {
+      final result = op(TensorBuffer.ones([1, 1, 1], dtype: dtype));
+      expect(result.storage.getAsDouble(0), 0);
+    }
+  });
+
   test('normalization parameters remain immutable after validation', () {
     for (final fused in [false, true]) {
       final mean = [0.5];

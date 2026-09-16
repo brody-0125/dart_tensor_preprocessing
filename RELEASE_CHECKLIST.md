@@ -202,3 +202,7 @@ Fused integer increment: 288 exact-comparison cases (5,201 total), all eight
 integer dtypes, positive in-range values, both alignCorners settings, batches
 and offset/strided views. Independent double torch interpolation followed by
 normalization and integer cast passes. Out-of-range/non-finite cases remain open.
+
+Fused numerical edge: std=1e-320 with resized==mean produced NaN instead of
+zero because the reciprocal overflowed. Reproduced before fixing direct division;
+float32/float64/int64 regression covers the corrected result.

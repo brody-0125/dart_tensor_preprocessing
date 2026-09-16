@@ -148,7 +148,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
           final srcOffset = ch * channelSize;
           final dstOffset = ch * outChannelSize;
           final m = mean[ch];
-          final invStd = 1.0 / std[ch];
+          final stdValue = std[ch];
 
           _bilinearNormalizeFloat32(
             inList,
@@ -160,7 +160,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             scaleY,
             scaleX,
             m,
-            invStd,
+            stdValue,
           );
         }
       default:
@@ -168,7 +168,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
           final srcOffset = ch * channelSize;
           final dstOffset = ch * outChannelSize;
           final m = mean[ch];
-          final invStd = 1.0 / std[ch];
+          final stdValue = std[ch];
 
           _bilinearNormalizeGeneric(
             input,
@@ -180,7 +180,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             scaleY,
             scaleX,
             m,
-            invStd,
+            stdValue,
           );
         }
     }
@@ -213,7 +213,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             final srcOffset = batch * batchSize + ch * channelSize;
             final dstOffset = batch * outBatchSize + ch * outChannelSize;
             final m = mean[ch];
-            final invStd = 1.0 / std[ch];
+            final stdValue = std[ch];
 
             _bilinearNormalizeFloat32(
               inList,
@@ -225,7 +225,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
               scaleY,
               scaleX,
               m,
-              invStd,
+              stdValue,
             );
           }
         }
@@ -235,7 +235,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
             final srcOffset = batch * batchSize + ch * channelSize;
             final dstOffset = batch * outBatchSize + ch * outChannelSize;
             final m = mean[ch];
-            final invStd = 1.0 / std[ch];
+            final stdValue = std[ch];
 
             _bilinearNormalizeGeneric(
               input,
@@ -247,7 +247,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
               scaleY,
               scaleX,
               m,
-              invStd,
+              stdValue,
             );
           }
         }
@@ -264,7 +264,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     double scaleY,
     double scaleX,
     double mean,
-    double invStd,
+    double stdValue,
   ) {
     const blockSize = 64;
 
@@ -303,8 +303,8 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
                 v10 * oneMinusFx * fy +
                 v11 * fx * fy;
 
-            // Fused normalize: (resized - mean) / std = (resized - mean) * invStd
-            outList[dstOffset + y * width + x] = (resized - mean) * invStd;
+            // Divide directly: reciprocal overflow would turn a zero numerator into NaN.
+            outList[dstOffset + y * width + x] = (resized - mean) / stdValue;
           }
         }
       }
@@ -321,7 +321,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     double scaleY,
     double scaleX,
     double mean,
-    double invStd,
+    double stdValue,
   ) {
     const blockSize = 64;
 
@@ -363,7 +363,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
 
             output.storage.setFromDouble(
               dstOffset + y * width + x,
-              (resized - mean) * invStd,
+              (resized - mean) * stdValue,
             );
           }
         }

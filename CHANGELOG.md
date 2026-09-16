@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fused normalization divides directly by std, avoiding reciprocal overflow
+  and incorrect NaN for a zero numerator with a subnormal standard deviation.
+
 - Normalize and fused resize/normalize defensively freeze mean/std lists so
   later caller mutations cannot bypass validation or change pipeline results.
 
