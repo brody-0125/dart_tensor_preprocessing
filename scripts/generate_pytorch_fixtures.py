@@ -485,6 +485,14 @@ def generate():
         other = torch.tensor([-1, 0, 1, -float('inf'), float('inf'), 0, float('nan')], dtype=dtype)
         x = torch.tensor([-2, -0.0, 0, -float('inf'), float('inf'), 3, 1], dtype=dtype)
         view_cases(f'atan2-tensor-{dtype}', x, lambda z: torch.atan2(z, other), {'op': 'atan2_tensor', 'other': tensor(other)})
+    x = torch.tensor([-1000000000000000000, -9007199254740993, 0, 9007199254740993, 1000000000000000000], dtype=torch.int64)
+    view_cases('clip-exact-int64', x, lambda z: z.clamp(-100000000000000000, 100000000000000000),
+               {'op': 'clip', 'min': -100000000000000000, 'max': 100000000000000000})
+    for dtype in (torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8, torch.uint16, torch.uint32, torch.uint64):
+        x = torch.tensor([0, 1, 3, 7, 20], dtype=dtype)
+        add(f'clip-integer-{dtype}', 'clip', x, x.to(torch.float64).clamp(1.5, 9.5).trunc().to(dtype), {'min': 1.5, 'max': 9.5})
+        add(f'scale-integer-{dtype}', 'scale', x, ((x.double() - 0.5) / 2.5).trunc().to(dtype), {'scale': 2.5, 'offset': 0.5})
+        add(f'atan2-integer-{dtype}', 'atan2_scalar', x, torch.atan2(x.double(), torch.tensor(0.5, dtype=torch.float64)).trunc().to(dtype), {'scalar': 0.5})
     return cases
 
 

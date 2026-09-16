@@ -7,6 +7,13 @@ source of truth for the named case prefixes below.
 
 ## Established contracts
 
+- Scale and Atan2 retain integer output dtype using double arithmetic followed
+  by truncation and storage conversion (uint8/16 clamp, other integer types wrap).
+  This differs from torch dtype promotion and cannot preserve all int64 inputs.
+  Clip compares integers exactly and converts only values outside its double
+  bounds. Numeric integer recipes cover all eight destination dtypes; exact
+  int64 clip also has offset/in-place/strided goldens.
+
 - Binary arithmetic requires identical tensor shapes (no broadcasting).
   It retains the input dtype; mixed float32/64 goldens explicitly compute in
   double then cast back, rather than claiming PyTorch promotion equivalence.
@@ -86,12 +93,12 @@ coverage beyond those cases remains subject to the release checklist.
 | `ArgMaxOp` | [lib/src/ops/argmax_op.dart](lib/src/ops/argmax_op.dart) | `core_reduce (delegated argmaxAxis) / reduce-adjacent / ties / nan` |
 | `ArgMinOp` | [lib/src/ops/argmax_op.dart](lib/src/ops/argmax_op.dart) | `core_reduce (delegated argminAxis) / reduce-adjacent / ties / nan` |
 | `AsinOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `asin` |
-| `Atan2Op` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | **Pending independent oracle / contract audit** |
+| `Atan2Op` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | numeric-*/clip-*/scale-*/atan2-* independent floating and integer recipes; offsets/strides, NaN/Inf, cancellation, shape/overlap and bound checks; dtype limits documented above |
 | `AtanOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `atan` |
 | `BatchNormOp` | [lib/src/ops/batch_norm_op.dart](lib/src/ops/batch_norm_op.dart) | `batch_norm` |
 | `CeilOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `ceil` |
 | `CenterCropOp` | [lib/src/ops/crop_op.dart](lib/src/ops/crop_op.dart) | `center-crop` |
-| `ClipOp` | [lib/src/ops/clip_op.dart](lib/src/ops/clip_op.dart) | **Pending independent oracle / contract audit** |
+| `ClipOp` | [lib/src/ops/clip_op.dart](lib/src/ops/clip_op.dart) | numeric-*/clip-*/scale-*/atan2-* independent floating and integer recipes; offsets/strides, NaN/Inf, cancellation, shape/overlap and bound checks; dtype limits documented above |
 | `ColorJitterOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
 | `ContiguousOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `CosOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `cos` |
@@ -141,7 +148,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `RollOp` | [lib/src/ops/roll_op.dart](lib/src/ops/roll_op.dart) | `index-*roll (including repeated axes)` |
 | `RoundOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `round-half-away (deliberate difference from torch.round)` |
 | `SELUOp` | [lib/src/ops/activation/selu_op.dart](lib/src/ops/activation/selu_op.dart) | `selu` |
-| `ScaleOp` | [lib/src/ops/normalize_op.dart](lib/src/ops/normalize_op.dart) | **Pending independent oracle / contract audit** |
+| `ScaleOp` | [lib/src/ops/normalize_op.dart](lib/src/ops/normalize_op.dart) | numeric-*/clip-*/scale-*/atan2-* independent floating and integer recipes; offsets/strides, NaN/Inf, cancellation, shape/overlap and bound checks; dtype limits documented above |
 | `SiLUOp` | [lib/src/ops/activation/swish_ops.dart](lib/src/ops/activation/swish_ops.dart) | `silu` |
 | `SigmoidOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `sigmoid` |
 | `SinOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `sin` |

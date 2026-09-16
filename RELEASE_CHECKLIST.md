@@ -86,6 +86,13 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   cancellation, scalar/tensor, offsets and strided input. Fixed severe Scale
   cancellation, Atan2 shape/overlap handling and Clip NaN bounds. Integer
   contracts for these three operations remain pending. Local full suite: 3,632 passed.
+  Added 27 integer recipes/exact int64 clip cases (2,105 total); fixed unchanged
+  Clip values losing integer precision. Local network-inclusive suite: 3,659 passed.
+  Numeric CI 35098903435/35098907602 passed every job except exact oracle
+  regeneration: both produced identical artifacts with three float32 Atan2
+  cases differing by at most 1.1920928955078125e-7. Reviewed every changed value
+  under unchanged tolerances, verified network payloads unchanged and adopted
+  canonical values. Latest commit must verify exact regeneration again.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

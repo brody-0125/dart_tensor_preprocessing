@@ -180029,12 +180029,12 @@
       "dtype": "float32",
       "values": [
         -1.6421037912368774,
-        -1.8157750368118286,
+        -1.815774917602539,
         -3.1415927410125732,
         3.1415927410125732,
         2.677945137023926,
         1.7359449863433838,
-        1.6162196397781372
+        1.6162195205688477
       ]
     },
     "atol": 1e-06,
@@ -180069,12 +180069,12 @@
       "dtype": "float32",
       "values": [
         -1.6421037912368774,
-        -1.8157750368118286,
+        -1.815774917602539,
         -3.1415927410125732,
         3.1415927410125732,
         2.677945137023926,
         1.7359449863433838,
-        1.6162196397781372
+        1.6162195205688477
       ]
     },
     "atol": 1e-06,
@@ -180108,12 +180108,12 @@
         -777.0,
         -555.0,
         -1.6421037912368774,
-        -1.8157750368118286,
+        -1.815774917602539,
         -3.1415927410125732,
         3.1415927410125732,
         2.677945137023926,
         1.7359449863433838,
-        1.6162196397781372,
+        1.6162195205688477,
         -333.0
       ]
     }
@@ -180147,12 +180147,12 @@
       "dtype": "float32",
       "values": [
         -1.6421037912368774,
-        -1.8157750368118286,
+        -1.815774917602539,
         -3.1415927410125732,
         3.1415927410125732,
         2.677945137023926,
         1.7359449863433838,
-        1.6162196397781372
+        1.6162195205688477
       ]
     },
     "atol": 1e-06,
@@ -182657,5 +182657,1029 @@
     "strides": [
       2
     ]
+  },
+  {
+    "name": "clip-exact-int64",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -100000000000000000,
+      "max": 100000000000000000
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        "-1000000000000000000",
+        "-9007199254740993",
+        0,
+        "9007199254740993",
+        "1000000000000000000"
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        "-100000000000000000",
+        "-9007199254740993",
+        0,
+        "9007199254740993",
+        "100000000000000000"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "clip-exact-int64-offset",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -100000000000000000,
+      "max": 100000000000000000
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        "-1000000000000000000",
+        "-9007199254740993",
+        0,
+        "9007199254740993",
+        "1000000000000000000"
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        "-100000000000000000",
+        "-9007199254740993",
+        0,
+        "9007199254740993",
+        "100000000000000000"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        8
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-1000000000000000000",
+        "-9007199254740993",
+        0,
+        "9007199254740993",
+        "1000000000000000000",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        8
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-100000000000000000",
+        "-9007199254740993",
+        0,
+        "9007199254740993",
+        "100000000000000000",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "clip-exact-int64-strided",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -100000000000000000,
+      "max": 100000000000000000
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        "-1000000000000000000",
+        "-9007199254740993",
+        0,
+        "9007199254740993",
+        "1000000000000000000"
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        "-100000000000000000",
+        "-9007199254740993",
+        0,
+        "9007199254740993",
+        "100000000000000000"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        5,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-1000000000000000000",
+        0,
+        "-9007199254740993",
+        0,
+        0,
+        0,
+        "9007199254740993",
+        0,
+        "1000000000000000000",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "clip-integer-torch.int8",
+    "op": "clip",
+    "params": {
+      "min": 1.5,
+      "max": 9.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int8",
+      "values": [
+        1,
+        1,
+        3,
+        7,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "scale-integer-torch.int8",
+    "op": "scale",
+    "params": {
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        0,
+        1,
+        2,
+        7
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "atan2-integer-torch.int8",
+    "op": "atan2_scalar",
+    "params": {
+      "scalar": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "clip-integer-torch.int16",
+    "op": "clip",
+    "params": {
+      "min": 1.5,
+      "max": 9.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int16",
+      "values": [
+        1,
+        1,
+        3,
+        7,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "scale-integer-torch.int16",
+    "op": "scale",
+    "params": {
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        0,
+        1,
+        2,
+        7
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "atan2-integer-torch.int16",
+    "op": "atan2_scalar",
+    "params": {
+      "scalar": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "clip-integer-torch.int32",
+    "op": "clip",
+    "params": {
+      "min": 1.5,
+      "max": 9.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int32",
+      "values": [
+        1,
+        1,
+        3,
+        7,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "scale-integer-torch.int32",
+    "op": "scale",
+    "params": {
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        0,
+        1,
+        2,
+        7
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "atan2-integer-torch.int32",
+    "op": "atan2_scalar",
+    "params": {
+      "scalar": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "clip-integer-torch.int64",
+    "op": "clip",
+    "params": {
+      "min": 1.5,
+      "max": 9.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        1,
+        1,
+        3,
+        7,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "scale-integer-torch.int64",
+    "op": "scale",
+    "params": {
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        0,
+        1,
+        2,
+        7
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "atan2-integer-torch.int64",
+    "op": "atan2_scalar",
+    "params": {
+      "scalar": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "clip-integer-torch.uint8",
+    "op": "clip",
+    "params": {
+      "min": 1.5,
+      "max": 9.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint8",
+      "values": [
+        1,
+        1,
+        3,
+        7,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "scale-integer-torch.uint8",
+    "op": "scale",
+    "params": {
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        1,
+        2,
+        7
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "atan2-integer-torch.uint8",
+    "op": "atan2_scalar",
+    "params": {
+      "scalar": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "clip-integer-torch.uint16",
+    "op": "clip",
+    "params": {
+      "min": 1.5,
+      "max": 9.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint16",
+      "values": [
+        1,
+        1,
+        3,
+        7,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "scale-integer-torch.uint16",
+    "op": "scale",
+    "params": {
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        1,
+        2,
+        7
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "atan2-integer-torch.uint16",
+    "op": "atan2_scalar",
+    "params": {
+      "scalar": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "clip-integer-torch.uint32",
+    "op": "clip",
+    "params": {
+      "min": 1.5,
+      "max": 9.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint32",
+      "values": [
+        1,
+        1,
+        3,
+        7,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "scale-integer-torch.uint32",
+    "op": "scale",
+    "params": {
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        1,
+        2,
+        7
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "atan2-integer-torch.uint32",
+    "op": "atan2_scalar",
+    "params": {
+      "scalar": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "clip-integer-torch.uint64",
+    "op": "clip",
+    "params": {
+      "min": 1.5,
+      "max": 9.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint64",
+      "values": [
+        1,
+        1,
+        3,
+        7,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "scale-integer-torch.uint64",
+    "op": "scale",
+    "params": {
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        0,
+        1,
+        2,
+        7
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "atan2-integer-torch.uint64",
+    "op": "atan2_scalar",
+    "params": {
+      "scalar": 0.5
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        1,
+        3,
+        7,
+        20
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
   }
 ]
