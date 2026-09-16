@@ -1,4 +1,4 @@
-# Compatibility audit for 1.0.0 (in progress)
+# Compatibility contracts for 1.0.0
 
 This is an evidence map, not a claim that all APIs match PyTorch. A passing
 legacy test alone does not close an independent-oracle requirement. The

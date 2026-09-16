@@ -145,10 +145,10 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   reuse weights/scratch across batch and channel planes and use direct typed
   access. Full 2,086-test suite passes. Local before/after timings and raw
   samples are recorded in benchmark/ANTIALIAS_RESULTS.md; no universal speed claim.
-- [ ] Finalize compatibility table, migration guide, README snippets/examples,
+- [x] Finalize compatibility table, migration guide, README snippets/examples,
   random/dtype/view contracts, and fixture dependency hashes/provenance.
 - [ ] Validate fixture licenses/attribution and package contents at final version.
-- [ ] Change pubspec/CHANGELOG/README to 1.0.0 only when functional audit is complete.
+- [x] Change pubspec/CHANGELOG/README to 1.0.0 only when functional audit is complete.
 - [ ] Run all gates on the actual final commit; verify required case counts, no hidden skips.
 - [ ] Merge the reviewed release, publish through existing pub.dev authorization,
   tag/release the identical commit, and install 1.0.0 in a clean consumer project.
@@ -287,3 +287,7 @@ Fixture provenance: fetched the full torchvision BSD notice from the exact
 network-manifest revision and retained it beside derived network outputs.
 README migration notes now include immutable statistics, new validation,
 reflection behavior and low-level mutation/ownership contracts.
+
+Release candidate prepared as 1.0.0. This version change is not publication;
+final-commit CI, clean publish dry-run, merge/publication/tag and installed
+consumer verification remain required.

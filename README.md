@@ -24,7 +24,7 @@ Tensor preprocessing library for Flutter/Dart. NumPy-like transforms pipeline fo
 
 ```yaml
 dependencies:
-  dart_tensor_preprocessing: ^0.9.0
+  dart_tensor_preprocessing: ^1.0.0
 ```
 
 ## Quick Start
@@ -287,7 +287,7 @@ not bitwise equality. See [fixture provenance and reproduction](test/fixtures/py
 The table maps APIs to their reference operations; it does not imply that every
 PyTorch dtype, input rank or option is supported.
 
-### Migration toward 1.0.0
+### Migration to 1.0.0
 
 `NormalizeOp` and `ResizeNormalizeFusedOp` copy and freeze their mean/std lists.
 Recreate the operation to change statistics. Gaussian blur, random erasing and
