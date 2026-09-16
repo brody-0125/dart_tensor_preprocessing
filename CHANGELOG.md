@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Mutation dtype dispatch rejects strided destinations rather than silently
+  changing a temporary contiguous copy. Pair dispatch still accepts strided input.
+
 - BufferPool ignores duplicate returns of an already pooled buffer, preventing
   the same object from being lent to two callers simultaneously.
 

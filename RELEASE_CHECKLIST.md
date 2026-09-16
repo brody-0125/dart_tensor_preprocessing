@@ -227,3 +227,8 @@ A bucket-local duplicate check (maximum eight entries) fixes double lending;
 regression reproduces the failure and checks independent acquired buffers.
 Ownership transfer and the prohibition on separately releasing aliases are
 now explicit in the API documentation.
+
+Dispatcher audit found non-contiguous mutation destinations were copied, so
+callback writes disappeared. dispatchVoid and dispatchPair now reject strided
+destinations before callbacks; read/input dispatch retains contiguous copying.
+Regression reproduces the old silent success and checks callbacks stay uncalled.

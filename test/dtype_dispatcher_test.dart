@@ -4,6 +4,44 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('mutation dispatch rejects strided destinations before callbacks', () {
+    final source = TensorBuffer.ones([2, 3]);
+    final strided = source.transpose([1, 0]);
+    var called = false;
+    expect(
+      () => DTypeDispatcher.dispatchVoid(
+        strided,
+        onFloat32: (_, __) {
+          called = true;
+        },
+        onFloat64: (_, __) {
+          called = true;
+        },
+        fallback: (_) {
+          called = true;
+        },
+      ),
+      throwsA(isA<NonContiguousException>()),
+    );
+    expect(
+      () => DTypeDispatcher.dispatchPair(
+        source,
+        strided,
+        onFloat32: (_, __, ___) {
+          called = true;
+        },
+        onFloat64: (_, __, ___) {
+          called = true;
+        },
+        fallback: (_, __) {
+          called = true;
+        },
+      ),
+      throwsA(isA<NonContiguousException>()),
+    );
+    expect(called, isFalse);
+  });
+
   group('DTypeDispatcher', () {
     group('dispatch', () {
       test('calls onFloat32 for float32 tensor', () {
