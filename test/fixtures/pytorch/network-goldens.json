@@ -14,7 +14,7 @@
     ],
     "dtype": "float32",
     "file": "rgb_pytorch-imagenet-224.f32.gz",
-    "sha256": "294cecca352457f4b3973a616d9ecd950cb8281195ca94c16c1db8d763251b4b",
+    "sha256": "b29e6195c748b75f6909efbb16bda1a06785305080482af55b17e695a22d698e",
     "atol": 1e-06,
     "rtol": 1e-05
   },
@@ -32,7 +32,7 @@
     ],
     "dtype": "float32",
     "file": "rgb_pytorch-clip-224.f32.gz",
-    "sha256": "b2b0dc413c4bcc56e1475e24f3a5e22165f5a13fa67d7af1e31bc661332bfc16",
+    "sha256": "462f78a273188bace4aeff601fec8e61799b5dd45adf143c3f41dd6131edd91a",
     "atol": 1e-06,
     "rtol": 1e-05
   },
@@ -50,7 +50,7 @@
     ],
     "dtype": "float32",
     "file": "rgb_pytorch-detection-640.f32.gz",
-    "sha256": "bbc38175c4de56f0bf80a8cc8d0884fcfbe4ce253f067ea746cba5da674de6a8",
+    "sha256": "83b70a99280a5b83b0225fb1949dee598edd18d082f4fe1cc6ef8ebd1328dcdf",
     "atol": 1e-06,
     "rtol": 1e-05
   }
