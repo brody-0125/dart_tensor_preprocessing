@@ -64,6 +64,7 @@ class GELUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('GELUOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _gelu(input);
   }
 

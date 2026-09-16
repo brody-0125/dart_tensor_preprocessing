@@ -96,6 +96,7 @@ class PositionalEncodingOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('PositionalEncodingOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _addEncoding(input);
   }
 

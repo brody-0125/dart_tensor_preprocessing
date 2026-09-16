@@ -133,6 +133,7 @@ class RandomErasingOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('RandomErasingOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _eraseImpl(input);
   }
 

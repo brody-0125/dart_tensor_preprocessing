@@ -229,25 +229,32 @@ void main() {
       expect(pipeline.operations.length, greaterThan(0));
     });
 
-    test('imagenetClassification creates pipeline with correct structure', () {
-      final pipeline = PipelinePresets.imagenetClassification();
-
-      // Verify pipeline has expected operations
-      expect(pipeline.operations.length, equals(5));
-      expect(pipeline.operations[0], isA<ResizeShortestOp>());
-      expect(pipeline.operations[1], isA<CenterCropOp>());
-      expect(pipeline.operations[2], isA<ToTensorOp>());
-      expect(pipeline.operations[3], isA<NormalizeOp>());
-      expect(pipeline.operations[4], isA<UnsqueezeOp>());
+    test('imagenetClassification processes RGB HWC input', () {
+      final input = TensorBuffer.fromUint8List(Uint8List(7 * 11 * 3), [
+        7,
+        11,
+        3,
+      ]);
+      final result = PipelinePresets.imagenetClassification(
+        shortestEdge: 6,
+        cropSize: 4,
+      ).run(input);
+      expect(result.shape, [1, 3, 4, 4]);
+      expect(result.dtype, DType.float32);
     });
 
-    test('objectDetection creates pipeline with correct structure', () {
-      final pipeline = PipelinePresets.objectDetection();
-
-      expect(pipeline.operations.length, equals(3));
-      expect(pipeline.operations[0], isA<ResizeOp>());
-      expect(pipeline.operations[1], isA<ToTensorOp>());
-      expect(pipeline.operations[2], isA<UnsqueezeOp>());
+    test('objectDetection preserves an existing batch dimension', () {
+      final input = TensorBuffer.fromUint8List(Uint8List(2 * 7 * 11 * 3), [
+        2,
+        7,
+        11,
+        3,
+      ]);
+      final result = PipelinePresets.objectDetection(
+        height: 4,
+        width: 4,
+      ).run(input);
+      expect(result.shape, [2, 3, 4, 4]);
     });
 
     test('custom pipeline allows flexible configuration', () {

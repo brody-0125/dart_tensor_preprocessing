@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:math' as math;
 
 import '../exceptions/tensor_exceptions.dart';
 import 'dtype.dart';

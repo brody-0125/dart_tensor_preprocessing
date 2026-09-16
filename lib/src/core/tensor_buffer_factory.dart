@@ -467,12 +467,13 @@ double _sin(double x) {
 
 /// Simple seeded random number generator (Linear Congruential Generator).
 class _SeededRandom {
+  static final _systemRandom = math.Random();
   int _state;
 
   _SeededRandom(int seed) : _state = seed & 0xFFFFFFFF;
 
   factory _SeededRandom.system() {
-    return _SeededRandom(DateTime.now().microsecondsSinceEpoch);
+    return _SeededRandom(_systemRandom.nextInt(0x80000000));
   }
 
   double nextDouble() {

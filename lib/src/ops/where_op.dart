@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
+import '../utils/contiguous_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
 
@@ -20,6 +21,9 @@ TensorBuffer tensorWhere(
   TensorBuffer x,
   TensorBuffer y,
 ) {
+  if (x.dtype != y.dtype) {
+    throw DTypeMismatchException(expected: x.dtype, actual: y.dtype);
+  }
   // Validate shapes match (v0.8.1: no broadcasting)
   if (condition.shape.length != x.shape.length) {
     throw ShapeMismatchException(
@@ -52,11 +56,9 @@ TensorBuffer tensorWhere(
     }
   }
 
-  final condContiguous = condition.isContiguous
-      ? condition
-      : condition.contiguous();
-  final xContiguous = x.isContiguous ? x : x.contiguous();
-  final yContiguous = y.isContiguous ? y : y.contiguous();
+  final condContiguous = contiguousStorageView(condition);
+  final xContiguous = contiguousStorageView(x);
+  final yContiguous = contiguousStorageView(y);
 
   final output = TensorBuffer.uninitialized(
     List<int>.from(x.shape),
@@ -66,7 +68,7 @@ TensorBuffer tensorWhere(
 
   switch (x.dtype) {
     case DType.float32:
-      final condData = condContiguous.storage.data as Float32List;
+      final condData = condContiguous.storage.data as List<num>;
       final xData = xContiguous.storage.data as Float32List;
       final yData = yContiguous.storage.data as Float32List;
       final outData = output.storage.data as Float32List;
@@ -76,7 +78,7 @@ TensorBuffer tensorWhere(
       }
 
     case DType.float64:
-      final condData = condContiguous.storage.data as Float64List;
+      final condData = condContiguous.storage.data as List<num>;
       final xData = xContiguous.storage.data as Float64List;
       final yData = yContiguous.storage.data as Float64List;
       final outData = output.storage.data as Float64List;

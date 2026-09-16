@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
+import '../utils/contiguous_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import '../utils/tensor_indexing.dart';
 import 'transform_op.dart';
@@ -110,7 +111,7 @@ class TopKOp extends TransformOp {
       );
     }
 
-    final src = input.isContiguous ? input : input.contiguous();
+    final src = contiguousStorageView(input);
 
     final outputShape = List<int>.from(src.shape);
     outputShape[normalizedAxis] = k;

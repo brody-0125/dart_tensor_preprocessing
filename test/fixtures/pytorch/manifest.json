@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "oracle": {
+    "torch": "2.10.0+cpu",
+    "torchvision": "0.25.0+cpu",
+    "python": "3.12",
+    "device": "cpu",
+    "threads": 1
+  },
+  "generator_sha256": "5ea88371e82d552bccfeee06dba11a36495541db1fc6ce93eb074a3a21315e19",
+  "requirements_sha256": "ed4d13f006d899b6c6682f517c657ee97eaefa5a1c6f9fe1a0cadd5b70534857",
+  "files": [
+    {
+      "path": "operations.golden.json",
+      "sha256": "e226e1d60b9f8b4625ba221cc54415a3070ab889313946a656cf61c61265fabc",
+      "cases": 161
+    }
+  ]
+}

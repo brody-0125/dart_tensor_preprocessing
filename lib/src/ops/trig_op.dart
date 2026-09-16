@@ -232,6 +232,7 @@ class Atan2Op extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw NonContiguousException('$runtimeType.applyInPlace');
     }
+    input = ensureContiguous(input);
     _apply(input);
   }
 

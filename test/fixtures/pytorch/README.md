@@ -1,0 +1,47 @@
+# PyTorch oracle fixtures
+
+Generate with Python 3.12 and `scripts/requirements-fixtures.txt`:
+
+```sh
+python -m pip install -r scripts/requirements-fixtures.txt
+python scripts/generate_pytorch_fixtures.py --network
+dart test test/pytorch_golden_test.dart
+RUN_PYTORCH_NETWORK_TESTS=1 dart test test/pytorch_network_test.dart
+```
+
+On PowerShell set `$env:RUN_PYTORCH_NETWORK_TESTS='1'` before the Dart command.
+`--output DIRECTORY` regenerates into another directory for inspection. Omitting
+`--network` regenerates only the offline operation/preset goldens.
+
+The oracle is CPU PyTorch 2.10.0 + torchvision 0.25.0 with one thread. The
+generator checks every pinned Python distribution version. Manifest hashes bind
+the generator, requirements, and JSON payload; non-finite numbers use explicit
+strings. Tests compare shape, dtype, and every element, including non-finite
+classification. Float32 uses atol 1e-6 / rtol 1e-5, Float64 1e-12 / 1e-10.
+Integer values can use strings to preserve values above 2^53.
+
+The initial corpus covers activations (including offset in-place aliases and
+extreme values), softmax, resize modes/antialias/align-corners, center crop, and
+all preset recipes for RGB uint8/float32 and HWC/NHWC. Presets also run in forced
+isolates and synchronous fallback. It is not yet a full audit of every public
+operation; normalization, indexing, color, augmentation and optimized-path
+coverage are being expanded before 1.0.0.
+
+Network sources are PNG test assets from `pytorch/vision` at the commit in
+`network-manifest.json`. The repository uses BSD-3-Clause; the manifest links the
+license and source. The PyTorch logo is used solely as an upstream test image,
+without implying endorsement. Original PNGs are cached only under `.dart_tool`
+and are not redistributed by this package. Offline synthetic pixels are created
+by the generator. Network tests always download originals and verify both the
+encoded SHA-256 and decoded-pixel SHA-256 before preprocessing. Grayscale and
+RGBA fixtures verify explicit RGB-contract rejection.
+
+Full ImageNet 224, CLIP 224 and direct-resize detection 640 outputs are stored as
+gzip-compressed little-endian float32, with hashes over the decompressed bytes.
+These are explicit tensor recipes, not generic compatibility claims for all
+weights or Pillow/Transformers processors. The network ImageNet recipe uses the public default shortest edge 256
+and crop 224. Small offline cases use `size + 2` to exercise resize/crop on
+non-square inputs.
+
+CI regenerates goldens and fails on a diff. Review differences against upstream
+behavior; never refresh goldens solely to make the Dart result pass.

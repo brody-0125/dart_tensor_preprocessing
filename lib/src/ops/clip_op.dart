@@ -58,6 +58,7 @@ class ClipOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('ClipOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _clip(input);
   }
 

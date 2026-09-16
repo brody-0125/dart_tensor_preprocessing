@@ -98,6 +98,10 @@ class ResizeOp extends TransformOp with RequiresContiguous {
   /// Kept for backward compatibility.
   final bool alignCorners;
 
+  /// Apply the torchvision antialias filter for bilinear/bicubic resize.
+  /// This path accepts floating-point input and half-pixel or align-corners coordinates.
+  final bool antialias;
+
   /// The coordinate transformation mode.
   ///
   /// When `null`, behavior is determined by [alignCorners]:
@@ -114,6 +118,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     required this.width,
     this.mode = InterpolationMode.bilinear,
     this.alignCorners = false,
+    this.antialias = false,
     this.coordinateMode,
   }) {
     if (height <= 0 || width <= 0) {
@@ -125,7 +130,9 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     }
     _effectiveMode =
         coordinateMode ??
-        (alignCorners
+        (mode == InterpolationMode.nearest
+            ? CoordinateTransformMode.asymmetric
+            : alignCorners
             ? CoordinateTransformMode.alignCorners
             : CoordinateTransformMode.halfPixel);
   }
@@ -151,6 +158,25 @@ class ResizeOp extends TransformOp with RequiresContiguous {
       );
     }
 
+    if (antialias &&
+        (mode == InterpolationMode.bilinear ||
+            mode == InterpolationMode.bicubic)) {
+      if (input.dtype != DType.float32 && input.dtype != DType.float64) {
+        throw InvalidParameterException(
+          'dtype',
+          input.dtype,
+          'Antialias resize requires float32 or float64',
+        );
+      }
+      if (_effectiveMode != CoordinateTransformMode.halfPixel &&
+          _effectiveMode != CoordinateTransformMode.alignCorners) {
+        throw InvalidParameterException(
+          'coordinateMode',
+          _effectiveMode,
+          'Antialias requires halfPixel or alignCorners',
+        );
+      }
+    }
     return rank == 3 ? _resize3D(contiguous) : _resize4D(contiguous);
   }
 
@@ -231,6 +257,12 @@ class ResizeOp extends TransformOp with RequiresContiguous {
       final srcOffset = batchOffset + ch * srcChannelStride;
       final dstOffset = outputBatchOffset + ch * dstChannelStride;
 
+      if (antialias &&
+          (mode == InterpolationMode.bilinear ||
+              mode == InterpolationMode.bicubic)) {
+        _resizeAntialias(input, output, srcH, srcW, srcOffset, dstOffset);
+        continue;
+      }
       switch (mode) {
         case InterpolationMode.nearest:
           _resizeNearest(
@@ -308,6 +340,87 @@ class ResizeOp extends TransformOp with RequiresContiguous {
         }
         return 0.0;
     }
+  }
+
+  // Separable, widened filters with renormalized boundary weights, matching
+  // ATen's antialias CPU path (PyTorch v2.10.0 UpSampleKernel.cpp).
+  void _resizeAntialias(
+    TensorBuffer input,
+    TensorBuffer output,
+    int srcH,
+    int srcW,
+    int srcOffset,
+    int dstOffset,
+  ) {
+    final xs = _antialiasWeights(srcW, width, input.dtype);
+    final ys = _antialiasWeights(srcH, height, input.dtype);
+    final temp = input.dtype == DType.float32
+        ? Float32List(srcH * width)
+        : Float64List(srcH * width);
+    for (var y = 0; y < srcH; y++) {
+      for (var x = 0; x < width; x++) {
+        final (start, weights) = xs[x];
+        var sum = 0.0;
+        for (var j = 0; j < weights.length; j++) {
+          sum +=
+              weights[j] *
+              input.storage.getAsDouble(srcOffset + y * srcW + start + j);
+        }
+        temp[y * width + x] = sum;
+      }
+    }
+    for (var y = 0; y < height; y++) {
+      final (start, weights) = ys[y];
+      for (var x = 0; x < width; x++) {
+        var sum = 0.0;
+        for (var j = 0; j < weights.length; j++) {
+          sum += weights[j] * temp[(start + j) * width + x];
+        }
+        output.storage.setFromDouble(dstOffset + y * width + x, sum);
+      }
+    }
+  }
+
+  List<(int, List<double>)> _antialiasWeights(
+    int source,
+    int target,
+    DType dtype,
+  ) {
+    final scratch = Float32List(1);
+    double cast(double value) {
+      if (dtype == DType.float64) return value;
+      scratch[0] = value;
+      return scratch[0];
+    }
+
+    final scale = cast(_computeScale(source, target));
+    final dilation = math.max(1.0, scale);
+    final support = (mode == InterpolationMode.bicubic ? 2 : 1) * dilation;
+    return List.generate(target, (i) {
+      final center = cast(scale * (i + 0.5));
+      final start = math.max(0, (center - support + 0.5).toInt());
+      final end = math.min(source, (center + support + 0.5).toInt());
+      final weights = List.generate(end - start, (j) {
+        final t = cast(
+          cast(cast(start + j - center) + 0.5) * cast(1.0 / dilation),
+        ).abs();
+        if (mode == InterpolationMode.bilinear) {
+          return cast(math.max(0.0, 1 - t));
+        }
+        if (t < 1) return cast(cast(cast(cast(1.5 * t) - 2.5) * t) * t + 1);
+        if (t < 2) {
+          return cast(cast(cast(cast(cast(-0.5 * t) + 2.5) * t) - 4) * t + 2);
+        }
+        return 0.0;
+      });
+      final total = weights.fold(0.0, (sum, value) => cast(sum + value));
+      if (total != 0) {
+        for (var j = 0; j < weights.length; j++) {
+          weights[j] = cast(weights[j] / total);
+        }
+      }
+      return (start, weights);
+    });
   }
 
   void _resizeNearest({
@@ -511,7 +624,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
             // Process block
             for (int y = by; y < endY; y++) {
               final rawSrcY = _mapCoordinate(y, srcH, height, scaleY);
-              final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+              final srcY = rawSrcY;
               final y0 = srcY.floor();
               final fy = srcY - y0;
 
@@ -529,7 +642,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
 
               for (int x = bx; x < endX; x++) {
                 final rawSrcX = _mapCoordinate(x, srcW, width, scaleX);
-                final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+                final srcX = rawSrcX;
                 final x0 = srcX.floor();
                 final fx = srcX - x0;
 
@@ -577,13 +690,13 @@ class ResizeOp extends TransformOp with RequiresContiguous {
         // Generic fallback
         for (int y = 0; y < height; y++) {
           final rawSrcY = _mapCoordinate(y, srcH, height, scaleY);
-          final srcY = rawSrcY.clamp(0.0, srcH - 1.0);
+          final srcY = rawSrcY;
           final y0 = srcY.floor();
           final fy = srcY - y0;
 
           for (int x = 0; x < width; x++) {
             final rawSrcX = _mapCoordinate(x, srcW, width, scaleX);
-            final srcX = rawSrcX.clamp(0.0, srcW - 1.0);
+            final srcX = rawSrcX;
             final x0 = srcX.floor();
             final fx = srcX - x0;
 
@@ -608,18 +721,15 @@ class ResizeOp extends TransformOp with RequiresContiguous {
   double _cubicWeight(double t) {
     final at = t.abs();
     if (at <= 1) {
-      return 1.5 * at * at * at - 2.5 * at * at + 1;
+      return 1.25 * at * at * at - 2.25 * at * at + 1;
     } else if (at < 2) {
-      return -0.5 * at * at * at + 2.5 * at * at - 4 * at + 2;
+      return -0.75 * at * at * at + 3.75 * at * at - 6 * at + 3;
     }
     return 0;
   }
 
-  /// Area interpolation for high-quality downsampling.
-  ///
-  /// Computes each output pixel as the weighted average of all source pixels
-  /// that overlap with the output pixel's area. Handles fractional coverage
-  /// at boundaries for anti-aliasing.
+  /// PyTorch area interpolation is adaptive average pooling: each bin
+  /// includes whole source samples from floor(start) through ceil(end).
   void _resizeArea({
     required TensorBuffer input,
     required TensorBuffer output,
@@ -628,125 +738,23 @@ class ResizeOp extends TransformOp with RequiresContiguous {
     required int srcOffset,
     required int dstOffset,
   }) {
-    final scaleY = srcH / height;
-    final scaleX = srcW / width;
-
-    // Dtype-specialized for hot path optimization
-    switch (input.dtype) {
-      case DType.float32:
-        final inList = input.storage.data as Float32List;
-        final outList = output.storage.data as Float32List;
-
-        // Cache-friendly blocking: process output in 64x64 blocks
-        const blockSize = 64;
-
-        for (int by = 0; by < height; by += blockSize) {
-          final endY = math.min(by + blockSize, height);
-
-          for (int bx = 0; bx < width; bx += blockSize) {
-            final endX = math.min(bx + blockSize, width);
-
-            for (int y = by; y < endY; y++) {
-              // Source region covered by output pixel [y]
-              final srcY0 = y * scaleY;
-              final srcY1 = (y + 1) * scaleY;
-
-              for (int x = bx; x < endX; x++) {
-                // Source region covered by output pixel [x]
-                final srcX0 = x * scaleX;
-                final srcX1 = (x + 1) * scaleX;
-
-                // Accumulate weighted sum
-                double sum = 0;
-                double totalWeight = 0;
-
-                final y0Floor = srcY0.floor().clamp(0, srcH - 1);
-                final y1Ceil = srcY1.ceil().clamp(0, srcH);
-                final x0Floor = srcX0.floor().clamp(0, srcW - 1);
-                final x1Ceil = srcX1.ceil().clamp(0, srcW);
-
-                for (int sy = y0Floor; sy < y1Ceil; sy++) {
-                  // Compute vertical overlap
-                  final overlapTop = math.max(srcY0, sy.toDouble());
-                  final overlapBottom = math.min(srcY1, (sy + 1).toDouble());
-                  final overlapY = math.max(0.0, overlapBottom - overlapTop);
-
-                  for (int sx = x0Floor; sx < x1Ceil; sx++) {
-                    // Compute horizontal overlap
-                    final overlapLeft = math.max(srcX0, sx.toDouble());
-                    final overlapRight = math.min(srcX1, (sx + 1).toDouble());
-                    final overlapX = math.max(0.0, overlapRight - overlapLeft);
-
-                    final weight = overlapX * overlapY;
-                    if (weight > 0) {
-                      sum += inList[srcOffset + sy * srcW + sx] * weight;
-                      totalWeight += weight;
-                    }
-                  }
-                }
-
-                outList[dstOffset + y * width + x] = totalWeight > 0
-                    ? sum / totalWeight
-                    : 0;
-              }
-            }
+    for (var y = 0; y < height; y++) {
+      final y0 = y * srcH ~/ height;
+      final y1 = ((y + 1) * srcH + height - 1) ~/ height;
+      for (var x = 0; x < width; x++) {
+        final x0 = x * srcW ~/ width;
+        final x1 = ((x + 1) * srcW + width - 1) ~/ width;
+        var sum = 0.0;
+        for (var sy = y0; sy < y1; sy++) {
+          for (var sx = x0; sx < x1; sx++) {
+            sum += input.storage.getAsDouble(srcOffset + sy * srcW + sx);
           }
         }
-      default:
-        // Generic fallback with cache-friendly blocking
-        const blockSize = 64;
-
-        for (int by = 0; by < height; by += blockSize) {
-          final endY = math.min(by + blockSize, height);
-
-          for (int bx = 0; bx < width; bx += blockSize) {
-            final endX = math.min(bx + blockSize, width);
-
-            for (int y = by; y < endY; y++) {
-              final srcY0 = y * scaleY;
-              final srcY1 = (y + 1) * scaleY;
-
-              for (int x = bx; x < endX; x++) {
-                final srcX0 = x * scaleX;
-                final srcX1 = (x + 1) * scaleX;
-
-                double sum = 0;
-                double totalWeight = 0;
-
-                final y0Floor = srcY0.floor().clamp(0, srcH - 1);
-                final y1Ceil = srcY1.ceil().clamp(0, srcH);
-                final x0Floor = srcX0.floor().clamp(0, srcW - 1);
-                final x1Ceil = srcX1.ceil().clamp(0, srcW);
-
-                for (int sy = y0Floor; sy < y1Ceil; sy++) {
-                  final overlapTop = math.max(srcY0, sy.toDouble());
-                  final overlapBottom = math.min(srcY1, (sy + 1).toDouble());
-                  final overlapY = math.max(0.0, overlapBottom - overlapTop);
-
-                  for (int sx = x0Floor; sx < x1Ceil; sx++) {
-                    final overlapLeft = math.max(srcX0, sx.toDouble());
-                    final overlapRight = math.min(srcX1, (sx + 1).toDouble());
-                    final overlapX = math.max(0.0, overlapRight - overlapLeft);
-
-                    final weight = overlapX * overlapY;
-                    if (weight > 0) {
-                      final v = input.storage.getAsDouble(
-                        srcOffset + sy * srcW + sx,
-                      );
-                      sum += v * weight;
-                      totalWeight += weight;
-                    }
-                  }
-                }
-
-                output.storage.setFromDouble(
-                  dstOffset + y * width + x,
-                  totalWeight > 0 ? sum / totalWeight : 0,
-                );
-              }
-            }
-          }
-        }
+        output.storage.setFromDouble(
+          dstOffset + y * width + x,
+          sum / ((y1 - y0) * (x1 - x0)),
+        );
+      }
     }
   }
 
@@ -879,12 +887,24 @@ class ResizeShortestOp extends TransformOp {
   /// Optional maximum size for the longest edge.
   final int? maxSize;
 
+  /// Whether to antialias bilinear/bicubic resizing.
+  final bool antialias;
+
   /// Creates a resize operation targeting the shortest edge.
   ResizeShortestOp({
     required this.shortestEdge,
     this.mode = InterpolationMode.bilinear,
     this.maxSize,
-  });
+    this.antialias = false,
+  }) {
+    if (shortestEdge <= 0 || (maxSize != null && maxSize! <= shortestEdge)) {
+      throw InvalidParameterException(
+        'shortestEdge/maxSize',
+        '$shortestEdge/$maxSize',
+        'Require shortestEdge > 0 and maxSize > shortestEdge',
+      );
+    }
+  }
 
   @override
   String get name => 'ResizeShortest($shortestEdge)';
@@ -906,26 +926,26 @@ class ResizeShortestOp extends TransformOp {
 
     final (newH, newW) = _computeNewSize(h, w);
 
-    final resizeOp = ResizeOp(height: newH, width: newW, mode: mode);
+    final resizeOp = ResizeOp(
+      height: newH,
+      width: newW,
+      mode: mode,
+      antialias: antialias,
+    );
 
     return resizeOp.apply(input);
   }
 
   (int, int) _computeNewSize(int h, int w) {
-    final scale = h < w ? shortestEdge / h : shortestEdge / w;
-
-    var newH = (h * scale).round();
-    var newW = (w * scale).round();
-
-    if (maxSize != null) {
-      final maxScale = maxSize! / math.max(newH, newW);
-      if (maxScale < 1.0) {
-        newH = (newH * maxScale).round();
-        newW = (newW * maxScale).round();
-      }
+    final short = math.min(h, w);
+    final long = math.max(h, w);
+    var newShort = shortestEdge;
+    var newLong = shortestEdge * long ~/ short;
+    if (maxSize != null && newLong > maxSize!) {
+      newShort = maxSize! * newShort ~/ newLong;
+      newLong = maxSize!;
     }
-
-    return (newH, newW);
+    return h <= w ? (newShort, newLong) : (newLong, newShort);
   }
 
   @override

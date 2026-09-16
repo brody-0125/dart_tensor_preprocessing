@@ -90,6 +90,7 @@ class NormalizeOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('NormalizeOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _validateShape(input.shape);
     _normalize(input);
   }
@@ -282,6 +283,7 @@ class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('ScaleOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _scale(input);
   }
 

@@ -33,8 +33,8 @@ dependencies:
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 
 // Create a tensor from image data (HWC format, Uint8)
-final imageData = Uint8List.fromList([/* RGBA pixel data */]);
-final tensor = TensorBuffer.fromUint8List(imageData, [height, width, channels]);
+final imageData = Uint8List.fromList([/* RGB pixel data */]);
+final tensor = TensorBuffer.fromUint8List(imageData, [height, width, 3]);
 
 // Use a preset pipeline for ImageNet models
 final pipeline = PipelinePresets.imagenetClassification();
@@ -57,8 +57,8 @@ final result = await pipeline.runAsync(tensor);
 
 ```dart
 final pipeline = TensorPipeline([
-  ResizeOp(height: 224, width: 224),
   ToTensorOp(normalize: true),  // HWC -> CHW, scale to [0,1]
+  ResizeOp(height: 224, width: 224, antialias: true),
   NormalizeOp.imagenet(),       // ImageNet mean/std
   UnsqueezeOp.batch(),          // Add batch dimension
 ]);
@@ -280,7 +280,33 @@ Operations supporting in-place: `ReLUOp`, `LeakyReLUOp`, `SigmoidOp`, `TanhOp`, 
 
 ## PyTorch Compatibility
 
-This library is designed to produce identical results to PyTorch/torchvision operations:
+Compatibility is checked against pinned CPU PyTorch 2.10.0 / torchvision 0.25.0
+goldens. Floating-point results use documented absolute/relative tolerances,
+not bitwise equality. See [fixture provenance and reproduction](test/fixtures/pytorch/README.md).
+The table maps APIs to their reference operations; it does not imply that every
+PyTorch dtype, input rank or option is supported.
+
+### Migration toward 1.0.0
+
+- Presets accept RGB HWC/NHWC `uint8` pixels or `float32`/`float64` values already
+  in [0,1]. Outputs are float32. Grayscale and RGBA require explicit RGB conversion.
+- Presets convert to CHW/NCHW before resizing, preserve an existing batch, and
+  antialias bilinear/bicubic resizing. `tflite()` returns NHWC;
+  `custom(toChw: false)` returns channel-last output after normalization.
+- Low-level `ResizeOp` still defaults to `antialias: false`. Its default nearest
+  mode now follows PyTorch `nearest` (asymmetric coordinates); an explicit
+  `coordinateMode` preserves access to ONNX-style alternatives. Antialias accepts
+  float32/64 with half-pixel or align-corners coordinates. Integer antialias
+  inputs must first be converted to float.
+- Bicubic uses PyTorch's coefficient -0.75 without antialias and -0.5 with
+  antialias. Area uses adaptive-average bins. Shortest-edge sizes truncate;
+  center crops use round-to-even and zero-pad oversized requests.
+- These numerical corrections can change model inputs compared with 0.9.0.
+  Presets are explicit tensor recipes. They do not guarantee parity with every
+  pretrained weight configuration or Pillow-based processor; object detection
+  uses direct resizing, without letterboxing.
+
+### Reference operations
 
 | Operation | PyTorch Equivalent |
 |-----------|-------------------|

@@ -1,0 +1,70 @@
+[
+  {
+    "name": "rgb_pytorch",
+    "repository": "pytorch/vision",
+    "revision": "8ac84ee75afb1c327902156b5336f56ad63b7e2f",
+    "source_file": "test/assets/fakedata/logos/rgb_pytorch.png",
+    "url": "https://raw.githubusercontent.com/pytorch/vision/8ac84ee75afb1c327902156b5336f56ad63b7e2f/test/assets/fakedata/logos/rgb_pytorch.png",
+    "sha256": "4415c40460f0d60ed69019fea870610fe73115a858200c109c024eff1a6be5e8",
+    "decoded_sha256": "1390fd7804d2e6cecbcd4f5e0eaa8edf3cbf1590843a2b51ef4ab33f08b6789f",
+    "shape": [
+      100,
+      100,
+      3
+    ],
+    "license": "BSD-3-Clause",
+    "license_url": "https://github.com/pytorch/vision/blob/8ac84ee75afb1c327902156b5336f56ad63b7e2f/LICENSE",
+    "recipes": [
+      {
+        "name": "imagenet",
+        "size": 224,
+        "shortest_edge": 256
+      },
+      {
+        "name": "clip",
+        "size": 224
+      },
+      {
+        "name": "detection",
+        "size": 640
+      }
+    ],
+    "expected_error": null
+  },
+  {
+    "name": "gray_pytorch",
+    "repository": "pytorch/vision",
+    "revision": "8ac84ee75afb1c327902156b5336f56ad63b7e2f",
+    "source_file": "test/assets/fakedata/logos/gray_pytorch.png",
+    "url": "https://raw.githubusercontent.com/pytorch/vision/8ac84ee75afb1c327902156b5336f56ad63b7e2f/test/assets/fakedata/logos/gray_pytorch.png",
+    "sha256": "c99e670b4cbbf1add67840b472157e81d9a7e9d0188fda932362dd1544b60b3a",
+    "decoded_sha256": "07d54ab1e49abee997c11f1bff0a0fb9b33c17c905df1d201d5f6243726b4550",
+    "shape": [
+      100,
+      100,
+      1
+    ],
+    "license": "BSD-3-Clause",
+    "license_url": "https://github.com/pytorch/vision/blob/8ac84ee75afb1c327902156b5336f56ad63b7e2f/LICENSE",
+    "recipes": [],
+    "expected_error": "RGB HWC or NHWC"
+  },
+  {
+    "name": "rgbalpha_pytorch",
+    "repository": "pytorch/vision",
+    "revision": "8ac84ee75afb1c327902156b5336f56ad63b7e2f",
+    "source_file": "test/assets/fakedata/logos/rgbalpha_pytorch.png",
+    "url": "https://raw.githubusercontent.com/pytorch/vision/8ac84ee75afb1c327902156b5336f56ad63b7e2f/test/assets/fakedata/logos/rgbalpha_pytorch.png",
+    "sha256": "588784802f0cf093197d9c4187c08e5f033017a02ebd7dd8a7c4216aba357932",
+    "decoded_sha256": "1f5d94859184fd7cfda070a4eb38e72f202ade771adb25334242f0814151d00d",
+    "shape": [
+      100,
+      100,
+      4
+    ],
+    "license": "BSD-3-Clause",
+    "license_url": "https://github.com/pytorch/vision/blob/8ac84ee75afb1c327902156b5336f56ad63b7e2f/LICENSE",
+    "recipes": [],
+    "expected_error": "RGB HWC or NHWC"
+  }
+]

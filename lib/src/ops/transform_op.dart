@@ -1,5 +1,6 @@
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
+import '../utils/contiguous_storage.dart';
 
 // ============================================================================
 // Operation Capabilities
@@ -151,10 +152,7 @@ mixin RequiresContiguous on TransformOp {
 
   /// Returns a contiguous version of [input] if needed.
   TensorBuffer ensureContiguous(TensorBuffer input) {
-    if (!input.isContiguous) {
-      return input.contiguous();
-    }
-    return input;
+    return contiguousStorageView(input);
   }
 
   /// Creates an output buffer from input, ensuring contiguity with single copy.

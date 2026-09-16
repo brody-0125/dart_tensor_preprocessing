@@ -33,6 +33,7 @@ abstract class UnaryMathOp extends TransformOp
     if (!input.isContiguous) {
       throw NonContiguousException('$runtimeType.applyInPlace');
     }
+    input = ensureContiguous(input);
     _apply(input);
   }
 

@@ -193,6 +193,7 @@ class BatchNormOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('BatchNormOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _validateShape(input.shape);
     _batchNorm(input);
   }

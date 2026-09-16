@@ -44,6 +44,7 @@ class ELUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('ELUOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _elu(input);
   }
 

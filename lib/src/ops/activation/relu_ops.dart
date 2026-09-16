@@ -37,6 +37,7 @@ class ReLUOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('ReLUOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _relu(input);
   }
 
@@ -103,6 +104,7 @@ class LeakyReLUOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('LeakyReLUOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _leakyRelu(input);
   }
 

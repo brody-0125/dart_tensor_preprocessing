@@ -50,6 +50,7 @@ abstract class ArithmeticOp extends TransformOp
     if (!input.isContiguous) {
       throw NonContiguousException('$runtimeType.applyInPlace');
     }
+    input = ensureContiguous(input);
     _apply(input);
   }
 
@@ -376,6 +377,7 @@ class PowOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     if (!input.isContiguous) {
       throw const NonContiguousException('PowOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _pow(input);
   }
 

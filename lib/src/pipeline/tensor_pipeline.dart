@@ -7,6 +7,7 @@ import '../core/tensor_buffer.dart';
 import '../core/tensor_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import '../ops/transform_op.dart';
+import '../utils/contiguous_storage.dart';
 
 /// A composable sequence of tensor transform operations.
 ///
@@ -153,7 +154,7 @@ class _SerializedTensor {
 }
 
 _SerializedTensor _serializeTensor(TensorBuffer tensor) {
-  final contiguous = tensor.contiguous();
+  final contiguous = contiguousStorageView(tensor);
   final data = contiguous.data;
 
   final buffer = data.buffer;

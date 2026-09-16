@@ -9,6 +9,7 @@ import 'dart:typed_data';
 
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
+import 'contiguous_storage.dart';
 
 /// Utility for dispatching operations based on tensor dtype.
 ///
@@ -54,6 +55,7 @@ class DTypeDispatcher {
     required R Function(Float64List data, int numel) onFloat64,
     required R Function(TensorBuffer tensor) fallback,
   }) {
+    tensor = contiguousStorageView(tensor);
     final numel = tensor.numel;
     switch (tensor.dtype) {
       case DType.float32:
@@ -95,6 +97,8 @@ class DTypeDispatcher {
     onFloat64,
     required R Function(TensorBuffer input, TensorBuffer output) fallback,
   }) {
+    input = contiguousStorageView(input);
+    output = contiguousStorageView(output);
     if (input.dtype != output.dtype) {
       return fallback(input, output);
     }

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../core/dtype.dart';
 import '../core/tensor_buffer.dart';
+import '../utils/contiguous_storage.dart';
 import '../exceptions/tensor_exceptions.dart';
 import '../utils/tensor_indexing.dart';
 import 'transform_op.dart';
@@ -61,8 +62,8 @@ class GatherOp extends TransformOp {
       );
     }
 
-    final inputContiguous = input.isContiguous ? input : input.contiguous();
-    final indexContiguous = index.isContiguous ? index : index.contiguous();
+    final inputContiguous = contiguousStorageView(input);
+    final indexContiguous = contiguousStorageView(index);
 
     final outputShape = List<int>.from(indexContiguous.shape);
     final output = TensorBuffer.uninitialized(outputShape, dtype: input.dtype);

@@ -180,6 +180,7 @@ class GroupNormOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('GroupNormOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _validateShape(input.shape);
     _groupNorm(input);
   }

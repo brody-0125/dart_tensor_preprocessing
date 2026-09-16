@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 1.0.0 preparation
+
+### Fixed
+
+- Bound contiguous storage kernels to the tensor's offset and element count,
+  including in-place operations, indexing, concatenation and isolate transport.
+- Correct preset HWC/NHWC input order; preserve existing batches and avoid
+  dividing floating-point image inputs by 255 twice.
+- Fix Tanh overflow and unseeded random calls reusing time-based seeds.
+- Match PyTorch nearest coordinates, bicubic coefficient/border handling,
+  area adaptive-average bins and torchvision shortest-edge size truncation.
+- Match torchvision center-crop rounding and zero padding for oversized crops.
+- Accept numeric masks independently of the selected tensor's dtype.
+
+### Added
+
+- Floating-point bilinear/bicubic antialias resize, used by image presets.
+- Pinned PyTorch/torchvision CPU golden generator and independent full-value
+  tests, including remote PNG fixtures with encoded/decoded checksums.
+- Linux/Windows/macOS Dart checks and separate network/oracle CI jobs.
+
+These changes alter incorrect 0.9.0 outputs. See the migration notes in README.
+The 1.0.0 release is pending the remaining compatibility audit and release gates.
+
 ## [0.9.0] - 2026-04-05
 
 ### Added

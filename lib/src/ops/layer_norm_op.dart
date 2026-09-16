@@ -186,6 +186,7 @@ class LayerNormOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('LayerNormOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _validateShape(input.shape);
     _layerNorm(input);
   }

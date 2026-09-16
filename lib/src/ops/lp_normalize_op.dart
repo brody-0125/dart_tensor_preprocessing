@@ -70,6 +70,7 @@ class LpNormalizeOp extends TransformOp
     if (!input.isContiguous) {
       throw const NonContiguousException('LpNormalizeOp.applyInPlace');
     }
+    input = ensureContiguous(input);
     _normalize(input);
   }
 
