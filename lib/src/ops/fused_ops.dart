@@ -363,7 +363,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
 
             output.storage.setFromDouble(
               dstOffset + y * width + x,
-              (resized - mean) * stdValue,
+              (resized - mean) / stdValue,
             );
           }
         }
