@@ -182,3 +182,8 @@ dtypes, odd/even model dimensions, rank 2/3/4 and offset/in-place/strided inputs
 Fixed base and inferred-shape validation; corrected RoPE/Embedding claims.
 Network-inclusive full suite: 6,114 passed before the additional parameter
 regression; that regression passed separately.
+
+RandomErasing: 240 independent torch assignment cases (4,793 total) across all
+dtypes, views/batches and skip/full/partial/impossible regions. Added native
+uniform-stream and integer-fill tests; reject non-finite parameters and invalid
+inferred rank. Full network suite results recorded in the progress artifact.

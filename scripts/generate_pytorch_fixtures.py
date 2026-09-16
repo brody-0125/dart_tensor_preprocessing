@@ -681,6 +681,28 @@ def generate():
                     view_cases(f'positional-{dtype}-{prefix}-{dim}-{base}', x,
                                lambda z, base=base: positional(z, base),
                                {'op': 'positional', 'dim': dim, 'max_len': 9, 'base': base})
+    def erased(z, variant):
+        y = z.clone()
+        if variant in ('skip', 'impossible'):
+            return y
+        if variant == 'full':
+            return torch.full_like(y, 7)
+        images = y.unsqueeze(0) if y.ndim == 3 else y
+        for image, (top, left) in zip(images, ((2, 1), (2, 0))):
+            image[:, top:top+2, left:left+2] = 7
+        return y
+    for dtype in (torch.float32, torch.float64, torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8, torch.uint16, torch.uint32, torch.uint64):
+        for batched in (False, True):
+            shape = (2, 2, 4, 5) if batched else (2, 4, 5)
+            x = torch.arange(math.prod(shape)).reshape(shape)
+            if dtype in (torch.int64, torch.uint64):
+                x += 9007199254740993
+            x = x.to(dtype)
+            for variant in ('skip', 'impossible', 'partial', 'full'):
+                view_cases(f'erase-{dtype}-{batched}-{variant}', x,
+                           lambda z, variant=variant: erased(z, variant),
+                           {'op': 'erase', 'variant': variant, 'seed': 41,
+                            'rectangles': [[2, 1, 2, 2], [2, 0, 2, 2]] if variant == 'partial' else []})
     return cases
 
 

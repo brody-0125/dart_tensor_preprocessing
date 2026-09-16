@@ -591,7 +591,7 @@ void main() {
         expect(op.capabilities.preservesShape, isTrue);
         expect(
           op.capabilities.pytorchEquivalent,
-          equals('torchvision.transforms.RandomErasing'),
+          equals('torchvision erase with package-specific sampling'),
         );
       });
     });

@@ -81,6 +81,17 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'erase' => RandomErasingOp(
+      probability: p['variant'] == 'skip' ? 0 : 1,
+      scaleRange: p['variant'] == 'full' ? (1, 1) : (0.2, 0.2),
+      ratioRange: p['variant'] == 'full'
+          ? (0.8, 0.8)
+          : p['variant'] == 'impossible'
+          ? (100, 100)
+          : (1, 1),
+      value: 7,
+      seed: p['seed'] as int,
+    ),
     'positional' => PositionalEncodingOp(
       dModel: p['dim'] as int,
       maxLen: p['max_len'] as int,

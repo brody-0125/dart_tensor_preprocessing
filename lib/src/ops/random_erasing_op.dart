@@ -13,7 +13,10 @@ import 'transform_op.dart';
 /// a constant or random value. This serves as a regularization method that enhances
 /// model robustness for object detection and recognition tasks.
 ///
-/// Equivalent to PyTorch's `torchvision.transforms.RandomErasing`.
+/// Related to torchvision RandomErasing, with package-specific sampling:
+/// each batch image is sampled independently, area is rounded before rectangle
+/// dimensions, full-image rectangles are allowed, and null fill uses uniform
+/// [0, 1) values (integer storage truncates these to zero). Seeds are Dart-native.
 ///
 /// ## Algorithm
 ///
@@ -76,14 +79,17 @@ class RandomErasingOp extends TransformOp
     this.value = 0.0,
     this.seed,
   }) {
-    if (probability < 0.0 || probability > 1.0) {
+    if (!probability.isFinite || probability < 0.0 || probability > 1.0) {
       throw InvalidParameterException(
         'probability',
         probability,
         'Must be in range [0.0, 1.0]',
       );
     }
-    if (scaleRange.$1 <= 0 || scaleRange.$1 > scaleRange.$2) {
+    if (!scaleRange.$1.isFinite ||
+        !scaleRange.$2.isFinite ||
+        scaleRange.$1 <= 0 ||
+        scaleRange.$1 > scaleRange.$2) {
       throw InvalidParameterException(
         'scaleRange',
         scaleRange,
@@ -97,12 +103,18 @@ class RandomErasingOp extends TransformOp
         'Max scale must be <= 1.0',
       );
     }
-    if (ratioRange.$1 <= 0 || ratioRange.$1 > ratioRange.$2) {
+    if (!ratioRange.$1.isFinite ||
+        !ratioRange.$2.isFinite ||
+        ratioRange.$1 <= 0 ||
+        ratioRange.$1 > ratioRange.$2) {
       throw InvalidParameterException(
         'ratioRange',
         ratioRange,
         'Must satisfy 0 < min <= max',
       );
+    }
+    if (value != null && !value!.isFinite) {
+      throw InvalidParameterException('value', value, 'Must be finite or null');
     }
   }
 
@@ -118,7 +130,7 @@ class RandomErasingOp extends TransformOp
   OperationCapabilities get capabilities => const OperationCapabilities(
     supportsInPlace: true,
     requiresContiguous: true,
-    pytorchEquivalent: 'torchvision.transforms.RandomErasing',
+    pytorchEquivalent: 'torchvision erase with package-specific sampling',
   );
 
   @override
@@ -141,12 +153,7 @@ class RandomErasingOp extends TransformOp
     final shape = tensor.shape;
     final rank = shape.length;
 
-    if (rank != 3 && rank != 4) {
-      throw ShapeMismatchException(
-        actual: shape,
-        message: 'RandomErasingOp requires 3D [C,H,W] or 4D [N,C,H,W] tensor',
-      );
-    }
+    _validateShape(shape);
 
     final random = Random(seed);
 
@@ -281,6 +288,18 @@ class RandomErasingOp extends TransformOp
     }
   }
 
+  void _validateShape(List<int> shape) {
+    if (shape.length != 3 && shape.length != 4) {
+      throw ShapeMismatchException(
+        actual: shape,
+        message: 'RandomErasingOp requires 3D [C,H,W] or 4D [N,C,H,W] tensor',
+      );
+    }
+  }
+
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    return List<int>.of(inputShape);
+  }
 }
