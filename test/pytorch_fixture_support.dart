@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
@@ -80,6 +81,32 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'masked_fill' => MaskedFillOp(
+      mask: fixtureTensor(p['mask'] as Map<String, dynamic>),
+      value: fixtureNumber(p['value']),
+    ),
+    'tile' => TileOp(reps: (p['reps'] as List).cast<int>()),
+    'repeat' => RepeatOp(sizes: (p['reps'] as List).cast<int>()),
+    'roll' => RollOp(
+      shifts: (p['shifts'] as List).cast<int>(),
+      dims: (p['dims'] as List?)?.cast<int>(),
+    ),
+    'slice' => SliceOp(
+      (p['slices'] as List)
+          .map(
+            (s) =>
+                s == null ? null : (s[0] as int?, s[1] as int?, s[2] as int?),
+          )
+          .toList(),
+    ),
+    'gather' => GatherOp(
+      dim: p['dim'] as int,
+      index: fixtureTensor(p['index'] as Map<String, dynamic>),
+    ),
+    'where' => WhereOp(
+      condition: fixtureTensor(p['mask'] as Map<String, dynamic>),
+      y: fixtureTensor(p['other'] as Map<String, dynamic>),
+    ),
     'neg' => NegOp(),
     'sqrt' => SqrtOp(),
     'exp' => ExpOp(),
@@ -158,6 +185,98 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
     ),
     _ => throw StateError('Unknown fixture operation: ${c['op']}'),
   };
+}
+
+TensorBuffer fixtureCoreOperation(Map<String, dynamic> c, TensorBuffer input) {
+  final p = c['params'] as Map<String, dynamic>;
+  switch (c['op']) {
+    case 'core_reduce':
+      final keep = p['keep'] as bool? ?? false;
+      final axes = (p['axes'] as List?)?.cast<int>();
+      if (axes != null) {
+        return switch (p['reduction']) {
+          'sum' => input.sumAxes(axes, keepDims: keep),
+          'mean' => input.meanAxes(axes, keepDims: keep),
+          'min' => input.minAxes(axes, keepDims: keep),
+          'max' => input.maxAxes(axes, keepDims: keep),
+          _ => throw StateError('Unknown multi-axis reduction'),
+        };
+      }
+      final axis = p['axis'] as int?;
+      if (axis != null) {
+        return switch (p['reduction']) {
+          'sum' => input.sumAxis(axis, keepDims: keep),
+          'mean' => input.meanAxis(axis, keepDims: keep),
+          'min' => input.minAxis(axis, keepDims: keep),
+          'max' => input.maxAxis(axis, keepDims: keep),
+          'argmin' => input.argminAxis(axis, keepDims: keep),
+          'argmax' => input.argmaxAxis(axis, keepDims: keep),
+          _ => throw StateError('Unknown axis reduction'),
+        };
+      }
+      final num value = switch (p['reduction']) {
+        'sum' => input.sum(),
+        'mean' => input.mean(),
+        'min' => input.min(),
+        'max' => input.max(),
+        'argmin' => input.argmin(),
+        'argmax' => input.argmax(),
+        _ => throw StateError('Unknown scalar reduction'),
+      };
+      return TensorBuffer(
+        storage: value is int
+            ? TensorStorage(Int64List.fromList([value]), DType.int64)
+            : TensorStorage(
+                Float64List.fromList([value.toDouble()]),
+                DType.float64,
+              ),
+        shape: [1],
+      );
+    case 'core_clone':
+      return input.clone();
+    case 'core_contiguous':
+      return input.contiguous();
+    case 'core_transpose':
+      return input.transpose((p['axes'] as List).cast<int>());
+    case 'core_reshape':
+      return input.contiguous().reshape((p['shape'] as List).cast<int>());
+    case 'core_stack':
+      return stack([
+        input,
+        fixtureTensor(p['other'] as Map<String, dynamic>),
+      ], dim: p['axis'] as int);
+    case 'core_concat':
+      return concat([
+        input,
+        fixtureTensor(p['other'] as Map<String, dynamic>),
+      ], axis: p['axis'] as int);
+    case 'core_split':
+    case 'core_chunk':
+      final parts = c['op'] == 'core_split'
+          ? split(input, (p['sizes'] as List).cast<int>(), dim: p['dim'] as int)
+          : chunk(input, p['chunks'] as int, dim: p['dim'] as int);
+      expect(parts.length, p['count']);
+      return parts[p['part'] as int];
+    case 'core_topk':
+      final op = TopKOp(
+        k: p['k'] as int,
+        axis: p['axis'] as int,
+        largest: p['largest'] as bool,
+      );
+      final result = op.applyTopK(input);
+      expect(op.computeOutputShape(input.shape), result.$1.shape);
+      if (p['indices'] == false) {
+        expectFixture(
+          GatherOp(dim: p['axis'] as int, index: result.$2)(input),
+          c['expected'] as Map<String, dynamic>,
+          atol: fixtureNumber(c['atol']),
+          rtol: fixtureNumber(c['rtol']),
+        );
+      }
+      return p['indices'] == true ? result.$2 : result.$1;
+    default:
+      throw StateError('Unknown core fixture: ${c['op']}');
+  }
 }
 
 TensorPipeline fixturePipeline(Map<String, dynamic> p) {
@@ -260,6 +379,21 @@ void registerPytorchFixtures(String directory) {
           expectFixture(
             input,
             c['input'] as Map<String, dynamic>,
+            atol: 0,
+            rtol: 0,
+          );
+          return;
+        }
+        if ((c['op'] as String).startsWith('core_')) {
+          expectFixture(
+            fixtureCoreOperation(c, input),
+            c['expected'] as Map<String, dynamic>,
+            atol: atol,
+            rtol: rtol,
+          );
+          expectFixture(
+            base,
+            (c['base'] ?? c['input']) as Map<String, dynamic>,
             atol: 0,
             rtol: 0,
           );

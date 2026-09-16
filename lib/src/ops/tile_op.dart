@@ -110,7 +110,8 @@ class TileOp extends TransformOp with RequiresContiguous {
             inIdx += inCoord * inStrides[d];
           }
 
-          outStorage.setFromDouble(outIdx, inStorage.getAsDouble(inIdx));
+          (outStorage.data as List<num>)[outIdx] =
+              (inStorage.data as List<num>)[inIdx];
         }
     }
 
@@ -119,6 +120,13 @@ class TileOp extends TransformOp with RequiresContiguous {
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {
+    if (reps.length != inputShape.length || reps.any((r) => r <= 0)) {
+      throw InvalidParameterException(
+        'reps',
+        reps,
+        'Provide one positive repetition count per input dimension',
+      );
+    }
     return [
       for (int i = 0; i < inputShape.length; i++) inputShape[i] * reps[i],
     ];

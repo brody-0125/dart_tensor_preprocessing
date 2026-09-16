@@ -62,6 +62,22 @@ class GatherOp extends TransformOp {
       );
     }
 
+    if (!index.dtype.isInteger) {
+      throw InvalidParameterException(
+        'index.dtype',
+        index.dtype,
+        'Gather indices must have an integer dtype',
+      );
+    }
+    for (var d = 0; d < rank; d++) {
+      if (d != normalizedDim && index.shape[d] > input.shape[d]) {
+        throw ShapeMismatchException(
+          actual: index.shape,
+          message: 'Gather index exceeds input size on non-gather dimension $d',
+        );
+      }
+    }
+
     final inputContiguous = contiguousStorageView(input);
     final indexContiguous = contiguousStorageView(index);
 
@@ -74,10 +90,10 @@ class GatherOp extends TransformOp {
     final outStrides = TensorIndexer.computeStrides(outputShape);
 
     // Read index values and validate range
-    final indexStorage = indexContiguous.storage;
+    final indexData = indexContiguous.storage.data as List<int>;
     final dimSize = inputShape[normalizedDim];
     for (int i = 0; i < numel; i++) {
-      final indexVal = indexStorage.getAsDouble(i).toInt();
+      final indexVal = indexData[i];
       if (indexVal < 0 || indexVal >= dimSize) {
         throw IndexOutOfBoundsException(
           index: indexVal,
@@ -103,7 +119,7 @@ class GatherOp extends TransformOp {
 
             if (d == normalizedDim) {
               // Use the index value for this dimension
-              final indexVal = indexStorage.getAsDouble(outIdx).toInt();
+              final indexVal = indexData[outIdx];
               srcIdx += indexVal * inStrides[d];
             } else {
               srcIdx += coord * inStrides[d];
@@ -126,7 +142,7 @@ class GatherOp extends TransformOp {
             remaining = remaining % outStrides[d];
 
             if (d == normalizedDim) {
-              final indexVal = indexStorage.getAsDouble(outIdx).toInt();
+              final indexVal = indexData[outIdx];
               srcIdx += indexVal * inStrides[d];
             } else {
               srcIdx += coord * inStrides[d];
@@ -149,14 +165,15 @@ class GatherOp extends TransformOp {
             remaining = remaining % outStrides[d];
 
             if (d == normalizedDim) {
-              final indexVal = indexStorage.getAsDouble(outIdx).toInt();
+              final indexVal = indexData[outIdx];
               srcIdx += indexVal * inStrides[d];
             } else {
               srcIdx += coord * inStrides[d];
             }
           }
 
-          outStorage.setFromDouble(outIdx, inStorage.getAsDouble(srcIdx));
+          (outStorage.data as List<num>)[outIdx] =
+              (inStorage.data as List<num>)[srcIdx];
         }
     }
 

@@ -289,6 +289,16 @@ PyTorch dtype, input rank or option is supported.
 
 ### Migration toward 1.0.0
 
+Axis reductions no longer silently cast every output to float32: float32/64
+remain their input dtype, integer sum promotes to int64, and min/max retain the
+input dtype. Integer axis mean is rejected; cast to float first. Scalar-valued
+`sum/mean/min/max` still explicitly return double, and tensor reductions with
+no remaining dimensions return shape `[1]`. Empty multi-axis lists remain an
+identity operation. Argmin/argmax compare integers exactly and return the first
+NaN index when present. Top-k treats NaN as largest; tied indices are unordered.
+Gather requires integer indices (including int32, a package extension) and
+validates non-gather dimensions. Tile/repeat require one positive count per axis.
+
 `random` and `randn` support float32/float64 and reject integer dtypes. Seeds
 are reproducible within this package, not equivalent to PyTorch seeds. Correcting
 the uniform endpoint and Box-Muller math changes seeded outputs from 0.9.0.

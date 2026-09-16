@@ -73,8 +73,8 @@ def generate():
     def add(name, op, x, y, params=None, **extra):
         cases.append({"name": name, "op": op, "params": params or {},
                       "input": tensor(x), "expected": tensor(y),
-                      "atol": 1e-12 if x.dtype == torch.float64 else 1e-6,
-                      "rtol": 1e-10 if x.dtype == torch.float64 else 1e-5, **extra})
+                      "atol": 1e-12 if y.dtype == torch.float64 else 1e-6,
+                      "rtol": 1e-10 if y.dtype == torch.float64 else 1e-5, **extra})
 
     operations = {"tanh": torch.tanh, "sigmoid": torch.sigmoid, "relu": F.relu,
                   "silu": F.silu, "mish": F.mish, "hardsigmoid": F.hardsigmoid,
@@ -103,14 +103,15 @@ def generate():
 
     # Normalization: independent torch calls, affine parameters, CHW/NCHW,
     # constant inputs, offset mutation sentinels and non-contiguous views.
-    def view_cases(name, x, fn, params):
+    def view_cases(name, x, fn, params, inplace=True):
         y = fn(x)
         add(name, params["op"], x, y, params)
         base = torch.cat((x.new_tensor([-777, -555]), x.flatten(), x.new_tensor([-333])))
         before = tensor(base)
-        base[2:-1] = y.flatten()
+        if inplace:
+            base[2:-1] = y.flatten()
         add(name + "-offset", params["op"], x, y, params, base=before,
-            offset=2, inplace=True, expected_base=tensor(base))
+            offset=2, inplace=inplace, expected_base=tensor(base))
         if x.ndim == 1:
             backing = torch.stack((x, torch.zeros_like(x)), dim=-1)
             view = backing[:, 0]
@@ -196,6 +197,107 @@ def generate():
         view_cases(f"round-half-away-{dtype}", x,
                    lambda z: torch.copysign(torch.floor(torch.abs(z) + 0.5), z),
                    {"op": "round"})
+
+    for dtype in (torch.float32, torch.float64, torch.int32, torch.int64):
+        values = [4, 1, -7, 2, 9, -3] if dtype != torch.int64 else [
+            9007199254740993, 9007199254740995, -9007199254740993,
+            9007199254740997, 9007199254740999, -9007199254740995]
+        x = torch.tensor(values, dtype=dtype).reshape(2, 3)
+        idx = torch.tensor([[2, 0], [0, 1]], dtype=torch.int64)
+        mask = torch.tensor([[1, 0, 1], [0, 1, 0]], dtype=torch.uint8)
+        y = x.flip(-1)
+        recipes = [
+            ("core_clone", lambda z: z.clone(), {}),
+            ("core_contiguous", lambda z: z.contiguous(), {}),
+            ("core_transpose", lambda z: z.permute(1, 0), {"axes": [1, 0]}),
+            ("core_reshape", lambda z: z.contiguous().reshape(3, 2), {"shape": [3, 2]}),
+            ("tile", lambda z: z.repeat(2, 3), {"reps": [2, 3]}),
+            ("repeat", lambda z: z.repeat(2, 3), {"reps": [2, 3]}),
+            ("roll", lambda z: torch.roll(z, (1, -2), (0, -1)), {"shifts": [1, -2], "dims": [0, -1]}),
+            ("roll", lambda z: torch.roll(z, 2), {"shifts": [2], "dims": None}),
+            ("roll", lambda z: torch.roll(z, (1, 1), (1, 1)), {"shifts": [1, 1], "dims": [1, 1]}),
+            ("slice", lambda z: z[:, 0:3:2], {"slices": [None, [0, 3, 2]]}),
+            ("gather", lambda z: torch.gather(z, -1, idx), {"dim": -1, "index": tensor(idx)}),
+            ("where", lambda z: torch.where(mask.bool(), z, y), {"mask": tensor(mask), "other": tensor(y)}),
+        ]
+        for axis in (0, -1):
+            recipes.append(("core_stack", lambda z, d=axis: torch.stack((z, y), d), {"axis": axis, "other": tensor(y)}))
+            recipes.append(("core_concat", lambda z, d=axis: torch.cat((z, y), d), {"axis": axis, "other": tensor(y)}))
+        for part in (0, 1):
+            recipes.append(("core_split", lambda z, i=part: torch.split(z, [1, 2], dim=-1)[i], {"sizes": [1, 2], "dim": -1, "part": part, "count": 2}))
+            recipes.append(("core_chunk", lambda z, i=part: torch.chunk(z, 2, dim=-1)[i], {"chunks": 2, "dim": -1, "part": part, "count": 2}))
+        for largest in (False, True):
+            for indices in (False, True):
+                recipes.append(("core_topk", lambda z, l=largest, i=indices: torch.topk(z, 2, dim=-1, largest=l)[int(i)],
+                                {"k": 2, "axis": -1, "largest": largest, "indices": indices}))
+        for reduction in ("sum", "min", "max", "argmin", "argmax", "mean"):
+            if reduction == "mean" and not x.is_floating_point():
+                continue  # PyTorch rejects integer mean; Dart must reject axis mean too.
+            for axis in (0, -1):
+                for keep in (False, True):
+                    def reduce(z, r=reduction, d=axis, k=keep):
+                        if r == "min": return torch.amin(z, d, k)
+                        if r == "max": return torch.amax(z, d, k)
+                        return getattr(torch, r)(z, dim=d, keepdim=k)
+                    recipes.append(("core_reduce", reduce,
+                                    {"reduction": reduction, "axis": axis, "keep": keep}))
+            # The scalar-valued Dart API explicitly returns double for value reductions.
+            fn = getattr(torch, reduction)
+            expected = fn(x if reduction.startswith("arg") else x.double()).reshape(1)
+            add(f"reduce-global-{dtype}-{reduction}", "core_reduce", x, expected,
+                {"reduction": reduction, "axis": None})
+        for reduction in ("sum", "min", "max", "mean"):
+            if reduction == "mean" and not x.is_floating_point(): continue
+            fn = torch.amin if reduction == "min" else torch.amax if reduction == "max" else getattr(torch, reduction)
+            for keep in (False, True):
+                y_multi = fn(x, dim=(0, 1), keepdim=keep)
+                if y_multi.ndim == 0: y_multi = y_multi.reshape(1)  # Scalar tensor outputs use [1] in this package.
+                add(f"reduce-multi-{dtype}-{reduction}-{keep}", "core_reduce", x, y_multi,
+                    {"reduction": reduction, "axes": [0, -1], "keep": keep})
+        view_cases(f"masked-fill-{dtype}", x, lambda z: z.masked_fill(mask.bool(), -2),
+                   {"op": "masked_fill", "mask": tensor(mask), "value": -2})
+        for number, (op, fn, params) in enumerate(recipes):
+            view_cases(f"index-{dtype}-{number}-{op}", x, fn, {**params, "op": op}, inplace=False)
+
+    for dtype in (torch.float32, torch.float64):
+        for values in ([[2, 2, 1], [3, 1, 1]], [[1, float("nan"), 2], [float("inf"), -1, float("nan")]]):
+            x = torch.tensor(values, dtype=dtype)
+            label = "nan" if torch.isnan(x).any() else "ties"
+            for reduction in ("min", "max", "argmin", "argmax"):
+                fn = torch.amin if reduction == "min" else torch.amax if reduction == "max" else getattr(torch, reduction)
+                view_cases(f"reduce-{label}-{dtype}-{reduction}", x, lambda z: fn(z, dim=-1),
+                           {"op": "core_reduce", "reduction": reduction, "axis": -1, "keep": False}, inplace=False)
+                result = getattr(torch, reduction)(x.double()).reshape(1)
+                add(f"reduce-global-{label}-{dtype}-{reduction}", "core_reduce", x, result,
+                    {"reduction": reduction, "axis": None})
+
+    for dtype in (torch.float32, torch.float64):
+        for count in (3, 20):
+            x = torch.arange(count * 2, dtype=dtype).reshape(2, count)
+            x[:, count // 2] = float("nan")
+            for largest in (False, True):
+                for indices in (False, True):
+                    k = min(count, 5)
+                    view_cases(f"topk-special-{dtype}-{count}-{largest}-{indices}", x,
+                               lambda z: torch.topk(z, k, dim=-1, largest=largest)[int(indices)],
+                               {"op": "core_topk", "k": k, "axis": -1, "largest": largest, "indices": indices}, inplace=False)
+        tied = torch.tensor([[2, 2, 1], [3, 1, 1]], dtype=dtype)
+        for largest in (False, True):
+            view_cases(f"topk-ties-{dtype}-{largest}", tied,
+                       lambda z: torch.topk(z, 2, dim=-1, largest=largest).values,
+                       {"op": "core_topk", "k": 2, "axis": -1, "largest": largest, "indices": False}, inplace=False)
+
+    adjacent = torch.tensor([[2**53, 2**53 + 1, 2**53], [-2**53, -2**53 - 1, -2**53]], dtype=torch.int64)
+    for reduction in ("argmin", "argmax"):
+        for axis in (None, -1):
+            fn = getattr(torch, reduction)
+            view_cases(f"reduce-adjacent-int64-{reduction}-{axis}", adjacent,
+                       lambda z: fn(z).reshape(1) if axis is None else fn(z, dim=axis),
+                       {"op": "core_reduce", "reduction": reduction, "axis": axis, "keep": False}, inplace=False)
+    for dtype, largest in ((torch.int32, 2**31 - 1), (torch.int64, 2**63 - 1)):
+        x = torch.tensor([[largest, 1]], dtype=dtype)
+        add(f"reduce-integer-overflow-{dtype}", "core_reduce", x, torch.sum(x, dim=-1),
+            {"reduction": "sum", "axis": -1, "keep": False})
 
     for dtype in (torch.float32, torch.float64):
         x = torch.arange(45, dtype=dtype).reshape(3, 3, 5) / 7

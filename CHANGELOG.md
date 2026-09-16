@@ -15,7 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dividing floating-point image inputs by 255 twice.
 - Fix Tanh overflow and unseeded random calls reusing time-based seeds.
 - Improve exact GELU error-function accuracy for float64.
-- Preserve exact int64/uint64 values in clone and strided contiguous copies.
+- Preserve exact int64/uint64 values in clone and strided contiguous copies,
+  and exact integer values through gather/slice/stack/concat/split/where/tile/roll/top-k.
+- Preserve axis reduction dtypes, promote integer sums to int64, and reject
+  integer axis means. Select argmin/argmax without converting integers to double;
+  propagate NaN in extrema and rank NaN consistently in top-k.
+- Accumulate repeated roll dimensions and validate gather index dtype/shape.
 - Allocate float64 random output correctly; keep uniform output below one after
   float32 rounding, and use standard Box-Muller math without truncated tails.
 - Match PyTorch Lp normalization's max(norm, eps) denominator; propagate NaN

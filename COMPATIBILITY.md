@@ -32,7 +32,8 @@ source of truth for the named case prefixes below.
   `integer_copy_regression_test.dart` checks values above 2^53 without floating
   comparisons. `storage.getAsDouble`, tensor element access and `toList` expose
   doubles, so they cannot represent every int64 value exactly. Use typed storage
-  for exact integer inspection. Remaining integer movement paths are pending.
+  for exact integer inspection. Gather/slice/stack/concat/split/where/tile/roll/top-k now have exact int64
+  cases; integer casting and other image movement paths are still pending.
 
 ## Transform operations
 
@@ -49,8 +50,8 @@ coverage beyond those cases remains subject to the release checklist.
 | `AdjustContrastOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
 | `AdjustHueOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
 | `AdjustSaturationOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
-| `ArgMaxOp` | [lib/src/ops/argmax_op.dart](lib/src/ops/argmax_op.dart) | **Pending independent oracle / contract audit** |
-| `ArgMinOp` | [lib/src/ops/argmax_op.dart](lib/src/ops/argmax_op.dart) | **Pending independent oracle / contract audit** |
+| `ArgMaxOp` | [lib/src/ops/argmax_op.dart](lib/src/ops/argmax_op.dart) | `core_reduce (delegated argmaxAxis) / reduce-adjacent / ties / nan` |
+| `ArgMinOp` | [lib/src/ops/argmax_op.dart](lib/src/ops/argmax_op.dart) | `core_reduce (delegated argminAxis) / reduce-adjacent / ties / nan` |
 | `AsinOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `asin` |
 | `Atan2Op` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | **Pending independent oracle / contract audit** |
 | `AtanOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `atan` |
@@ -68,7 +69,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `FloorOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `floor` |
 | `GELUOp` | [lib/src/ops/activation/gelu_op.dart](lib/src/ops/activation/gelu_op.dart) | `gelu / gelu-dense / gelu-special` |
 | `GLUOp` | [lib/src/ops/activation/glu_op.dart](lib/src/ops/activation/glu_op.dart) | `glu` |
-| `GatherOp` | [lib/src/ops/gather_op.dart](lib/src/ops/gather_op.dart) | **Pending independent oracle / contract audit** |
+| `GatherOp` | [lib/src/ops/gather_op.dart](lib/src/ops/gather_op.dart) | `index-*gather` |
 | `GaussianBlurOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
 | `GroupNormOp` | [lib/src/ops/group_norm_op.dart](lib/src/ops/group_norm_op.dart) | `group_norm` |
 | `HardsigmoidOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `hardsigmoid` |
@@ -82,7 +83,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `LeakyReLUOp` | [lib/src/ops/activation/relu_ops.dart](lib/src/ops/activation/relu_ops.dart) | `leaky_relu` |
 | `LogOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `log` |
 | `LpNormalizeOp` | [lib/src/ops/lp_normalize_op.dart](lib/src/ops/lp_normalize_op.dart) | `lp / lp-special` |
-| `MaskedFillOp` | [lib/src/ops/masked_fill_op.dart](lib/src/ops/masked_fill_op.dart) | **Pending independent oracle / contract audit** |
+| `MaskedFillOp` | [lib/src/ops/masked_fill_op.dart](lib/src/ops/masked_fill_op.dart) | `masked-fill` |
 | `MishOp` | [lib/src/ops/activation/mish_op.dart](lib/src/ops/activation/mish_op.dart) | `mish` |
 | `MulOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
 | `NegOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `neg` |
@@ -97,46 +98,46 @@ coverage beyond those cases remains subject to the release checklist.
 | `RandomHorizontalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
 | `RandomVerticalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
 | `ReLUOp` | [lib/src/ops/activation/relu_ops.dart](lib/src/ops/activation/relu_ops.dart) | `relu` |
-| `RepeatOp` | [lib/src/ops/repeat_op.dart](lib/src/ops/repeat_op.dart) | **Pending independent oracle / contract audit** |
+| `RepeatOp` | [lib/src/ops/repeat_op.dart](lib/src/ops/repeat_op.dart) | `index-*repeat` |
 | `ReshapeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
 | `ResizeNormalizeFusedOp` | [lib/src/ops/fused_ops.dart](lib/src/ops/fused_ops.dart) | **Pending independent oracle / contract audit** |
 | `ResizeOp` | [lib/src/ops/resize_op.dart](lib/src/ops/resize_op.dart) | `resize / resize-aa` |
 | `ResizeShortestOp` | [lib/src/ops/resize_op.dart](lib/src/ops/resize_op.dart) | `shortest` |
 | `RgbToGrayscaleOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | **Pending independent oracle / contract audit** |
 | `RgbToHsvOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | **Pending independent oracle / contract audit** |
-| `RollOp` | [lib/src/ops/roll_op.dart](lib/src/ops/roll_op.dart) | **Pending independent oracle / contract audit** |
+| `RollOp` | [lib/src/ops/roll_op.dart](lib/src/ops/roll_op.dart) | `index-*roll (including repeated axes)` |
 | `RoundOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `round-half-away (deliberate difference from torch.round)` |
 | `SELUOp` | [lib/src/ops/activation/selu_op.dart](lib/src/ops/activation/selu_op.dart) | `selu` |
 | `ScaleOp` | [lib/src/ops/normalize_op.dart](lib/src/ops/normalize_op.dart) | **Pending independent oracle / contract audit** |
 | `SiLUOp` | [lib/src/ops/activation/swish_ops.dart](lib/src/ops/activation/swish_ops.dart) | `silu` |
 | `SigmoidOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `sigmoid` |
 | `SinOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `sin` |
-| `SliceOp` | [lib/src/ops/slice_op.dart](lib/src/ops/slice_op.dart) | **Pending independent oracle / contract audit** |
+| `SliceOp` | [lib/src/ops/slice_op.dart](lib/src/ops/slice_op.dart) | `index-*slice` |
 | `SoftmaxOp` | [lib/src/ops/activation/softmax_op.dart](lib/src/ops/activation/softmax_op.dart) | `softmax` |
 | `SqrtOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `sqrt` |
 | `SqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
 | `SubOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
 | `TanOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `tan` |
 | `TanhOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `tanh` |
-| `TileOp` | [lib/src/ops/tile_op.dart](lib/src/ops/tile_op.dart) | **Pending independent oracle / contract audit** |
+| `TileOp` | [lib/src/ops/tile_op.dart](lib/src/ops/tile_op.dart) | `index-*tile` |
 | `ToImageOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | **Pending independent oracle / contract audit** |
 | `ToTensorOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | **Pending independent oracle / contract audit** |
-| `TopKOp` | [lib/src/ops/topk_op.dart](lib/src/ops/topk_op.dart) | **Pending independent oracle / contract audit** |
+| `TopKOp` | [lib/src/ops/topk_op.dart](lib/src/ops/topk_op.dart) | `index-*core_topk / topk-special / topk-ties` |
 | `TypeCastOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | **Pending independent oracle / contract audit** |
 | `UnsqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
 | `VerticalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
-| `WhereOp` | [lib/src/ops/where_op.dart](lib/src/ops/where_op.dart) | **Pending independent oracle / contract audit** |
+| `WhereOp` | [lib/src/ops/where_op.dart](lib/src/ops/where_op.dart) | `index-*where` |
 
 ## Core, convenience APIs and execution infrastructure
 
 | Public surface | Evidence / remaining gate |
 |---|---|
 | `TensorBuffer` constructor; shape/strides/storageOffset/memoryFormat; dtype/rank/numel/sizeInBytes/isContiguous/data/dataAsFloat32List | Offset and storage regression tests; constructor bounds, shape metadata and scalar/empty consistency audit pending |
-| `transpose`, `reshape`, `squeeze`, `unsqueeze`, `contiguous`, `clone`, element access, `toList`, `computeStrides` | Exact integer clone/contiguous regressions; independent core/view goldens pending |
+| `transpose`, `reshape`, `squeeze`, `unsqueeze`, `contiguous`, `clone`, element access, `toList`, `computeStrides` | Core clone/contiguous/transpose/reshape have float32/64/int32/int64 offset and strided goldens; squeeze/unsqueeze/scalar and alias-contract audit pending |
 | `zeros`, `ones`, `full`, `uninitialized`, `eye`, `linspace`, `arange`, `fromFloat32List`, `fromFloat64List`, `fromUint8List` | Existing factory tests; dtype-wide independent goldens pending |
 | `random`, `randn` | Deliberately different RNG; documented contract and mathematical regression suite above |
-| `sum`, `mean`, `min`, `max`, `sumAxis`, `meanAxis`, `minAxis`, `maxAxis`, `argmax`, `argmin`, `argmaxAxis`, `argminAxis` | Independent reductions including ties, NaN, dtype and view tests pending |
-| `stack`, `concat`, `split`, `chunk`, `tensorWhere`, top-k extension | View/sentinel regressions; independent integer/value/tie cases pending |
+| `sum`, `mean`, `min`, `max`, `sumAxis`, `meanAxis`, `minAxis`, `maxAxis`, `argmax`, `argmin`, `argmaxAxis`, `argminAxis` | Independent single/multi/global reductions, keepDims, ties, NaN, offset/strided, integer overflow/adjacent int64 cases; integer axis mean rejected; global value API is double, scalar tensor shape is [1] |
+| `stack`, `concat`, `split`, `chunk`, `tensorWhere`, top-k extension | Independent values and exact int64, offsets/strides, split/chunk part counts, top-k values/indices/NaN/ties; no broadcasting |
 | `TensorViewExtension` (`sliceFirst`, `isViewable`, `toChannelsLast`, `toChannelsFirst`, `flatten`, `select`, `narrow`) | Existing utility tests; exact layout/index audit pending |
 | `DType`, `MemoryFormat`, `TensorStorage`, typed views, buffer pool, dtype dispatcher, tensor indexing, `SimdOps` | Native storage/utility contracts, not separate PyTorch numerical operations; dtype/memory/SIMD-tail audit pending |
 | `TransformOp`, `InPlaceTransform`, `RequiresContiguous`, `OperationCapabilities`, error types/messages | Native composition/validation contracts; tests must cover invalid arguments and mutation boundaries |

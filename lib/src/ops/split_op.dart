@@ -183,7 +183,8 @@ void _copySlice(
           srcIdx += srcCoord * srcStrides[d];
         }
 
-        dstStorage.setFromDouble(dstIdx, srcStorage.getAsDouble(srcIdx));
+        (dstStorage.data as List<num>)[dstIdx] =
+            (srcStorage.data as List<num>)[srcIdx];
       }
   }
 }

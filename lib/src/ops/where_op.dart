@@ -95,10 +95,9 @@ TensorBuffer tensorWhere(
 
       for (int i = 0; i < numel; i++) {
         final cond = condStorage.getAsDouble(i) != 0;
-        outStorage.setFromDouble(
-          i,
-          cond ? xStorage.getAsDouble(i) : yStorage.getAsDouble(i),
-        );
+        (outStorage.data as List<num>)[i] = cond
+            ? (xStorage.data as List<num>)[i]
+            : (yStorage.data as List<num>)[i];
       }
   }
 

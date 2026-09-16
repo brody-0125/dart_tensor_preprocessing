@@ -38,9 +38,14 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   Float32/64 coverage adds 270 cases (431 total), including non-contiguous
   views and Lp non-finite inputs. Fix Lp denominator and validate epsilon/order.
   Canonical Linux regeneration passed in runs 35090715234 and 35090718980.
-- [ ] Expand core/indexing/reduction goldens: transpose/reshape/clone/contiguous,
+- [ ] Finish core/indexing/reduction goldens: transpose/reshape/clone/contiguous,
   integer precision, scalar/empty restrictions, dtype conversion, sum/mean/min/max,
   argmin/max/topk (including ties), gather/slice/split/concat/repeat/tile/roll/where.
+  Added 752 cases (1,307 total): copy/index operations with exact int64,
+  scalar/single/multi-axis reductions, dtypes, NaN/ties, offsets/strides,
+  top-k indices and integer overflow/adjacent values. Fixed discovered copy,
+  reduction, repeated-roll and index validation defects. Factory/casting,
+  squeeze/unsqueeze/scalar and remaining alias contracts are still pending.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

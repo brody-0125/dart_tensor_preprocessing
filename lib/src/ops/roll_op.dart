@@ -24,7 +24,15 @@ class RollOp extends TransformOp with RequiresContiguous {
   final List<int>? dims;
 
   /// Creates a Roll operation.
-  RollOp({required this.shifts, this.dims});
+  RollOp({required this.shifts, this.dims}) {
+    if (shifts.isEmpty || (dims == null && shifts.length != 1)) {
+      throw InvalidParameterException(
+        'shifts',
+        shifts,
+        'Provide at least one shift, or exactly one for a flat roll',
+      );
+    }
+  }
 
   @override
   String get name => 'Roll';
@@ -83,10 +91,8 @@ class RollOp extends TransformOp with RequiresContiguous {
         final inStorage = input.storage;
         final outStorage = output.storage;
         for (int i = 0; i < numel; i++) {
-          outStorage.setFromDouble(
-            (i + shift) % numel,
-            inStorage.getAsDouble(i),
-          );
+          (outStorage.data as List<num>)[(i + shift) % numel] =
+              (inStorage.data as List<num>)[i];
         }
     }
 
@@ -137,8 +143,7 @@ class RollOp extends TransformOp with RequiresContiguous {
             for (int s = 0; s < dims!.length; s++) {
               final rollDim = dims![s] < 0 ? rank + dims![s] : dims![s];
               if (d == rollDim) {
-                newCoord =
-                    ((coord + shifts[s]) % shape[d] + shape[d]) % shape[d];
+                newCoord = (newCoord + shifts[s] % shape[d]) % shape[d];
               }
             }
 
@@ -164,8 +169,7 @@ class RollOp extends TransformOp with RequiresContiguous {
             for (int s = 0; s < dims!.length; s++) {
               final rollDim = dims![s] < 0 ? rank + dims![s] : dims![s];
               if (d == rollDim) {
-                newCoord =
-                    ((coord + shifts[s]) % shape[d] + shape[d]) % shape[d];
+                newCoord = (newCoord + shifts[s] % shape[d]) % shape[d];
               }
             }
 
@@ -191,15 +195,15 @@ class RollOp extends TransformOp with RequiresContiguous {
             for (int s = 0; s < dims!.length; s++) {
               final rollDim = dims![s] < 0 ? rank + dims![s] : dims![s];
               if (d == rollDim) {
-                newCoord =
-                    ((coord + shifts[s]) % shape[d] + shape[d]) % shape[d];
+                newCoord = (newCoord + shifts[s] % shape[d]) % shape[d];
               }
             }
 
             outIdx += newCoord * strides[d];
           }
 
-          outStorage.setFromDouble(outIdx, inStorage.getAsDouble(inIdx));
+          (outStorage.data as List<num>)[outIdx] =
+              (inStorage.data as List<num>)[inIdx];
         }
     }
 

@@ -199,8 +199,8 @@ void _stackTensors(
             outStrides,
             inputRank,
           );
-          final value = contiguous.storage.getAsDouble(srcIdx);
-          output.storage.setFromDouble(destIdx, value);
+          (output.storage.data as List<num>)[destIdx] =
+              (contiguous.storage.data as List<num>)[srcIdx];
         }
       }
   }
@@ -363,8 +363,8 @@ void _copyContiguousAxis0(List<TensorBuffer> tensors, TensorBuffer output) {
       int offset = 0;
       for (final tensor in tensors) {
         for (int i = 0; i < tensor.numel; i++) {
-          final value = tensor.storage.getAsDouble(i);
-          output.storage.setFromDouble(offset + i, value);
+          (output.storage.data as List<num>)[offset + i] =
+              (tensor.storage.data as List<num>)[i];
         }
         offset += tensor.numel;
       }
@@ -425,8 +425,8 @@ void _copyTensorToConcat(
           final destCoord = (dim == concatAxis) ? coord + axisOffset : coord;
           destIdx += destCoord * destStrides[dim];
         }
-        final value = source.storage.getAsDouble(srcIdx);
-        destination.storage.setFromDouble(destIdx, value);
+        (destination.storage.data as List<num>)[destIdx] =
+            (source.storage.data as List<num>)[srcIdx];
       }
   }
 }
