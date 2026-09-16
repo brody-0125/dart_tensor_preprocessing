@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- RandomCrop preserves integer values without converting through double and
+  rejects invalid rank/oversized crops consistently during shape inference.
+
 - Horizontal/vertical flips preserve exact integer storage instead of converting
   through double. Random flips reject non-finite probabilities, and every flip
   validates rank consistently during execution and shape inference.

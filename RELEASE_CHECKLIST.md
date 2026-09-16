@@ -115,6 +115,10 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   uint8/exact int64, offset/strided and random probability 0/1. Fixed integer
   copy precision, finite probability and inferred-rank validation. Full local
   network suite: 4,491 passed; static analysis clean.
+  RandomCrop adds 120 cases (3,053 total): all ten dtypes, full/partial crops,
+  CHW/NCHW and offset/strided views, using recorded native seed coordinates
+  and independent torch slices. Fixed integer copy precision and inferred
+  rank/size validation. Full local network suite: 4,612 passed; analysis clean.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

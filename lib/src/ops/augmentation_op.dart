@@ -98,8 +98,8 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
           for (int col = 0; col < width; col++) {
             final inputIdx = ch * h * w + (startH + row) * w + (startW + col);
             final outputIdx = ch * height * width + row * width + col;
-            final val = input.storage.getAsDouble(inputIdx);
-            output.storage.setFromDouble(outputIdx, val);
+            (output.storage.data as List<num>)[outputIdx] =
+                (input.storage.data as List<num>)[inputIdx];
           }
         }
       }
@@ -134,8 +134,8 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
                   ch * height * width +
                   row * width +
                   col;
-              final val = input.storage.getAsDouble(inputIdx);
-              output.storage.setFromDouble(outputIdx, val);
+              (output.storage.data as List<num>)[outputIdx] =
+                  (input.storage.data as List<num>)[inputIdx];
             }
           }
         }
@@ -147,6 +147,13 @@ class RandomCropOp extends TransformOp with RequiresContiguous {
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    if (height > inputShape[inputShape.length - 2] || width > inputShape.last) {
+      throw InvalidParameterException('crop size', [
+        height,
+        width,
+      ], 'Crop size cannot exceed input dimensions');
+    }
     if (inputShape.length == 3) {
       return [inputShape[0], height, width]; // [C, H, W]
     } else {

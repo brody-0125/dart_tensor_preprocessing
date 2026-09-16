@@ -108,7 +108,7 @@ def generate():
         y = fn(x)
         add(name, params["op"], x, y, params)
         unsigned = x.dtype in (torch.uint8, torch.uint16, torch.uint32, torch.uint64)
-        base = torch.cat((x.new_tensor([77, 55] if unsigned else [-777, -555]), x.flatten(), x.new_tensor([33] if unsigned else [-333])))
+        base = torch.cat((torch.tensor([77, 55] if unsigned else [-777, -555]).to(x.dtype), x.flatten(), torch.tensor([33] if unsigned else [-333]).to(x.dtype)))
         before = tensor(base)
         if inplace:
             base[2:-1] = y.flatten()
@@ -596,6 +596,18 @@ def generate():
                     view_cases(f'flip-{direction}-{dtype}-{batched}-{probability}', x,
                                lambda z, axis=axis, probability=probability: z if probability == 0 else z.flip(axis),
                                {'op': 'flip', 'direction': direction, 'probability': probability}, inplace=False)
+    for dtype in (torch.float32, torch.float64, torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8, torch.uint16, torch.uint32, torch.uint64):
+        for batched in (False, True):
+            shape = (2, 2, 3, 5) if batched else (2, 3, 5)
+            x = torch.arange(math.prod(shape)).reshape(shape)
+            if dtype in (torch.int64, torch.uint64):
+                x += 9007199254740993
+            x = x.to(dtype)
+            for h, w, top, left in ((2, 3, 0, 2), (3, 5, 0, 0)):
+                # Dart seed 41 samples (0,2) for the 3x5 -> 2x3 crop.
+                view_cases(f'random-crop-{dtype}-{batched}-{h}-{w}', x,
+                           lambda z, h=h, w=w, top=top, left=left: z[..., top:top+h, left:left+w],
+                           {'op': 'random_crop', 'height': h, 'width': w, 'seed': 41, 'top': top, 'left': left}, inplace=False)
     return cases
 
 
