@@ -245,3 +245,9 @@ float32/64/int64, CHW/NCHW and offset/strided views through callable sync, force
 isolate and synchronous fallback, with Identity/fused/Contiguous composition.
 No fixture payload was added. Custom presets already run the same three modes
 against independent goldens. Full network suite: 6,774 passed; analysis clean.
+
+TensorViewExtension audit closed: reviewed sliceFirst/isViewable/channel
+permutations/flatten/select/unbind/narrow against existing independent goldens
+and native contracts. Added exact int64 offset channel round-trip/flatten test
+for storage identity, strides and sentinels. The four targeted view/layout
+suites passed all 134 tests; no production change was needed.

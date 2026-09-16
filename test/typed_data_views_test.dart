@@ -4,6 +4,40 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('channel views preserve offset integer values and shared storage', () {
+    final raw = Int64List.fromList([
+      -7,
+      9007199254740993,
+      9007199254740995,
+      9007199254740997,
+      9007199254740999,
+      -9,
+    ]);
+    final input = TensorBuffer(
+      storage: TensorStorage(raw, DType.int64),
+      shape: [1, 2, 1, 2],
+      storageOffset: 1,
+    );
+    final nhwc = input.toChannelsLast();
+    expect(nhwc.shape, [1, 1, 2, 2]);
+    expect(nhwc.contiguous().storage.data, [
+      9007199254740993,
+      9007199254740997,
+      9007199254740995,
+      9007199254740999,
+    ]);
+    final restored = nhwc.toChannelsFirst();
+    expect(restored.strides, input.strides);
+    expect(restored.storageOffset, 1);
+    expect(identical(restored.storage, input.storage), isTrue);
+    final flat = restored.flatten();
+    expect(flat.shape, [4]);
+    expect(flat.storageOffset, 1);
+    expect(identical(flat.storage, input.storage), isTrue);
+    expect(raw.first, -7);
+    expect(raw.last, -9);
+  });
+
   group('TypedDataViews', () {
     group('float32SublistView', () {
       test('creates zero-copy view', () {
