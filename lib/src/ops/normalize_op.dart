@@ -24,7 +24,9 @@ class NormalizeOp extends TransformOp
   final List<double> std;
 
   /// Creates a normalize operation with the given [mean] and [std].
-  NormalizeOp({required this.mean, required this.std}) {
+  NormalizeOp({required List<double> mean, required List<double> std})
+    : mean = List<double>.unmodifiable(mean),
+      std = List<double>.unmodifiable(std) {
     if (mean.length != std.length) {
       throw InvalidParameterException(
         'mean/std',

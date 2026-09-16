@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Normalize and fused resize/normalize defensively freeze mean/std lists so
+  later caller mutations cannot bypass validation or change pipeline results.
+
 - Fused resize/normalize validates rank and channel count during shape inference.
 
 - RandomErasing rejects non-finite parameters and validates inferred rank;

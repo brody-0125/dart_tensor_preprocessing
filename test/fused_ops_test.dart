@@ -4,6 +4,27 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('normalization parameters remain immutable after validation', () {
+    for (final fused in [false, true]) {
+      final mean = [0.5];
+      final std = [0.25];
+      final op = fused
+          ? ResizeNormalizeFusedOp(height: 1, width: 1, mean: mean, std: std)
+          : NormalizeOp(mean: mean, std: std);
+      mean[0] = 100;
+      std[0] = 0;
+      final result = op(TensorBuffer.ones([1, 1, 1]));
+      expect(result.storage.getAsDouble(0), 2);
+      if (op is ResizeNormalizeFusedOp) {
+        expect(() => op.std[0] = 0, throwsUnsupportedError);
+        expect(() => op.mean.clear(), throwsUnsupportedError);
+      } else if (op is NormalizeOp) {
+        expect(() => op.std[0] = 0, throwsUnsupportedError);
+        expect(() => op.mean.clear(), throwsUnsupportedError);
+      }
+    }
+  });
+
   group('ResizeNormalizeFusedOp', () {
     group('constructor validation', () {
       test('throws for mismatched mean/std lengths', () {

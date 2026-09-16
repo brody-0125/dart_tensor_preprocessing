@@ -192,3 +192,8 @@ Fused resize/normalize float32/64: 120 independent torch double-interpolate and
 normalize cases (4,913 total), alignCorners, singleton/identity/up/down sizes,
 64-pixel blocking boundary, batches and offset/strided views. Shape inference
 now validates rank/channels. Integer and remaining parameter contracts stay open.
+
+Normalization parameter audit: reproduced mutation of validated std to zero
+producing -Infinity instead of 2. Both NormalizeOp and ResizeNormalizeFusedOp
+now copy mean/std into unmodifiable lists; regression verifies caller and
+public-field mutations. Remaining fused integer audit remains open.

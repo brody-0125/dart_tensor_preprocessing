@@ -43,10 +43,11 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
   ResizeNormalizeFusedOp({
     required this.height,
     required this.width,
-    required this.mean,
-    required this.std,
+    required List<double> mean,
+    required List<double> std,
     this.alignCorners = false,
-  }) {
+  }) : mean = List<double>.unmodifiable(mean),
+       std = List<double>.unmodifiable(std) {
     if (height <= 0 || width <= 0) {
       throw InvalidParameterException(
         'height/width',
