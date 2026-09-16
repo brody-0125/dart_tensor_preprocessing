@@ -81,6 +81,8 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'to_tensor' => ToTensorOp(normalize: p['normalize'] as bool),
+    'to_image' => ToImageOp(denormalize: p['denormalize'] as bool),
     'clip' => ClipOp(
       min: fixtureNumber(p['min']),
       max: fixtureNumber(p['max']),

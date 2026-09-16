@@ -93,6 +93,12 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   cases differing by at most 1.1920928955078125e-7. Reviewed every changed value
   under unchanged tolerances, verified network payloads unchanged and adopted
   canonical values. Latest commit must verify exact regeneration again.
+  Canonical adoption CI 35099322211/35099325397 passed all gates.
+  ToTensor/ToImage add 216 cases (2,321 total), including channel/batch/flag/
+  offset/stride combinations and explicit non-torch rounding/normalization
+  recipes. No implementation change was required for these valid inputs.
+  Local network-inclusive suite passed 3,875 tests before one invalid-rank
+  regression was added; that regression is verified separately.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

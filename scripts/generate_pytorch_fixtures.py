@@ -106,7 +106,8 @@ def generate():
     def view_cases(name, x, fn, params, inplace=True):
         y = fn(x)
         add(name, params["op"], x, y, params)
-        base = torch.cat((x.new_tensor([-777, -555]), x.flatten(), x.new_tensor([-333])))
+        unsigned = x.dtype in (torch.uint8, torch.uint16, torch.uint32, torch.uint64)
+        base = torch.cat((x.new_tensor([77, 55] if unsigned else [-777, -555]), x.flatten(), x.new_tensor([33] if unsigned else [-333])))
         before = tensor(base)
         if inplace:
             base[2:-1] = y.flatten()
@@ -493,6 +494,30 @@ def generate():
         add(f'clip-integer-{dtype}', 'clip', x, x.to(torch.float64).clamp(1.5, 9.5).trunc().to(dtype), {'min': 1.5, 'max': 9.5})
         add(f'scale-integer-{dtype}', 'scale', x, ((x.double() - 0.5) / 2.5).trunc().to(dtype), {'scale': 2.5, 'offset': 0.5})
         add(f'atan2-integer-{dtype}', 'atan2_scalar', x, torch.atan2(x.double(), torch.tensor(0.5, dtype=torch.float64)).trunc().to(dtype), {'scalar': 0.5})
+    for dtype in (torch.uint8, torch.int64, torch.float32, torch.float64):
+        for channels in (1, 3, 4):
+            for batched in (False, True):
+                shape = (2, 3, 5, channels) if batched else (3, 5, channels)
+                x = ((torch.arange(math.prod(shape)) * 37) % 256).reshape(shape).to(dtype)
+                if dtype in (torch.float32, torch.float64):
+                    x = x / 255
+                axes = (0, 3, 1, 2) if batched else (2, 0, 1)
+                for normalize in (False, True):
+                    view_cases(f'to-tensor-{dtype}-{channels}-{batched}-{normalize}', x,
+                               lambda z, axes=axes, normalize=normalize: (z.double().permute(axes) / (255 if normalize else 1)).float(),
+                               {'op': 'to_tensor', 'normalize': normalize}, inplace=False)
+    for dtype in (torch.float32, torch.float64):
+        for channels in (1, 3, 4):
+            for batched in (False, True):
+                shape = (2, channels, 3, 5) if batched else (channels, 3, 5)
+                x = (torch.arange(math.prod(shape), dtype=dtype).reshape(shape) % 17 - 2) / 11
+                axes = (0, 2, 3, 1) if batched else (1, 2, 0)
+                for denormalize in (False, True):
+                    def to_image(z, axes=axes, denormalize=denormalize):
+                        y = z.double().permute(axes) * (255 if denormalize else 1)
+                        return torch.copysign(torch.floor(y.abs() + 0.5), y).clamp(0, 255).to(torch.uint8)
+                    view_cases(f'to-image-{dtype}-{channels}-{batched}-{denormalize}', x, to_image,
+                               {'op': 'to_image', 'denormalize': denormalize}, inplace=False)
     return cases
 
 

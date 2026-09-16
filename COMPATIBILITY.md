@@ -7,6 +7,14 @@ source of truth for the named case prefixes below.
 
 ## Established contracts
 
+- ToTensor explicitly maps HWC/NHWC to CHW/NCHW and outputs float32. Its
+  normalize flag divides all input dtypes by 255, including floating inputs;
+  this is distinct from preset handling of already-normalized floats.
+  ToImage reverses axes, optionally multiplies by 255, then rounds halfway
+  away from zero and clamps to uint8. `to-tensor-*`/`to-image-*` cover 1/3/4
+  channels, batches, flags, offsets and strided storage. Unsupported ranks
+  are rejected by execution and shape inference.
+
 - Scale and Atan2 retain integer output dtype using double arithmetic followed
   by truncation and storage conversion (uint8/16 clamp, other integer types wrap).
   This differs from torch dtype promotion and cannot preserve all int64 inputs.
@@ -160,8 +168,8 @@ coverage beyond those cases remains subject to the release checklist.
 | `TanOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `tan` |
 | `TanhOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `tanh` |
 | `TileOp` | [lib/src/ops/tile_op.dart](lib/src/ops/tile_op.dart) | `index-*tile` |
-| `ToImageOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | **Pending independent oracle / contract audit** |
-| `ToTensorOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | **Pending independent oracle / contract audit** |
+| `ToImageOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | `to-image-*`: explicit rounding/clamp recipe, 1/3/4 channels, rank3/4, flags, offsets and strides |
+| `ToTensorOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | `to-tensor-*`: uint8/int64/float32/64, 1/3/4 channels, rank3/4, flags, offsets and strides |
 | `TopKOp` | [lib/src/ops/topk_op.dart](lib/src/ops/topk_op.dart) | `index-*core_topk / topk-special / topk-ties` |
 | `TypeCastOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | `cast-*`: all destination dtypes, float32/64 and exact int64 sources, offset/strided inputs; native identity/wrapping regressions |
 | `UnsqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | `unsqueeze-*`: float32/64/int32/int64, offsets/strides, negative axes, alias checks |

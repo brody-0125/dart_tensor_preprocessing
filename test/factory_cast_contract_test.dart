@@ -4,6 +4,23 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('image converters reject unsupported ranks consistently', () {
+    for (final shape in [
+      [2],
+      [2, 3],
+      [1, 2, 3, 4, 5],
+    ]) {
+      final x = TensorBuffer.zeros(shape);
+      for (final op in <TransformOp>[ToTensorOp(), ToImageOp()]) {
+        expect(() => op(x), throwsA(isA<ShapeMismatchException>()));
+        expect(
+          () => op.computeOutputShape(shape),
+          throwsA(isA<ShapeMismatchException>()),
+        );
+      }
+    }
+  });
+
   test('sequence factories reject empty and non-finite ranges', () {
     for (final create in <TensorBuffer Function()>[
       () => TensorBuffer.arange(start: 1, end: 1),
