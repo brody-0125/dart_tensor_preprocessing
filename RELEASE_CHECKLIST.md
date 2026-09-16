@@ -210,3 +210,9 @@ float32/float64/int64 regression covers the corrected result.
 SIMD normalization reproduces the same reciprocal overflow for subnormal std.
 Guarded direct-division fallback now covers float32/64, scalar/vector paths and
 tails at lengths 1/4/9/128; standard-range SIMD behavior remains unchanged.
+
+Storage contract audit: exact native clamp/wrap/truncate expectations, rejected
+NaN/Inf writes leave storage unchanged, all ten dtype bounded-view clones,
+independent copies, byte sizes and bounds validated in storage_contract_test.
+Typed-view clones preserve int64/uint64 values above 2^53. Buffer-pool/dispatcher
+and remaining SIMD utility audit are separate pending gates.

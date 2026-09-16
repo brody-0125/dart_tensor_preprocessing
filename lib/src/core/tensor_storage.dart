@@ -82,6 +82,12 @@ class TensorStorage {
   }
 
   /// Sets the element at [index] from a double [value].
+  ///
+  /// Integer storage truncates toward zero. Uint8/Uint16 clamp to their
+  /// ranges; other integer lists use native typed-list wrapping after Dart's
+  /// double-to-int conversion. NaN/infinity throw for integer storage before
+  /// writing. For exact 64-bit integers, write through the typed [data] list
+  /// instead of converting through double.
   void setFromDouble(int index, double value) {
     _checkBounds(index);
     switch (_data) {
