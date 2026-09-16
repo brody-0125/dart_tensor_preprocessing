@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Hue half-turns use an exact complementary-channel formula, preventing
+  normalized integer channels from truncating 1 to 0 due to HSV roundoff.
+  Color adjustment/jitter reject non-finite factors and validate shape inference.
+
 - RGB/grayscale/HSV output shape inference now rejects invalid ranks and
   channel counts consistently with execution.
 

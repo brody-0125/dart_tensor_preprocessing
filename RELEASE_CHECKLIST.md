@@ -104,6 +104,12 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   promoted uint8/int64 inputs, primaries/ties/gradients, batch/view variants.
   Fixed shape-inference rank/channel validation; full local network suite:
   4,021 passed, static analysis clean. Color adjustment/augmentation remains pending.
+  Color-space CI 35099984523/35099989484 passed all gates.
+  Adjustment/jitter adds 324 cases (2,789 total): fixed factors, dtype/batch/view
+  combinations, neutral jitter and a recorded seed schedule with independent
+  torch image values. Preserve documented package recipes rather than claiming
+  torchvision default equivalence. Fixed integer hue half-turn truncation,
+  non-finite factors and shape inference. Full local network suite: 4,346 passed.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

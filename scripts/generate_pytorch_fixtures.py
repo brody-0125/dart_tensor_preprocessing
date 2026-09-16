@@ -535,6 +535,56 @@ def generate():
                 for op, fn in (('grayscale', TV.rgb_to_grayscale), ('rgb_hsv', TVT._rgb2hsv), ('hsv_rgb', TVT._hsv2rgb)):
                     view_cases(f'color-{op}-{dtype}-{batched}-{variant}', x,
                                lambda z, fn=fn: fn(work(z)), {'op': op}, inplace=False)
+    for dtype in (torch.float32, torch.float64, torch.uint8, torch.int64):
+        for batched in (False, True):
+            x = (torch.arange(24).reshape(3, 2, 4) % 11).to(dtype)
+            x = x / 10 if dtype.is_floating_point else x % 2
+            if batched:
+                x = torch.stack((x, x.flip(-1)))
+            for op, factors in (('brightness', (-0.2, 0, 0.3)), ('contrast', (0, 1, 1.7)), ('saturation', (0, 1, 1.4)), ('hue', (-0.5, 0, 0.25))):
+                for factor in factors:
+                    def adjust(z, op=op, factor=factor):
+                        # Normalized integer colors contain only 0/1. Use exact
+                        # identities at quantization boundaries, avoiding HSV
+                        # roundoff turning a mathematical 1 into integer 0.
+                        if not z.is_floating_point():
+                            if (op == 'saturation' and factor >= 1) or (op == 'hue' and factor == 0):
+                                return z.clone()
+                            if op == 'hue' and abs(factor) == 0.5:
+                                return z.amax(dim=-3, keepdim=True) + z.amin(dim=-3, keepdim=True) - z
+                        y = z.double()
+                        if op == 'brightness':
+                            y = y + factor
+                        elif op == 'contrast':
+                            mean = y.mean(dim=(-2,-1), keepdim=True)
+                            y = (y - mean) * factor + mean
+                        elif op == 'saturation':
+                            if not z.is_floating_point():
+                                y = y.float()
+                            hsv = TVT._rgb2hsv(y)
+                            hsv[..., 1, :, :] = (hsv[..., 1, :, :] * factor).clamp(0, 1)
+                            y = TVT._hsv2rgb(hsv)
+                        else:
+                            if not z.is_floating_point():
+                                y = y.float()
+                            hsv = TVT._rgb2hsv(y)
+                            hsv[..., 0, :, :] = (hsv[..., 0, :, :] + factor) % 1
+                            y = TVT._hsv2rgb(hsv)
+                        return y.clamp(0, 1).to(z.dtype)
+                    view_cases(f'adjust-{op}-{dtype}-{batched}-{factor}', x, adjust, {'op': 'adjust_' + op, 'factor': factor}, inplace=False)
+            view_cases(f'jitter-zero-{dtype}-{batched}', x, lambda z: z,
+                       {'op': 'jitter_zero'}, inplace=False)
+            if dtype.is_floating_point:
+                # Record Dart's native seed-41 parameter schedule; calculate
+                # all image values independently with the torch recipes above.
+                schedule = [('hue', 0.07442255934333572), ('contrast', 0.8612890867873617),
+                            ('saturation', 1.080408081135197), ('brightness', -0.017690283284051755)]
+                def jitter(z):
+                    for operation, factor in schedule:
+                        z = adjust(z, operation, factor)
+                    return z
+                view_cases(f'jitter-seed41-{dtype}-{batched}', x, jitter,
+                           {'op': 'jitter_fixed', 'seed': 41, 'schedule': schedule}, inplace=False)
     return cases
 
 

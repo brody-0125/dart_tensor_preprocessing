@@ -7,6 +7,16 @@ source of truth for the named case prefixes below.
 
 ## Established contracts
 
+- Color adjustment retains the package's existing recipes: additive brightness,
+  per-channel-mean contrast, HSV saturation and wrapped hue, all clamped to [0,1].
+  These are not torchvision's default brightness/contrast/saturation recipes.
+  Float64 hue keeps double precision instead of torchvision adjust_hue's float32
+  conversion. Integer normalized colors are 0/1 and outputs truncate; their
+  identity and half-turn references use exact torch algebra to avoid HSV
+  roundoff crossing integer boundaries. `adjust-*` and `jitter-*` verify these
+  recipes, including a recorded native Dart seed-41 schedule with independently
+  computed torch image values. Dart seeds do not imply PyTorch RNG parity.
+
 - RGB/HSV conversion expects finite normalized channels in [0,1], as stated
   in its API documentation. Integer inputs are converted numerically to float32
   without dividing by 255; integer HSV tests therefore use binary channel values.
@@ -102,10 +112,10 @@ coverage beyond those cases remains subject to the release checklist.
 | `AbsOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `abs` |
 | `AcosOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `acos` |
 | `AddOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | binary-*/integer-* goldens: floating, integer, mixed/fractional recipes, non-finite values, offsets/strides and in-place boundaries; explicit dtype contract above |
-| `AdjustBrightnessOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
-| `AdjustContrastOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
-| `AdjustHueOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
-| `AdjustSaturationOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
+| `AdjustBrightnessOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | adjust-*/jitter-* independent recipes, normalized dtype/batch/view variants, exact integer identities, recorded native seed schedule and finite-factor/shape validation |
+| `AdjustContrastOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | adjust-*/jitter-* independent recipes, normalized dtype/batch/view variants, exact integer identities, recorded native seed schedule and finite-factor/shape validation |
+| `AdjustHueOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | adjust-*/jitter-* independent recipes, normalized dtype/batch/view variants, exact integer identities, recorded native seed schedule and finite-factor/shape validation |
+| `AdjustSaturationOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | adjust-*/jitter-* independent recipes, normalized dtype/batch/view variants, exact integer identities, recorded native seed schedule and finite-factor/shape validation |
 | `ArgMaxOp` | [lib/src/ops/argmax_op.dart](lib/src/ops/argmax_op.dart) | `core_reduce (delegated argmaxAxis) / reduce-adjacent / ties / nan` |
 | `ArgMinOp` | [lib/src/ops/argmax_op.dart](lib/src/ops/argmax_op.dart) | `core_reduce (delegated argminAxis) / reduce-adjacent / ties / nan` |
 | `AsinOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `asin` |
@@ -115,7 +125,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `CeilOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `ceil` |
 | `CenterCropOp` | [lib/src/ops/crop_op.dart](lib/src/ops/crop_op.dart) | `center-crop` |
 | `ClipOp` | [lib/src/ops/clip_op.dart](lib/src/ops/clip_op.dart) | numeric-*/clip-*/scale-*/atan2-* independent floating and integer recipes; offsets/strides, NaN/Inf, cancellation, shape/overlap and bound checks; dtype limits documented above |
-| `ColorJitterOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
+| `ColorJitterOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | adjust-*/jitter-* independent recipes, normalized dtype/batch/view variants, exact integer identities, recorded native seed schedule and finite-factor/shape validation |
 | `ContiguousOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `CosOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `cos` |
 | `DivOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | binary-*/integer-* goldens: floating, integer, mixed/fractional recipes, non-finite values, offsets/strides and in-place boundaries; explicit dtype contract above |

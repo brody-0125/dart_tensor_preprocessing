@@ -124,7 +124,15 @@ class AdjustBrightnessOp extends TransformOp with RequiresContiguous {
   final double factor;
 
   /// Creates a brightness adjustment operation.
-  AdjustBrightnessOp({required this.factor});
+  AdjustBrightnessOp({required this.factor}) {
+    if (!factor.isFinite) {
+      throw InvalidParameterException(
+        'factor',
+        factor,
+        'factor must be finite',
+      );
+    }
+  }
 
   @override
   String get name => 'AdjustBrightness(factor=$factor)';
@@ -165,7 +173,10 @@ class AdjustBrightnessOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateColorShape(inputShape, name);
+    return inputShape;
+  }
 }
 
 // ============================================================================
@@ -195,7 +206,7 @@ class AdjustContrastOp extends TransformOp with RequiresContiguous {
 
   /// Creates a contrast adjustment operation.
   AdjustContrastOp({required this.factor}) {
-    if (factor < 0) {
+    if (!factor.isFinite || factor < 0) {
       throw InvalidParameterException(
         'factor',
         factor.toString(),
@@ -288,7 +299,10 @@ class AdjustContrastOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateColorShape(inputShape, name);
+    return inputShape;
+  }
 }
 
 // ============================================================================
@@ -317,7 +331,7 @@ class AdjustSaturationOp extends TransformOp with RequiresContiguous {
 
   /// Creates a saturation adjustment operation.
   AdjustSaturationOp({required this.factor}) {
-    if (factor < 0) {
+    if (!factor.isFinite || factor < 0) {
       throw InvalidParameterException(
         'factor',
         factor.toString(),
@@ -402,7 +416,10 @@ class AdjustSaturationOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateColorShape(inputShape, name);
+    return inputShape;
+  }
 }
 
 // ============================================================================
@@ -431,7 +448,7 @@ class AdjustHueOp extends TransformOp with RequiresContiguous {
 
   /// Creates a hue adjustment operation.
   AdjustHueOp({required this.factor}) {
-    if (factor < -0.5 || factor > 0.5) {
+    if (!factor.isFinite || factor < -0.5 || factor > 0.5) {
       throw InvalidParameterException(
         'factor',
         factor.toString(),
@@ -466,6 +483,17 @@ class AdjustHueOp extends TransformOp with RequiresContiguous {
     return output;
   }
 
+  (double, double, double) _shiftHue(double r, double g, double b) {
+    if (factor == 0) return (r, g, b);
+    if (factor.abs() == 0.5) {
+      // Exact half-turn avoids HSV roundoff crossing integer truncation bounds.
+      final sum = max(r, max(g, b)) + min(r, min(g, b));
+      return (sum - r, sum - g, sum - b);
+    }
+    final (hue, sat, val) = rgbToHsv(r, g, b);
+    return hsvToRgb((hue + factor) % 1.0, sat, val);
+  }
+
   void _adjustHue3D(TensorBuffer tensor) {
     final h = tensor.shape[1];
     final w = tensor.shape[2];
@@ -476,10 +504,7 @@ class AdjustHueOp extends TransformOp with RequiresContiguous {
       final g = tensor.storage.getAsDouble(channelSize + i);
       final b = tensor.storage.getAsDouble(2 * channelSize + i);
 
-      var (hue, sat, val) = rgbToHsv(r, g, b);
-      hue = (hue + factor) % 1.0;
-      if (hue < 0) hue += 1.0;
-      final (nr, ng, nb) = hsvToRgb(hue, sat, val);
+      final (nr, ng, nb) = _shiftHue(r, g, b);
 
       tensor.storage.setFromDouble(i, nr.clamp(0.0, 1.0));
       tensor.storage.setFromDouble(channelSize + i, ng.clamp(0.0, 1.0));
@@ -505,10 +530,7 @@ class AdjustHueOp extends TransformOp with RequiresContiguous {
         final g = tensor.storage.getAsDouble(gIdx);
         final b = tensor.storage.getAsDouble(bIdx);
 
-        var (hue, sat, val) = rgbToHsv(r, g, b);
-        hue = (hue + factor) % 1.0;
-        if (hue < 0) hue += 1.0;
-        final (nr, ng, nb) = hsvToRgb(hue, sat, val);
+        final (nr, ng, nb) = _shiftHue(r, g, b);
 
         tensor.storage.setFromDouble(rIdx, nr.clamp(0.0, 1.0));
         tensor.storage.setFromDouble(gIdx, ng.clamp(0.0, 1.0));
@@ -518,7 +540,10 @@ class AdjustHueOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateColorShape(inputShape, name);
+    return inputShape;
+  }
 }
 
 // ============================================================================
@@ -583,28 +608,28 @@ class ColorJitterOp extends TransformOp with RequiresContiguous {
     this.hue,
     this.seed,
   }) {
-    if (brightness != null && brightness! < 0) {
+    if (brightness != null && (!brightness!.isFinite || brightness! < 0)) {
       throw InvalidParameterException(
         'brightness',
         brightness.toString(),
         'Brightness must be non-negative',
       );
     }
-    if (contrast != null && contrast! < 0) {
+    if (contrast != null && (!contrast!.isFinite || contrast! < 0)) {
       throw InvalidParameterException(
         'contrast',
         contrast.toString(),
         'Contrast must be non-negative',
       );
     }
-    if (saturation != null && saturation! < 0) {
+    if (saturation != null && (!saturation!.isFinite || saturation! < 0)) {
       throw InvalidParameterException(
         'saturation',
         saturation.toString(),
         'Saturation must be non-negative',
       );
     }
-    if (hue != null && (hue! < 0 || hue! > 0.5)) {
+    if (hue != null && (!hue!.isFinite || hue! < 0 || hue! > 0.5)) {
       throw InvalidParameterException(
         'hue',
         hue.toString(),
@@ -671,5 +696,8 @@ class ColorJitterOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateColorShape(inputShape, name);
+    return inputShape;
+  }
 }

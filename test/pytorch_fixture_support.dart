@@ -81,6 +81,28 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'jitter_fixed' => ColorJitterOp(
+      brightness: 0.2,
+      contrast: 0.3,
+      saturation: 0.4,
+      hue: 0.1,
+      seed: p['seed'] as int,
+    ),
+    'adjust_brightness' => AdjustBrightnessOp(
+      factor: fixtureNumber(p['factor']),
+    ),
+    'adjust_contrast' => AdjustContrastOp(factor: fixtureNumber(p['factor'])),
+    'adjust_saturation' => AdjustSaturationOp(
+      factor: fixtureNumber(p['factor']),
+    ),
+    'adjust_hue' => AdjustHueOp(factor: fixtureNumber(p['factor'])),
+    'jitter_zero' => ColorJitterOp(
+      brightness: 0,
+      contrast: 0,
+      saturation: 0,
+      hue: 0,
+      seed: 41,
+    ),
     'grayscale' => RgbToGrayscaleOp(),
     'rgb_hsv' => RgbToHsvOp(),
     'hsv_rgb' => HsvToRgbOp(),
