@@ -261,3 +261,14 @@ SIMD binary length audit: add/subtract/multiply/divide previously relied on
 assertions disabled in release builds. Runtime validation now rejects mismatched
 inputs/output before writes; the regression checks all three mismatch positions
 and preserves output sentinels across all four kernels.
+
+Utility audit closed against 269 passing tests across nine focused suites:
+dtype conversion, storage contracts, typed views, memory layout, pool,
+dispatcher, indexing, padding index helpers and SIMD. Reviewed the public
+utility implementations and documented native integer/float accumulation,
+valid-index preconditions, aliasing and pool ownership limits in COMPATIBILITY.
+Previously discovered offset, reflection, duplicate pooling, mutation dispatch,
+copy overlap and reciprocal/length defects have dedicated regressions.
+The public compatibility map now has no unfinished operation/utility rows;
+release-wide checklist reconciliation, docs/package checks and final release
+commit gates remain outstanding.

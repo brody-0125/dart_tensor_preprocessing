@@ -106,7 +106,7 @@ source of truth for the named case prefixes below.
   comparisons. `storage.getAsDouble`, tensor element access and `toList` expose
   doubles, so they cannot represent every int64 value exactly. Use typed storage
   for exact integer inspection. Gather/slice/stack/concat/split/where/tile/roll/top-k now have exact int64
-  cases; integer casting and other image movement paths are still pending.
+  cases. Factory/cast, padding, crop and flip fixtures also check exact integer movement.
 
 ## Transform operations
 
@@ -212,9 +212,22 @@ coverage beyond those cases remains subject to the release checklist.
 | `sum`, `mean`, `min`, `max`, `sumAxis`, `meanAxis`, `minAxis`, `maxAxis`, `argmax`, `argmin`, `argmaxAxis`, `argminAxis` | Independent single/multi/global reductions, keepDims, ties, NaN, offset/strided, integer overflow/adjacent int64 cases; integer axis mean rejected; global value API is double, scalar tensor shape is [1] |
 | `stack`, `concat`, `split`, `chunk`, `tensorWhere`, top-k extension | Independent values and exact int64, offsets/strides, split/chunk part counts, top-k values/indices/NaN/ties; no broadcasting |
 | `TensorViewExtension` (`sliceFirst`, `isViewable`, `toChannelsLast`, `toChannelsFirst`, `flatten`, `select`, `unbind`, `narrow`) | `view-select/unbind/narrow-*` cover values, exact integers, offset/strided storage and alias identity; vector select/unbind retain [1]. Channel conversion round-trip/flatten preserve offset, exact int64 values and shared storage; native typed-view, view-contract and memory-layout tests cover invalid ranks, slice bounds, strides and isViewable. |
-| `DType`, `MemoryFormat`, `TensorStorage`, typed views, buffer pool, dtype dispatcher, tensor indexing, `SimdOps` | Native storage/utility contracts, not separate PyTorch numerical operations; dtype/memory/SIMD-tail audit pending |
+| `DType`, `MemoryFormat`, `TensorStorage`, typed views, buffer pool, dtype dispatcher, tensor indexing, `SimdOps` | Native contracts verified in dtype_conversion, storage_contract, typed_data_views, memory_layout, buffer_pool, dtype_dispatcher, tensor_indexing, index_utils and simd_ops tests (269 passing). SIMD offset/alignment/tails, overlapping copy, runtime length validation and reciprocal extremes are covered. |
 | `TransformOp`, `InPlaceTransform`, `RequiresContiguous`, `OperationCapabilities`, error types/messages | Native composition/validation contracts; tests must cover invalid arguments and mutation boundaries |
 | `TensorPipeline` run/runAsync/call/shape validation/composition and `PipelinePresets` factories | All presets including custom variants use independent goldens in sync/forced isolate/fallback modes. Representative fused pipelines reuse float32/64/int64 goldens for CHW/NCHW offset/strided inputs in all three execution modes. Native pipeline tests cover composition, callable syntax and shape inference. |
 
 No row marked pending may be treated as passed solely because another row or
 CI is green. Finish the pending audit before changing the package to 1.0.0.
+
+### Low-level utility scope
+
+`TensorIndexer` performs index arithmetic on valid dimensions/coordinates; it
+is not a checked tensor accessor. Padding index helpers require positive sizes.
+SIMD binary kernels require equal lengths. Use separate output buffers or exact
+in-place operands; partial overlap is supported by `SimdOps.copy`, not promised
+by arithmetic kernels. SIMD float32 reductions accumulate vector lanes in
+float32 and need not match double summation bit-for-bit. BufferPool transfers
+ownership on release; do not continue using released buffers or separately
+release aliases. DType integer behavior follows native Dart typed lists; this
+release's oracle/CI support claim is native Linux/macOS/Windows, not JavaScript
+64-bit integer equivalence.
