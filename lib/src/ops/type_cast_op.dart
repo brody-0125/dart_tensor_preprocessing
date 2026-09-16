@@ -7,6 +7,10 @@ import '../exceptions/tensor_exceptions.dart';
 import 'transform_op.dart';
 
 /// Casts tensor element values to a different data type.
+///
+/// Floating values round halfway away from zero when cast to integers.
+/// Int8/int16/uint8/uint16/uint32 destinations clamp; other integer
+/// destinations use typed-buffer wrapping. Integer sources retain precision.
 class TypeCastOp extends TransformOp with RequiresContiguous {
   /// The target data type to cast to.
   final DType targetDtype;
@@ -50,7 +54,7 @@ class TypeCastOp extends TransformOp with RequiresContiguous {
     final newData = targetDtype.createBuffer(numel);
 
     for (int i = 0; i < numel; i++) {
-      final value = contiguous.storage.getAsDouble(i);
+      final value = (contiguous.storage.data as List<num>)[i];
       _setTypedDataValue(newData, i, value);
     }
 
@@ -60,12 +64,12 @@ class TypeCastOp extends TransformOp with RequiresContiguous {
     );
   }
 
-  void _setTypedDataValue(TypedData data, int index, double value) {
+  void _setTypedDataValue(TypedData data, int index, num value) {
     switch (data) {
       case final Float32List list:
-        list[index] = value;
+        list[index] = value.toDouble();
       case final Float64List list:
-        list[index] = value;
+        list[index] = value.toDouble();
       case final Int8List list:
         list[index] = value.round().clamp(-128, 127);
       case final Int16List list:

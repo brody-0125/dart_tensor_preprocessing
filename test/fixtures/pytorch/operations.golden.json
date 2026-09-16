@@ -132720,5 +132720,7435 @@
     },
     "atol": 1e-06,
     "rtol": 1e-05
+  },
+  {
+    "name": "factory-eye-torch.float32",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "float32",
+      "values": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.float32-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.float32-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        0.5,
+        9.5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.float32-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        0.5,
+        2.0,
+        3.5,
+        5.0,
+        6.5,
+        8.0,
+        9.5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.float32-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "float32",
+      "values": [
+        0.5,
+        1.25,
+        2.0,
+        2.75,
+        3.5,
+        4.25,
+        5.0,
+        5.75,
+        6.5,
+        7.25,
+        8.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.float32--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "float32",
+      "values": [
+        9.5,
+        8.25,
+        7.0,
+        5.75,
+        4.5,
+        3.25,
+        2.0,
+        0.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-eye-torch.float64",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "float64",
+      "values": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "factory-linspace-torch.float64-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.5
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "factory-linspace-torch.float64-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        0.5,
+        9.5
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "factory-linspace-torch.float64-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        0.5,
+        2.0,
+        3.5,
+        5.0,
+        6.5,
+        8.0,
+        9.5
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "factory-arange-torch.float64-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "float64",
+      "values": [
+        0.5,
+        1.25,
+        2.0,
+        2.75,
+        3.5,
+        4.25,
+        5.0,
+        5.75,
+        6.5,
+        7.25,
+        8.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "factory-arange-torch.float64--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "float64",
+      "values": [
+        9.5,
+        8.25,
+        7.0,
+        5.75,
+        4.5,
+        3.25,
+        2.0,
+        0.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "factory-eye-torch.int8",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "int8",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int8-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int8-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int8-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.int8-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.int8--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "int8",
+      "values": [
+        9,
+        8,
+        7,
+        5,
+        4,
+        3,
+        2,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-eye-torch.int16",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "int16",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int16-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int16-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int16-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.int16-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.int16--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "int16",
+      "values": [
+        9,
+        8,
+        7,
+        5,
+        4,
+        3,
+        2,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-eye-torch.int32",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "int32",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int32-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int32-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int32-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.int32-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.int32--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "int32",
+      "values": [
+        9,
+        8,
+        7,
+        5,
+        4,
+        3,
+        2,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-eye-torch.int64",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "int64",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int64-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int64-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.int64-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.int64-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.int64--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "int64",
+      "values": [
+        9,
+        8,
+        7,
+        5,
+        4,
+        3,
+        2,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-eye-torch.uint8",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "uint8",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint8-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint8-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint8-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.uint8-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.uint8--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "uint8",
+      "values": [
+        9,
+        8,
+        7,
+        5,
+        4,
+        3,
+        2,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-eye-torch.uint16",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "uint16",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint16-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint16-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint16-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.uint16-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.uint16--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "uint16",
+      "values": [
+        9,
+        8,
+        7,
+        5,
+        4,
+        3,
+        2,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-eye-torch.uint32",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "uint32",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint32-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint32-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint32-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.uint32-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.uint32--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "uint32",
+      "values": [
+        9,
+        8,
+        7,
+        5,
+        4,
+        3,
+        2,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-eye-torch.uint64",
+    "op": "core_factory",
+    "params": {
+      "factory": "eye",
+      "n": 3,
+      "m": 5
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        3,
+        5
+      ],
+      "dtype": "uint64",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint64-1",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint64-2",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 2
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-linspace-torch.uint64-7",
+    "op": "core_factory",
+    "params": {
+      "factory": "linspace",
+      "start": 0.5,
+      "end": 9.5,
+      "steps": 7
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.uint64-0.75",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 0.5,
+      "end": 8.5,
+      "step": 0.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        11
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-arange-torch.uint64--1.25",
+    "op": "core_factory",
+    "params": {
+      "factory": "arange",
+      "start": 9.5,
+      "end": 0.5,
+      "step": -1.25
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        8
+      ],
+      "dtype": "uint64",
+      "values": [
+        9,
+        8,
+        7,
+        5,
+        4,
+        3,
+        2,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.float32",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.float32-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.float32-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float32-torch.float64",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "cast-torch.float32-torch.float64-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.float64-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float32-torch.int8",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int8",
+      "values": [
+        -128,
+        -128,
+        -2,
+        1,
+        127,
+        127
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.int8-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int8",
+      "values": [
+        -128,
+        -128,
+        -2,
+        1,
+        127,
+        127
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.int8-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int8",
+      "values": [
+        -128,
+        -128,
+        -2,
+        1,
+        127,
+        127
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float32-torch.int16",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int16",
+      "values": [
+        -32768,
+        -129,
+        -2,
+        1,
+        256,
+        32767
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.int16-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int16",
+      "values": [
+        -32768,
+        -129,
+        -2,
+        1,
+        256,
+        32767
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.int16-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int16",
+      "values": [
+        -32768,
+        -129,
+        -2,
+        1,
+        256,
+        32767
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float32-torch.int32",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int32",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.int32-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int32",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.int32-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int32",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float32-torch.int64",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.int64-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.int64-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float32-torch.uint8",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        255,
+        255
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.uint8-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        255,
+        255
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.uint8-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        255,
+        255
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float32-torch.uint16",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65535
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.uint16-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65535
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.uint16-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65535
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float32-torch.uint32",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.uint32-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.uint32-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float32-torch.uint64",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint64",
+      "values": [
+        32770,
+        129,
+        2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float32-torch.uint64-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint64",
+      "values": [
+        32770,
+        129,
+        2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float32-torch.uint64-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint64",
+      "values": [
+        32770,
+        129,
+        2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        32769.5,
+        0.0,
+        128.5,
+        0.0,
+        1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.float32",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float64-torch.float32-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.float32-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.float64",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "cast-torch.float64-torch.float64-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.float64-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.int8",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int8",
+      "values": [
+        -128,
+        -128,
+        -2,
+        1,
+        127,
+        127
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float64-torch.int8-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int8",
+      "values": [
+        -128,
+        -128,
+        -2,
+        1,
+        127,
+        127
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.int8-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int8",
+      "values": [
+        -128,
+        -128,
+        -2,
+        1,
+        127,
+        127
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.int16",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int16",
+      "values": [
+        -32768,
+        -129,
+        -2,
+        1,
+        256,
+        32767
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float64-torch.int16-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int16",
+      "values": [
+        -32768,
+        -129,
+        -2,
+        1,
+        256,
+        32767
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.int16-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int16",
+      "values": [
+        -32768,
+        -129,
+        -2,
+        1,
+        256,
+        32767
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.int32",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int32",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float64-torch.int32-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int32",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.int32-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int32",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.int64",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float64-torch.int64-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.int64-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        -32770,
+        -129,
+        -2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.uint8",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        255,
+        255
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float64-torch.uint8-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        255,
+        255
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.uint8-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        255,
+        255
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.uint16",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65535
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float64-torch.uint16-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65535
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.uint16-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65535
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.uint32",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float64-torch.uint32-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.uint32-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        -128.5,
+        -1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -32769.5,
+        0.0,
+        -128.5,
+        0.0,
+        -1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.float64-torch.uint64",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint64",
+      "values": [
+        32770,
+        129,
+        2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.float64-torch.uint64-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint64",
+      "values": [
+        32770,
+        129,
+        2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.float64-torch.uint64-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        32769.5,
+        128.5,
+        1.5,
+        0.5,
+        255.5,
+        65536.5
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint64",
+      "values": [
+        32770,
+        129,
+        2,
+        1,
+        256,
+        65537
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        32769.5,
+        0.0,
+        128.5,
+        0.0,
+        1.5,
+        0.0,
+        0.5,
+        0.0,
+        255.5,
+        0.0,
+        65536.5,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.float32",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -9007199254740992.0,
+        -257.0,
+        -1.0,
+        0.0,
+        257.0,
+        9007199254740992.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.int64-torch.float32-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -9007199254740992.0,
+        -257.0,
+        -1.0,
+        0.0,
+        257.0,
+        9007199254740992.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.float32-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float32",
+      "values": [
+        -9007199254740992.0,
+        -257.0,
+        -1.0,
+        0.0,
+        257.0,
+        9007199254740992.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        0,
+        -257,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.float64",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -9007199254740992.0,
+        -257.0,
+        -1.0,
+        0.0,
+        257.0,
+        9007199254740992.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "cast-torch.int64-torch.float64-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -9007199254740992.0,
+        -257.0,
+        -1.0,
+        0.0,
+        257.0,
+        9007199254740992.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.float64-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "float64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "float64",
+      "values": [
+        -9007199254740992.0,
+        -257.0,
+        -1.0,
+        0.0,
+        257.0,
+        9007199254740992.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        0,
+        -257,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.int8",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int8",
+      "values": [
+        -128,
+        -128,
+        -1,
+        0,
+        127,
+        127
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.int64-torch.int8-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int8",
+      "values": [
+        -128,
+        -128,
+        -1,
+        0,
+        127,
+        127
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.int8-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int8",
+      "values": [
+        -128,
+        -128,
+        -1,
+        0,
+        127,
+        127
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        0,
+        -257,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.int16",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int16",
+      "values": [
+        -32768,
+        -257,
+        -1,
+        0,
+        257,
+        32767
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.int64-torch.int16-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int16",
+      "values": [
+        -32768,
+        -257,
+        -1,
+        0,
+        257,
+        32767
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.int16-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int16",
+      "values": [
+        -32768,
+        -257,
+        -1,
+        0,
+        257,
+        32767
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        0,
+        -257,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.int32",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int32",
+      "values": [
+        -1,
+        -257,
+        -1,
+        0,
+        257,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.int64-torch.int32-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int32",
+      "values": [
+        -1,
+        -257,
+        -1,
+        0,
+        257,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.int32-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int32",
+      "values": [
+        -1,
+        -257,
+        -1,
+        0,
+        257,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        0,
+        -257,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.int64",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.int64-torch.int64-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.int64-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "int64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        0,
+        -257,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.uint8",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        255,
+        255
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.int64-torch.uint8-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        255,
+        255
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.uint8-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint8"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        255,
+        255
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        0,
+        -257,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.uint16",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        257,
+        65535
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.int64-torch.uint16-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        257,
+        65535
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.uint16-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint16"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        257,
+        65535
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        0,
+        -257,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.uint32",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        257,
+        4294967295
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.int64-torch.uint32-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        257,
+        4294967295
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.uint32-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint32"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        -257,
+        -1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        257,
+        4294967295
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "-9007199254740993",
+        0,
+        -257,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "cast-torch.int64-torch.uint64",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        257,
+        1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint64",
+      "values": [
+        "9007199254740993",
+        257,
+        1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "cast-torch.int64-torch.uint64-offset",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        257,
+        1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint64",
+      "values": [
+        "9007199254740993",
+        257,
+        1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        257,
+        1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        257,
+        1,
+        0,
+        257,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "cast-torch.int64-torch.uint64-strided",
+    "op": "core_cast",
+    "params": {
+      "op": "core_cast",
+      "dtype": "uint64"
+    },
+    "input": {
+      "shape": [
+        6
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        257,
+        1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        6
+      ],
+      "dtype": "uint64",
+      "values": [
+        "9007199254740993",
+        257,
+        1,
+        0,
+        257,
+        "9007199254740993"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        6,
+        2
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        0,
+        257,
+        0,
+        1,
+        0,
+        0,
+        0,
+        257,
+        0,
+        "9007199254740993",
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
   }
 ]

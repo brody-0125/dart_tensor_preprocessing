@@ -248,10 +248,11 @@ TensorBuffer _eyeImpl(int n, {int? m, DType dtype = DType.float32}) {
     throw InvalidParameterException('m', cols, 'm must be positive');
   }
 
-  final data = Float32List(n * cols);
+  final data = dtype.createBuffer(n * cols);
+  final values = data as List<num>;
   final diagSize = n < cols ? n : cols;
   for (int i = 0; i < diagSize; i++) {
-    data[i * cols + i] = 1.0;
+    values[i * cols + i] = dtype.isInteger ? 1 : 1.0;
   }
 
   return TensorBuffer(
@@ -262,7 +263,8 @@ TensorBuffer _eyeImpl(int n, {int? m, DType dtype = DType.float32}) {
 
 /// Creates a 1D tensor with evenly spaced values.
 ///
-/// Equivalent to `torch.linspace()` in PyTorch.
+/// Computes a double sequence, then truncates integer outputs toward zero.
+/// Finite endpoints and positive steps are required.
 ///
 /// ```dart
 /// final tensor = TensorBuffer.linspace(0.0, 1.0, steps: 5);
@@ -278,14 +280,24 @@ TensorBuffer _linspaceImpl(
     throw InvalidParameterException('steps', steps, 'steps must be >= 1');
   }
 
-  final data = Float32List(steps);
+  if (!start.isFinite || !end.isFinite) {
+    throw InvalidParameterException('range', [
+      start,
+      end,
+    ], 'endpoints must be finite');
+  }
+  final data = dtype.createBuffer(steps);
+  final values = data as List<num>;
 
   if (steps == 1) {
-    data[0] = start;
+    values[0] = dtype.isInteger ? start.toInt() : start;
   } else {
     final step = (end - start) / (steps - 1);
     for (int i = 0; i < steps; i++) {
-      data[i] = start + i * step;
+      final value = i < steps ~/ 2
+          ? start + i * step
+          : end - (steps - i - 1) * step;
+      values[i] = dtype.isInteger ? value.toInt() : value;
     }
   }
 
@@ -297,7 +309,8 @@ TensorBuffer _linspaceImpl(
 
 /// Creates a 1D tensor with values in a range with a given step.
 ///
-/// Equivalent to `torch.arange()` in PyTorch.
+/// Computes a double sequence excluding the end, then truncates integer
+/// outputs toward zero. Finite values and a nonempty range are required.
 ///
 /// ```dart
 /// final tensor = TensorBuffer.arange(start: 0.0, end: 5.0);
@@ -312,6 +325,13 @@ TensorBuffer _arangeImpl({
   double step = 1.0,
   DType dtype = DType.float32,
 }) {
+  if (!start.isFinite || !end.isFinite || !step.isFinite) {
+    throw InvalidParameterException('range', [
+      start,
+      end,
+      step,
+    ], 'range values must be finite');
+  }
   if (step == 0) {
     throw InvalidParameterException('step', step, 'step cannot be zero');
   }
@@ -325,15 +345,17 @@ TensorBuffer _arangeImpl({
 
   final numSteps = ((end - start) / step).ceil();
   if (numSteps <= 0) {
-    return TensorBuffer(
-      storage: TensorStorage(Float32List(0), dtype),
-      shape: List.unmodifiable([0]),
-    );
+    throw InvalidParameterException('range', [
+      start,
+      end,
+    ], 'empty tensors are not supported');
   }
 
-  final data = Float32List(numSteps);
+  final data = dtype.createBuffer(numSteps);
+  final values = data as List<num>;
   for (int i = 0; i < numSteps; i++) {
-    data[i] = start + i * step;
+    final value = start + i * step;
+    values[i] = dtype.isInteger ? value.toInt() : value;
   }
 
   return TensorBuffer(

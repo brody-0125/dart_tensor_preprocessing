@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Allocate eye/linspace/arange using the requested dtype; reject non-finite or
+  empty sequences explicitly. Document double-sequence integer truncation.
+- Preserve exact integer sources in TypeCastOp, including values beyond 2^53;
+  retain the documented legacy rounding, clamping and wrapping rules.
+
 - Bound contiguous storage kernels to the tensor's offset and element count,
   including in-place operations, indexing, concatenation and isolate transport.
 - Correct preset HWC/NHWC input order; preserve existing batches and avoid

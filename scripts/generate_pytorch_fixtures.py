@@ -327,6 +327,39 @@ def generate():
     for h, w in ((4, 4), (2, 2), (9, 13)):
         x = torch.arange(7 * 11, dtype=torch.float32).reshape(1, 7, 11)
         add(f"center-crop-{h}x{w}", "center_crop", x, TV.center_crop(x, [h, w]), {"height": h, "width": w})
+    # Sequence factories compute in double, then truncate integer destinations.
+    # This intentionally differs from torch's integer-endpoint linspace kernel.
+    for dtype in (torch.float32, torch.float64, torch.int8, torch.int16,
+                  torch.int32, torch.int64, torch.uint8, torch.uint16,
+                  torch.uint32, torch.uint64):
+        dummy = torch.zeros(1, dtype=dtype)
+        add(f"factory-eye-{dtype}", "core_factory", dummy, torch.eye(3, 5, dtype=torch.int64).to(dtype),
+            {"factory": "eye", "n": 3, "m": 5})
+        for steps in (1, 2, 7):
+            add(f"factory-linspace-{dtype}-{steps}", "core_factory", dummy,
+                torch.linspace(0.5, 9.5, steps, dtype=torch.float64).to(dtype),
+                {"factory": "linspace", "start": 0.5, "end": 9.5, "steps": steps})
+        for start, end, step in ((0.5, 8.5, 0.75), (9.5, 0.5, -1.25)):
+            add(f"factory-arange-{dtype}-{step}", "core_factory", dummy,
+                torch.arange(start, end, step, dtype=torch.float64).to(dtype),
+                {"factory": "arange", "start": start, "end": end, "step": step})
+
+    # Existing public cast contract is half-away rounding, with selected clamps.
+    clamps = {torch.int8: (-128, 127), torch.int16: (-32768, 32767),
+              torch.uint8: (0, 255), torch.uint16: (0, 65535), torch.uint32: (0, 4294967295)}
+    for source in (torch.float32, torch.float64, torch.int64):
+        x = torch.tensor([-9007199254740993, -257, -1, 0, 257, 9007199254740993], dtype=source) if source == torch.int64 else torch.tensor([-32769.5, -128.5, -1.5, 0.5, 255.5, 65536.5], dtype=source)
+        for dest in (torch.float32, torch.float64, torch.int8, torch.int16, torch.int32,
+                     torch.int64, torch.uint8, torch.uint16, torch.uint32, torch.uint64):
+            def cast(z, dest=dest):
+                if dest in (torch.float32, torch.float64) or dest == z.dtype:
+                    return z.to(dest)
+                y = torch.copysign(torch.floor(z.abs() + 0.5), z) if z.is_floating_point() else z
+                if dest in clamps:
+                    y = y.clamp(*clamps[dest])
+                return y.to(dest)
+            view_cases(f"cast-{source}-{dest}", x.abs() if dest == torch.uint64 else x, cast,
+                       {"op": "core_cast", "dtype": str(dest).removeprefix("torch.")}, inplace=False)
     return cases
 
 

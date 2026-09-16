@@ -7,6 +7,18 @@ source of truth for the named case prefixes below.
 
 ## Established contracts
 
+- `eye` supports every dtype. `linspace`/`arange` compute a double sequence,
+  then truncate for integer destinations; this is deliberately different from
+  PyTorch's integer-endpoint kernels. Endpoints/step must be finite and the
+  sequence nonempty. Public arguments are doubles, so they cannot express every
+  int64 value. `factory-*` goldens cover all ten dtypes.
+- `TypeCastOp` preserves same-dtype view identity. Integer sources are read
+  exactly; floating sources round halfway away from zero for integer outputs.
+  Int8/int16/uint8/uint16/uint32 destinations clamp, while int32/int64/uint64
+  use typed-buffer wrapping. `cast-*` goldens express this existing contract
+  with explicit torch rounding/clamping recipes. Native Dart exposes uint64
+  high-bit values as signed integers; no JavaScript 64-bit parity is promised.
+
 - CPU tensor oracle: torch 2.10.0+cpu / torchvision 0.25.0+cpu, float32/64.
   Cases assert shape, dtype, every value, and NaN/infinity classification.
 - Image presets: RGB uint8 or float32/64 HWC/NHWC input, float32 output;
@@ -123,7 +135,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `ToImageOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | **Pending independent oracle / contract audit** |
 | `ToTensorOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | **Pending independent oracle / contract audit** |
 | `TopKOp` | [lib/src/ops/topk_op.dart](lib/src/ops/topk_op.dart) | `index-*core_topk / topk-special / topk-ties` |
-| `TypeCastOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | **Pending independent oracle / contract audit** |
+| `TypeCastOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | `cast-*`: all destination dtypes, float32/64 and exact int64 sources, offset/strided inputs; native identity/wrapping regressions |
 | `UnsqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
 | `VerticalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
 | `WhereOp` | [lib/src/ops/where_op.dart](lib/src/ops/where_op.dart) | `index-*where` |
@@ -134,7 +146,7 @@ coverage beyond those cases remains subject to the release checklist.
 |---|---|
 | `TensorBuffer` constructor; shape/strides/storageOffset/memoryFormat; dtype/rank/numel/sizeInBytes/isContiguous/data/dataAsFloat32List | Offset and storage regression tests; constructor bounds, shape metadata and scalar/empty consistency audit pending |
 | `transpose`, `reshape`, `squeeze`, `unsqueeze`, `contiguous`, `clone`, element access, `toList`, `computeStrides` | Core clone/contiguous/transpose/reshape have float32/64/int32/int64 offset and strided goldens; squeeze/unsqueeze/scalar and alias-contract audit pending |
-| `zeros`, `ones`, `full`, `uninitialized`, `eye`, `linspace`, `arange`, `fromFloat32List`, `fromFloat64List`, `fromUint8List` | Existing factory tests; dtype-wide independent goldens pending |
+| `zeros`, `ones`, `full`, `uninitialized`, `eye`, `linspace`, `arange`, `fromFloat32List`, `fromFloat64List`, `fromUint8List` | `factory-*` covers eye/linspace/arange for all ten dtypes; remaining factory contracts under audit |
 | `random`, `randn` | Deliberately different RNG; documented contract and mathematical regression suite above |
 | `sum`, `mean`, `min`, `max`, `sumAxis`, `meanAxis`, `minAxis`, `maxAxis`, `argmax`, `argmin`, `argmaxAxis`, `argminAxis` | Independent single/multi/global reductions, keepDims, ties, NaN, offset/strided, integer overflow/adjacent int64 cases; integer axis mean rejected; global value API is double, scalar tensor shape is [1] |
 | `stack`, `concat`, `split`, `chunk`, `tensorWhere`, top-k extension | Independent values and exact int64, offsets/strides, split/chunk part counts, top-k values/indices/NaN/ties; no broadcasting |

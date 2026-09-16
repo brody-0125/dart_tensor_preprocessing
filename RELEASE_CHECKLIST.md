@@ -44,8 +44,12 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   Added 752 cases (1,307 total): copy/index operations with exact int64,
   scalar/single/multi-axis reductions, dtypes, NaN/ties, offsets/strides,
   top-k indices and integer overflow/adjacent values. Fixed discovered copy,
-  reduction, repeated-roll and index validation defects. Factory/casting,
-  squeeze/unsqueeze/scalar and remaining alias contracts are still pending.
+  reduction, repeated-roll and index validation defects. CI runs 35094405848
+  and 35094410310 passed, including exact fixed-CPU regeneration.
+  Added another 150 factory/cast cases (1,457 total): all destination dtypes,
+  sequence truncation, legacy cast rounding/clamps and exact integer movement.
+  Fixed dtype allocation in eye/linspace/arange and integer cast precision.
+  Remaining factories, squeeze/unsqueeze/scalar and alias contracts are pending.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

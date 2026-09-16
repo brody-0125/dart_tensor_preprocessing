@@ -400,7 +400,9 @@ class TensorBuffer {
 
   /// Creates a 1D tensor with evenly spaced values.
   ///
-  /// Equivalent to `torch.linspace()` in PyTorch.
+  /// Computes a double sequence with both endpoints included (start only for
+  /// one step), then truncates integer outputs toward zero. Finite endpoints
+  /// and positive steps are required; integer PyTorch linspace differs.
   ///
   /// ```dart
   /// final tensor = TensorBuffer.linspace(0.0, 1.0, steps: 5);
@@ -415,7 +417,8 @@ class TensorBuffer {
 
   /// Creates a 1D tensor with values in a range with a given step.
   ///
-  /// Equivalent to `torch.arange()` in PyTorch.
+  /// Computes a double sequence excluding the end, then truncates integer
+  /// outputs toward zero. Finite values and a nonempty range are required.
   ///
   /// ```dart
   /// final tensor = TensorBuffer.arange(start: 0.0, end: 5.0);

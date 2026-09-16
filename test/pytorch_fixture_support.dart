@@ -190,6 +190,29 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
 TensorBuffer fixtureCoreOperation(Map<String, dynamic> c, TensorBuffer input) {
   final p = c['params'] as Map<String, dynamic>;
   switch (c['op']) {
+    case 'core_cast':
+      return TypeCastOp(DType.values.byName(p['dtype'] as String))(input);
+    case 'core_factory':
+      return switch (p['factory']) {
+        'eye' => TensorBuffer.eye(
+          p['n'] as int,
+          m: p['m'] as int,
+          dtype: input.dtype,
+        ),
+        'linspace' => TensorBuffer.linspace(
+          fixtureNumber(p['start']),
+          fixtureNumber(p['end']),
+          steps: p['steps'] as int,
+          dtype: input.dtype,
+        ),
+        'arange' => TensorBuffer.arange(
+          start: fixtureNumber(p['start']),
+          end: fixtureNumber(p['end']),
+          step: fixtureNumber(p['step']),
+          dtype: input.dtype,
+        ),
+        _ => throw StateError('Unknown factory'),
+      };
     case 'core_reduce':
       final keep = p['keep'] as bool? ?? false;
       final axes = (p['axes'] as List?)?.cast<int>();
