@@ -98,6 +98,70 @@ def generate():
             x = torch.tensor([[1000, 999, 998], [-1000, -999, -998]], dtype=dtype)
             add(f"softmax-{dtype_name}-{axis}", "softmax", x, F.softmax(x, dim=axis), {"axis": axis})
 
+    # Normalization: independent torch calls, affine parameters, CHW/NCHW,
+    # constant inputs, offset mutation sentinels and non-contiguous views.
+    def norm_cases(name, x, fn, params):
+        y = fn(x)
+        add(name, params["op"], x, y, params)
+        base = torch.cat((x.new_tensor([-777, -555]), x.flatten(), x.new_tensor([-333])))
+        before = tensor(base)
+        base[2:-1] = y.flatten()
+        add(name + "-offset", params["op"], x, y, params, base=before,
+            offset=2, inplace=True, expected_base=tensor(base))
+        backing = x.transpose(-1, -2).contiguous()
+        view = backing.transpose(-1, -2)
+        add(name + "-strided", params["op"], view, fn(view), params,
+            base=tensor(backing), offset=0, strides=list(view.stride()))
+
+    for dtype in (torch.float32, torch.float64):
+        for batched in (False, True):
+            shape = (2, 4, 2, 3) if batched else (4, 2, 3)
+            for variant in ("plain", "affine", "constant"):
+                x = (torch.arange(math.prod(shape), dtype=dtype).reshape(shape) % 17 - 8) / 4
+                if variant == "constant":
+                    x = torch.full_like(x, 0.25)
+                eps = 0.125 if variant == "affine" else 1e-5
+                affine = variant != "plain"
+                weight = torch.tensor([0.5, -1, 2, 0], dtype=dtype) if affine else None
+                bias = torch.tensor([-0.25, 0.5, 1, -2], dtype=dtype) if affine else None
+                mean = torch.tensor([0.5, -1, 2, 0], dtype=dtype)
+                var = torch.tensor([0.5, 0, 2, 4], dtype=dtype)
+                kw = {"eps": eps, "channels": 4,
+                      "weight": weight.tolist() if affine else None,
+                      "bias": bias.tolist() if affine else None}
+                def image_norm(z, fn):
+                    return fn(z) if batched else fn(z.unsqueeze(0)).squeeze(0)
+                recipes = [
+                    ("batch_norm", lambda z: image_norm(z, lambda v: F.batch_norm(v, mean, var, weight, bias, training=False, eps=eps)),
+                     {**kw, "mean": mean.tolist(), "variance": var.tolist()}),
+                    ("instance_norm", lambda z: image_norm(z, lambda v: F.instance_norm(v, weight=weight, bias=bias, eps=eps)), kw),
+                    ("group_norm", lambda z: image_norm(z, lambda v: F.group_norm(v, 2, weight, bias, eps)), {**kw, "groups": 2}),
+                    ("normalize", lambda z: TV.normalize(z, mean.tolist(), [0.5, 1, 2, 4]),
+                     {"mean": mean.tolist(), "std": [0.5, 1, 2, 4]})]
+                layer_weight = torch.tensor([[0.5, 1, -1], [2, 0, 0.25]], dtype=dtype) if affine else None
+                layer_bias = torch.tensor([[1, -1, 0], [0.5, 2, -2]], dtype=dtype) if affine else None
+                layer_kw = {"shape": [2, 3], "eps": eps,
+                            "weight": layer_weight.flatten().tolist() if affine else None,
+                            "bias": layer_bias.flatten().tolist() if affine else None}
+                recipes.extend([
+                    ("layer_norm", lambda z: F.layer_norm(z, [2, 3], layer_weight, layer_bias, eps), layer_kw),
+                    ("rms_norm", lambda z: F.rms_norm(z, [2, 3], layer_weight, eps), layer_kw)])
+                for op, fn, params in recipes:
+                    norm_cases(f"{op}-{dtype}-batch{batched}-{variant}", x, fn, {**params, "op": op})
+        for order in (1.0, 2.0, 3.0, float("inf")):
+            for axis in (0, -1):
+                x = torch.tensor([[0, 0, 0], [0.01, -0.02, 0.03], [3, -4, 5]], dtype=dtype)
+                params = {"op": "lp_normalize", "p": encode_number(order), "dim": axis, "eps": 0.125}
+                norm_cases(f"lp-{dtype}-p{order}-dim{axis}", x,
+                           lambda z: F.normalize(z, p=order, dim=axis, eps=0.125), params)
+
+    for dtype in (torch.float32, torch.float64):
+        x = torch.tensor([[float("nan"), 1], [float("inf"), 1], [0, 0]], dtype=dtype)
+        for order in (1.0, 2.0, float("inf")):
+            add(f"lp-special-{dtype}-{order}", "lp_normalize", x,
+                F.normalize(x, p=order, dim=-1, eps=0.125),
+                {"p": encode_number(order), "dim": -1, "eps": 0.125})
+
     for dtype in (torch.float32, torch.float64):
         x = torch.arange(45, dtype=dtype).reshape(3, 3, 5) / 7
         add(f"shortest-{dtype}", "resize_shortest", x,

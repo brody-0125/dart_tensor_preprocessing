@@ -147,7 +147,8 @@ TensorBuffer _fullImpl(
 
 /// Creates a tensor with random values uniformly distributed in [0, 1).
 ///
-/// Equivalent to `torch.rand()` in PyTorch.
+/// Uniform float32/float64 values. Seeds are reproducible within this package,
+/// but do not reproduce PyTorch random sequences.
 ///
 /// ```dart
 /// final tensor = TensorBuffer.random([3, 224, 224]);
@@ -160,22 +161,33 @@ TensorBuffer _randomImpl(
 }) {
   TensorBuffer._validateShapeStatic(shape);
   final numel = shape.fold(1, (a, b) => a * b);
-  final data = Float32List(numel);
+  if (!dtype.isFloatingPoint) {
+    throw InvalidParameterException(
+      'dtype',
+      dtype,
+      'Random values require float32 or float64',
+    );
+  }
+  final data = dtype.createBuffer(numel) as List<double>;
   final rng = seed != null ? _SeededRandom(seed) : _SeededRandom.system();
 
   for (int i = 0; i < numel; i++) {
-    data[i] = rng.nextDouble();
+    // A valid double below one can round to one in Float32 storage.
+    do {
+      data[i] = rng.nextDouble();
+    } while (data[i] == 1.0);
   }
 
   return TensorBuffer(
-    storage: TensorStorage(data, dtype),
+    storage: TensorStorage(data as TypedData, dtype),
     shape: List.unmodifiable(shape),
   );
 }
 
 /// Creates a tensor with random values from a standard normal distribution N(0, 1).
 ///
-/// Equivalent to `torch.randn()` in PyTorch.
+/// Normal float32/float64 values. Seeds are reproducible within this package,
+/// but do not reproduce PyTorch random sequences.
 ///
 /// ```dart
 /// final tensor = TensorBuffer.randn([3, 224, 224]);
@@ -188,25 +200,33 @@ TensorBuffer _randnImpl(
 }) {
   TensorBuffer._validateShapeStatic(shape);
   final numel = shape.fold(1, (a, b) => a * b);
-  final data = Float32List(numel);
+  if (!dtype.isFloatingPoint) {
+    throw InvalidParameterException(
+      'dtype',
+      dtype,
+      'Random values require float32 or float64',
+    );
+  }
+  final data = dtype.createBuffer(numel) as List<double>;
   final rng = seed != null ? _SeededRandom(seed) : _SeededRandom.system();
 
   // Box-Muller transform for normal distribution
   for (int i = 0; i < numel; i += 2) {
-    final u1 = rng.nextDouble();
+    var u1 = rng.nextDouble();
+    while (u1 == 0) {
+      u1 = rng.nextDouble();
+    }
     final u2 = rng.nextDouble();
-    // Avoid log(0)
-    final safeU1 = u1 < 1e-10 ? 1e-10 : u1;
-    final r = _sqrt(-2.0 * _log(safeU1));
-    final theta = 2.0 * _pi * u2;
-    data[i] = r * _cos(theta);
+    final r = math.sqrt(-2.0 * math.log(u1));
+    final theta = 2.0 * math.pi * u2;
+    data[i] = r * math.cos(theta);
     if (i + 1 < numel) {
-      data[i + 1] = r * _sin(theta);
+      data[i + 1] = r * math.sin(theta);
     }
   }
 
   return TensorBuffer(
-    storage: TensorStorage(data, dtype),
+    storage: TensorStorage(data as TypedData, dtype),
     shape: List.unmodifiable(shape),
   );
 }
@@ -377,91 +397,6 @@ TensorBuffer _fromUint8ListImpl(Uint8List data, List<int> shape) {
 }
 
 // ============================================================================
-// Math Helpers for Random Number Generation
-// ============================================================================
-
-double _sqrt(double x) => x >= 0 ? _power(x, 0.5) : double.nan;
-
-double _log(double x) {
-  if (x <= 0) return double.negativeInfinity;
-  // Natural log approximation using Taylor series or built-in
-  double result = 0;
-  double term = (x - 1) / (x + 1);
-  final termSq = term * term;
-  for (int i = 1; i <= 100; i += 2) {
-    result += term / i;
-    term *= termSq;
-  }
-  return 2 * result;
-}
-
-double _power(double base, double exp) {
-  if (exp == 0.5) {
-    // Newton's method for square root
-    if (base < 0) return double.nan;
-    if (base == 0) return 0;
-    double guess = base / 2;
-    for (int i = 0; i < 20; i++) {
-      guess = (guess + base / guess) / 2;
-    }
-    return guess;
-  }
-  // For other cases, use exp(exp * ln(base))
-  return _exp(exp * _log(base));
-}
-
-double _exp(double x) {
-  double result = 1;
-  double term = 1;
-  for (int i = 1; i <= 30; i++) {
-    term *= x / i;
-    result += term;
-    if (term.abs() < 1e-15) break;
-  }
-  return result;
-}
-
-const double _pi = 3.14159265358979323846;
-
-double _cos(double x) {
-  // Normalize to [-pi, pi]
-  while (x > _pi) {
-    x -= 2 * _pi;
-  }
-  while (x < -_pi) {
-    x += 2 * _pi;
-  }
-
-  double result = 1;
-  double term = 1;
-  final xSq = x * x;
-  for (int i = 1; i <= 15; i++) {
-    term *= -xSq / ((2 * i - 1) * (2 * i));
-    result += term;
-  }
-  return result;
-}
-
-double _sin(double x) {
-  // Normalize to [-pi, pi]
-  while (x > _pi) {
-    x -= 2 * _pi;
-  }
-  while (x < -_pi) {
-    x += 2 * _pi;
-  }
-
-  double result = x;
-  double term = x;
-  final xSq = x * x;
-  for (int i = 1; i <= 15; i++) {
-    term *= -xSq / ((2 * i) * (2 * i + 1));
-    result += term;
-  }
-  return result;
-}
-
-// ============================================================================
 // Seeded Random Number Generator
 // ============================================================================
 
@@ -479,6 +414,6 @@ class _SeededRandom {
   double nextDouble() {
     // LCG parameters (same as glibc)
     _state = ((_state * 1103515245) + 12345) & 0x7FFFFFFF;
-    return _state / 0x7FFFFFFF;
+    return _state / 0x80000000;
   }
 }

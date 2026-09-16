@@ -289,6 +289,14 @@ PyTorch dtype, input rank or option is supported.
 
 ### Migration toward 1.0.0
 
+`random` and `randn` support float32/float64 and reject integer dtypes. Seeds
+are reproducible within this package, not equivalent to PyTorch seeds. Correcting
+the uniform endpoint and Box-Muller math changes seeded outputs from 0.9.0.
+`LpNormalizeOp` now divides by `max(norm, eps)` and accepts positive p (including
+infinity) with finite positive eps. Other normalization eps values must also
+be finite and positive. int64/uint64 clone and contiguous copies preserve exact
+integers; the explicitly double-valued indexing API still returns double.
+
 - Presets accept RGB HWC/NHWC `uint8` pixels or `float32`/`float64` values already
   in [0,1]. Outputs are float32. Grayscale and RGBA require explicit RGB conversion.
 - Presets convert to CHW/NCHW before resizing, preserve an existing batch, and

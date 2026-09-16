@@ -77,7 +77,46 @@ void expectFixture(
 
 TransformOp fixtureOperation(Map<String, dynamic> c) {
   final p = c['params'] as Map<String, dynamic>;
+  List<double>? numbers(String key) =>
+      (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'batch_norm' => BatchNormOp(
+      runningMean: numbers('mean')!,
+      runningVar: numbers('variance')!,
+      weight: numbers('weight'),
+      bias: numbers('bias'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'instance_norm' => InstanceNormOp(
+      numFeatures: p['channels'] as int,
+      weight: numbers('weight'),
+      bias: numbers('bias'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'group_norm' => GroupNormOp(
+      numChannels: p['channels'] as int,
+      numGroups: p['groups'] as int,
+      weight: numbers('weight'),
+      bias: numbers('bias'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'layer_norm' => LayerNormOp(
+      normalizedShape: (p['shape'] as List).cast<int>(),
+      weight: numbers('weight'),
+      bias: numbers('bias'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'rms_norm' => RMSNormOp(
+      normalizedShape: (p['shape'] as List).cast<int>(),
+      weight: numbers('weight'),
+      eps: fixtureNumber(p['eps']),
+    ),
+    'normalize' => NormalizeOp(mean: numbers('mean')!, std: numbers('std')!),
+    'lp_normalize' => LpNormalizeOp(
+      p: fixtureNumber(p['p']),
+      dim: p['dim'] as int,
+      eps: fixtureNumber(p['eps']),
+    ),
     'tanh' => TanhOp(),
     'sigmoid' => SigmoidOp(),
     'relu' => ReLUOp(),
@@ -166,6 +205,7 @@ void registerPytorchFixtures(String directory) {
                 storage: base.storage,
                 shape: ((c['input'] as Map)['shape'] as List).cast<int>(),
                 storageOffset: c['offset'] as int,
+                strides: (c['strides'] as List?)?.cast<int>(),
               )
             : base;
         final atol = fixtureNumber(c['atol']);

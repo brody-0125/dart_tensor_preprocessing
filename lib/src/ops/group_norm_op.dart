@@ -113,7 +113,7 @@ class GroupNormOp extends TransformOp
         'Must have length $numChannels',
       );
     }
-    if (eps <= 0) {
+    if (!eps.isFinite || eps <= 0) {
       throw InvalidParameterException(
         'eps',
         eps.toString(),

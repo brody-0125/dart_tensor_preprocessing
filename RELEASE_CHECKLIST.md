@@ -30,8 +30,11 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
 ## Required before 1.0.0
 
 - [ ] Map every public API to oracle cases or an explicit supported-contract limit.
-- [ ] Expand normalization goldens: Batch/Layer/Group/Instance/RMS/Lp, affine,
+- [x] Expand normalization goldens: Batch/Layer/Group/Instance/RMS/Lp, affine,
   epsilon, constant inputs, invalid axes/shapes, in-place view sentinels.
+  Float32/64 coverage adds 270 cases (431 total), including non-contiguous
+  views and Lp non-finite inputs. Fix Lp denominator and validate epsilon/order.
+  Newly added values await canonical Linux regeneration review.
 - [ ] Expand core/indexing/reduction goldens: transpose/reshape/clone/contiguous,
   integer precision, scalar/empty restrictions, dtype conversion, sum/mean/min/max,
   argmin/max/topk (including ties), gather/slice/split/concat/repeat/tile/roll/where.
@@ -40,8 +43,10 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
 - [ ] Cover remaining activations/math/trig/positional operations and supported
   dtypes, non-finite edge cases, non-contiguous input, and invalid parameters.
 - [ ] Compare fused operations and SIMD/scalar tails against independent PyTorch.
-- [ ] Audit random factories' float64 allocation and Box-Muller math (existing
-  source still allocates Float32List and contains custom transcendental approximations).
+- [x] Fix random factories' float64 allocation and Box-Muller math; reject
+  integer dtype, exclude the uniform endpoint after float32 rounding, skip
+  zero before log, preserve normal tails, and document package-specific seeds.
+  Targeted regression tests reproduce all three defects before their fixes.
 - [ ] Audit storage copy paths for int64 values beyond double's exact range;
   `_copyToContiguous` is fixed and tested; audit remaining movement/conversion
   operations. Do not hide precision loss with floating-point comparisons.

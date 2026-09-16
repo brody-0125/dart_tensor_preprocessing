@@ -128,7 +128,7 @@ class BatchNormOp extends TransformOp
       );
     }
 
-    if (eps <= 0) {
+    if (!eps.isFinite || eps <= 0) {
       throw InvalidParameterException(
         'eps',
         eps.toString(),

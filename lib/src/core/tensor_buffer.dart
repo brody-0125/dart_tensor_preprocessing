@@ -359,7 +359,8 @@ class TensorBuffer {
 
   /// Creates a tensor with random values uniformly distributed in [0, 1).
   ///
-  /// Equivalent to `torch.rand()` in PyTorch.
+  /// Supports float32/float64. Seeds are package-specific and do not reproduce
+  /// PyTorch random sequences. Integer dtypes are rejected.
   ///
   /// ```dart
   /// final tensor = TensorBuffer.random([3, 224, 224]);
@@ -373,7 +374,8 @@ class TensorBuffer {
 
   /// Creates a tensor with random values from a standard normal distribution N(0, 1).
   ///
-  /// Equivalent to `torch.randn()` in PyTorch.
+  /// Supports float32/float64. Seeds are package-specific and do not reproduce
+  /// PyTorch random sequences. Integer dtypes are rejected.
   ///
   /// ```dart
   /// final tensor = TensorBuffer.randn([3, 224, 224]);

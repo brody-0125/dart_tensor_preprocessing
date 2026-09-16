@@ -8,13 +8,13 @@
     "capability": "DEFAULT",
     "threads": 1
   },
-  "generator_sha256": "1958bab257c5ec54757dd464b84bd420e8bce9c9e534f58c86780657af71e9d0",
+  "generator_sha256": "3b4dbea278773560450d214305982026e2606e48e8a480383ceb2a33b77ce89d",
   "requirements_sha256": "ed4d13f006d899b6c6682f517c657ee97eaefa5a1c6f9fe1a0cadd5b70534857",
   "files": [
     {
       "path": "operations.golden.json",
-      "sha256": "7e86cfffd1b3c00c8ecac4c90a9f21dcbd9f95f05ca6ab2a6acad268c8071e0a",
-      "cases": 161
+      "sha256": "888d4bd861dbecdecbf52112bc4ffd292960c5db68b4b9d4cae8f41500d7724c",
+      "cases": 431
     }
   ]
 }

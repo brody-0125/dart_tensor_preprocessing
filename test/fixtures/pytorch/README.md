@@ -21,12 +21,16 @@ strings. Tests compare shape, dtype, and every element, including non-finite
 classification. Float32 uses atol 1e-6 / rtol 1e-5, Float64 1e-12 / 1e-10.
 Integer values can use strings to preserve values above 2^53.
 
-The initial corpus covers activations (including offset in-place aliases and
+The corpus covers activations (including offset in-place aliases and
 extreme values), softmax, resize modes/antialias/align-corners, center crop, and
 all preset recipes for RGB uint8/float32 and HWC/NHWC. Presets also run in forced
 isolates and synchronous fallback. It is not yet a full audit of every public
-operation; normalization, indexing, color, augmentation and optimized-path
-coverage are being expanded before 1.0.0.
+operation; indexing, color, augmentation and optimized-path coverage are being
+expanded before 1.0.0. Normalization covers Batch (inference), Instance, Group,
+Layer, RMS, Lp and per-channel normalization with float32/64, CHW/NCHW,
+plain/affine/constant inputs, epsilon clamping, offset in-place sentinels,
+non-contiguous views and Lp non-finite values. Random factories have separate
+mathematical regression tests; matching PyTorch RNG seeds is not a contract.
 
 Network sources are PNG test assets from `pytorch/vision` at the commit in
 `network-manifest.json`. The repository uses BSD-3-Clause; the manifest links the
