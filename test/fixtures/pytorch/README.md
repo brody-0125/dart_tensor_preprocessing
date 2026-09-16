@@ -1,10 +1,16 @@
 # PyTorch oracle fixtures
 
-The manifest currently contains 3,293 offline cases. Factory/cast cases cover
+The manifest currently contains 5,201 offline cases. Factory/cast cases cover
 all ten destination dtypes, using explicit double-sequence truncation and
 legacy cast-rounding/clamping recipes where those differ from native torch
 integer kernels. Squeeze/unsqueeze include offsets, non-contiguous storage,
 negative axes and the package's single-element `[1]` convention.
+
+Each operation case occupies one line in a standard JSON array. This keeps
+case-level diffs visible without expanding each tensor element onto a separate
+line. The generator uses the same deterministic encoding as the checked-in
+file; manifests hash the encoded bytes. Large network outputs remain gzip
+binary fixtures. Do not pretty-print the operation corpus with indent=2.
 
 Generate on canonical Ubuntu 24.04 x86_64 with Python 3.12, qemu-user
 (Haswell-v4 CPU model), and the wheel hash lock:

@@ -216,3 +216,8 @@ NaN/Inf writes leave storage unchanged, all ten dtype bounded-view clones,
 independent copies, byte sizes and bounds validated in storage_contract_test.
 Typed-view clones preserve int64/uint64 values above 2^53. Buffer-pool/dispatcher
 and remaining SIMD utility audit are separate pending gates.
+
+Fixture review-size correction: operations JSON changed from 834,349 to 5,203
+lines (12,712,023 to 5,631,250 bytes), one case per line. Decoded data equality
+verified for all 5,201 cases; generator and manifest updated together. Full
+network-inclusive suite: 6,770 passed. No case or expectation was removed.

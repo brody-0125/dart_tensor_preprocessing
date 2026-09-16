@@ -777,7 +777,7 @@ def main():
     torch.use_deterministic_algorithms(True)
     cases = generate()
     args.output.mkdir(parents=True, exist_ok=True)
-    raw = (json.dumps(cases, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode()
+    raw = ("[\n" + ",\n".join(json.dumps(case, ensure_ascii=False, separators=(",", ":"), allow_nan=False) for case in cases) + "\n]\n").encode()
     (args.output / "operations.golden.json").write_bytes(raw)
     manifest = {"schema_version": 1,
                 "oracle": {"torch": "2.10.0+cpu", "torchvision": "0.25.0+cpu", "python": "3.12", "device": "cpu", "cpu_model": os.environ.get("PYTORCH_ORACLE_CPU_MODEL", "native-investigation"), "capability": "DEFAULT", "mkl_cbwr": "COMPATIBLE", "mkl_instructions": "SSE4_2", "threads": 1},
