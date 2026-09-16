@@ -13,7 +13,8 @@ On PowerShell set `$env:RUN_PYTORCH_NETWORK_TESTS='1'` before the Dart command.
 `--output DIRECTORY` regenerates into another directory for inspection. Omitting
 `--network` regenerates only the offline operation/preset goldens.
 
-The oracle is CPU PyTorch 2.10.0 + torchvision 0.25.0 with one thread. The
+The oracle is CPU PyTorch 2.10.0 + torchvision 0.25.0 with one thread and `ATEN_CPU_CAPABILITY=default` to avoid runner-dependent
+AVX2/AVX512 kernel selection. The
 generator checks every pinned Python distribution version. Manifest hashes bind
 the generator, requirements, and JSON payload; non-finite numbers use explicit
 strings. Tests compare shape, dtype, and every element, including non-finite
