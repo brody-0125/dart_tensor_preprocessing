@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- SimdOps.copy uses native typed-list copying to preserve overlapping views
+  and rejects unequal lengths outside debug builds.
+
 - Mutation dtype dispatch rejects strided destinations rather than silently
   changing a temporary contiguous copy. Pair dispatch still accepts strided input.
 

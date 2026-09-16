@@ -453,47 +453,14 @@ class SimdOps {
     }
   }
 
-  /// Fast memory copy using SIMD.
+  /// Copies equally sized arrays, including overlapping typed views.
   ///
-  /// More efficient than standard list copy for large Float32 arrays.
-  ///
-  /// **Complexity:** O(n) where n = src.length
+  /// Uses the runtime's typed-list copy implementation.
   static void copy(Float32List src, Float32List dst) {
-    assert(src.length == dst.length);
-    final length = src.length;
-    if (length == 0) return;
-
-    final simdLength = length ~/ 4 * 4;
-
-    final allAligned =
-        src.offsetInBytes % 16 == 0 && dst.offsetInBytes % 16 == 0;
-
-    if (allAligned) {
-      final srcView = Float32x4List.view(
-        src.buffer,
-        src.offsetInBytes,
-        simdLength ~/ 4,
-      );
-      final dstView = Float32x4List.view(
-        dst.buffer,
-        dst.offsetInBytes,
-        simdLength ~/ 4,
-      );
-      for (var i = 0; i < srcView.length; i++) {
-        dstView[i] = srcView[i];
-      }
-    } else {
-      for (var i = 0; i < simdLength; i += 4) {
-        dst[i] = src[i];
-        dst[i + 1] = src[i + 1];
-        dst[i + 2] = src[i + 2];
-        dst[i + 3] = src[i + 3];
-      }
+    if (src.length != dst.length) {
+      throw ArgumentError('Source and destination lengths must match');
     }
-
-    for (var i = simdLength; i < length; i++) {
-      dst[i] = src[i];
-    }
+    dst.setRange(0, src.length, src);
   }
 
   /// Fills array with a constant value using SIMD.

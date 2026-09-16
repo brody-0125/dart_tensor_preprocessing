@@ -4,6 +4,26 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('copy handles overlapping aligned and unaligned views', () {
+    for (final shift in [1, 4]) {
+      for (final backwards in [false, true]) {
+        final data = Float32List.fromList(
+          List.generate(16, (i) => i.toDouble()),
+        );
+        final sourceStart = backwards ? shift : 0;
+        final destinationStart = backwards ? 0 : shift;
+        final expected = data.toList();
+        final original = data.sublist(sourceStart, sourceStart + 9);
+        expected.setRange(destinationStart, destinationStart + 9, original);
+        SimdOps.copy(
+          Float32List.sublistView(data, sourceStart, sourceStart + 9),
+          Float32List.sublistView(data, destinationStart, destinationStart + 9),
+        );
+        expect(data, expected);
+      }
+    }
+  });
+
   group('SimdOps', () {
     group('multiplyScalar', () {
       test('multiplies all elements by scalar', () {

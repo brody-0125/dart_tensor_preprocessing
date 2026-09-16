@@ -251,3 +251,8 @@ permutations/flatten/select/unbind/narrow against existing independent goldens
 and native contracts. Added exact int64 offset channel round-trip/flatten test
 for storage identity, strides and sentinels. The four targeted view/layout
 suites passed all 134 tests; no production change was needed.
+
+SIMD copy audit reproduced overwritten source values for overlapping views.
+Replaced the manual vector/scalar copy with native TypedList.setRange, removing
+about 40 lines and adding runtime length validation. Regression covers both
+overlap directions, aligned/unaligned offsets and a vector tail.
