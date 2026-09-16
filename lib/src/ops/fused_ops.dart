@@ -14,6 +14,11 @@ import 'transform_op.dart';
 /// normalize steps.
 ///
 /// Supports 3D `[C, H, W]` and 4D `[N, C, H, W]` inputs.
+/// Interpolation and normalization use double arithmetic before storing in the
+/// input dtype. Integer outputs follow TensorStorage truncation/clamp/wrap
+/// rules; integers above 2^53 may lose precision. This is not PyTorch's native
+/// integer normalization. Negative nonzero std is allowed. Non-finite statistics
+/// propagate for floating outputs; non-finite integer writes throw.
 ///
 /// ## Complexity
 ///

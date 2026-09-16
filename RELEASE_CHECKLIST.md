@@ -232,3 +232,10 @@ Dispatcher audit found non-contiguous mutation destinations were copied, so
 callback writes disappeared. dispatchVoid and dispatchPair now reject strided
 destinations before callbacks; read/input dispatch retains contiguous copying.
 Regression reproduces the old silent success and checks callbacks stay uncalled.
+
+Fused contract audit closed: explicit native boundary expectations cover eight
+integer dtypes, negative std, NaN mean, infinite std and failed integer writes
+without modifying input. All 38 fused tests passed. COMPATIBILITY documents
+the double arithmetic precision limit and distinct native conversion recipe.
+Compact-fixture CI 35105035766/35105027891 and buffer-pool CI
+35105227072/35105221466 passed every gate, including exact Linux regeneration.

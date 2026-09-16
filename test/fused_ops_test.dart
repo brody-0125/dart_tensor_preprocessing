@@ -4,6 +4,68 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('fused integer output follows native storage conversion at bounds', () {
+    final expected = <DType, int>{
+      DType.int8: 25,
+      DType.int16: -999,
+      DType.int32: -999,
+      DType.int64: -999,
+      DType.uint8: 0,
+      DType.uint16: 0,
+      DType.uint32: 4294966297,
+      DType.uint64: -999,
+    };
+    for (final entry in expected.entries) {
+      final result = ResizeNormalizeFusedOp(
+        height: 1,
+        width: 1,
+        mean: [1000],
+        std: [1],
+      )(TensorBuffer.ones([1, 1, 1], dtype: entry.key));
+      expect((result.storage.data as List<int>).single, entry.value);
+    }
+  });
+  test(
+    'fused non-finite statistics propagate for floats and reject integer NaN',
+    () {
+      for (final dtype in [DType.float32, DType.float64]) {
+        final input = TensorBuffer.ones([1, 1, 1], dtype: dtype);
+        final nan = ResizeNormalizeFusedOp(
+          height: 1,
+          width: 1,
+          mean: [double.nan],
+          std: [1],
+        )(input);
+        expect(nan.storage.getAsDouble(0).isNaN, isTrue);
+        final zero = ResizeNormalizeFusedOp(
+          height: 1,
+          width: 1,
+          mean: [0],
+          std: [double.infinity],
+        )(input);
+        expect(zero.storage.getAsDouble(0), 0);
+        final negative = ResizeNormalizeFusedOp(
+          height: 1,
+          width: 1,
+          mean: [0],
+          std: [-2],
+        )(input);
+        expect(negative.storage.getAsDouble(0), -0.5);
+      }
+      final input = TensorBuffer.ones([1, 1, 1], dtype: DType.int64);
+      expect(
+        () => ResizeNormalizeFusedOp(
+          height: 1,
+          width: 1,
+          mean: [double.nan],
+          std: [1],
+        )(input),
+        throwsUnsupportedError,
+      );
+      expect(input.storage.data, [1]);
+    },
+  );
+
   test('normalization avoids reciprocal overflow across vector tails', () {
     for (final dtype in [DType.float32, DType.float64]) {
       for (final length in [1, 4, 9, 128]) {
