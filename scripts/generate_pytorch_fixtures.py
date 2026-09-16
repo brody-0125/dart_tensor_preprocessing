@@ -416,6 +416,31 @@ def generate():
                            lambda z, fn=fn, operand=operand: fn(z, operand),
                            {"op": "binary_" + name, **({"scalar": operand} if scalar else {"other": tensor(other)})})
         view_cases(f"binary-pow-{dtype}", x, lambda z: torch.pow(z, 1.5), {"op": "binary_pow", "scalar": 1.5})
+    for dtype in (torch.int32, torch.int64):
+        x = torch.tensor([-11, -3, -1, 0, 1, 3, 11], dtype=dtype)
+        if dtype == torch.int64:
+            x += 9007199254740993
+        other = torch.tensor([1, 2, -1, 3, -2, 1, 2], dtype=dtype)
+        for name, fn in (("add", torch.add), ("sub", torch.sub), ("mul", torch.mul)):
+            for scalar in (True, False):
+                operand = 2 if scalar else other
+                view_cases(f"binary-integer-{name}-{dtype}-{scalar}", x,
+                           lambda z, fn=fn, operand=operand: fn(z, operand),
+                           {"op": "binary_" + name, **({"scalar": operand} if scalar else {"other": tensor(other)})})
+    for dtype in (torch.float32, torch.float64):
+        x = torch.tensor([-float("inf"), -0.0, 0.0, float("inf"), float("nan"), 1, -1], dtype=dtype)
+        other = torch.tensor([0, 0, 1, -1, 2, 0, 3], dtype=dtype)
+        for name, fn in (("add", torch.add), ("sub", torch.sub), ("mul", torch.mul), ("div", torch.div)):
+            view_cases(f"binary-special-{name}-{dtype}", x, lambda z, fn=fn: fn(z, other),
+                       {"op": "binary_" + name, "other": tensor(other)})
+            mixed = torch.tensor([0.25, 1.5, 2, -1.25, 3, 7, -2], dtype=torch.float64 if dtype == torch.float32 else torch.float32)
+            finite = torch.tensor([0.125, 0.5, 1, 2, 3, 7, 11], dtype=dtype)
+            view_cases(f"binary-mixed-{name}-{dtype}", finite,
+                       lambda z, fn=fn: fn(z.double(), mixed.double()).to(dtype),
+                       {"op": "binary_" + name, "other": tensor(mixed)})
+        for exponent in (0.5, -0.5):
+            view_cases(f"binary-special-pow-{dtype}-{exponent}", x,
+                       lambda z, exponent=exponent: torch.pow(z, exponent), {"op": "binary_pow", "scalar": exponent})
     return cases
 
 

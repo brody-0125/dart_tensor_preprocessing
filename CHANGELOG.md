@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Preserve exact integer add/subtract/multiply for integer tensor operands and
+  integral signed-64-bit scalar operands, avoiding double conversion above 2^53.
+- Pow exponents 0.5/-0.5 use sqrt/reciprocal-sqrt semantics, including NaN for
+  negative infinity, matching the pinned PyTorch reference.
+
 - Binary arithmetic rejects tensor operands with different shapes even when
   element counts match. In-place tensor arithmetic snapshots the other operand
   so overlapping views use original values throughout the calculation.

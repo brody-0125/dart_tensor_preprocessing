@@ -7,6 +7,13 @@ source of truth for the named case prefixes below.
 
 ## Established contracts
 
+- Binary arithmetic requires identical tensor shapes (no broadcasting).
+  It retains the input dtype; mixed float32/64 goldens explicitly compute in
+  double then cast back, rather than claiming PyTorch promotion equivalence.
+  Add/sub/mul with integer operands preserve integer precision; signed int32/64
+  are independently verified above 2^53. Unsigned/fractional-integer/division
+  contracts remain under audit. Overlapping in-place operands are snapshotted.
+
 - Rank-zero and empty tensors are unsupported. Squeeze retains `[1]` for a
   single element; both squeeze and unsqueeze normalize negative axes.
   Shape/stride metadata is immutable, strides nonnegative, and every reachable

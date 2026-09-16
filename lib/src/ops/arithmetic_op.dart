@@ -56,6 +56,38 @@ abstract class ArithmeticOp extends TransformOp
 
   void _apply(TensorBuffer tensor, {bool snapshotOther = false}) {
     computeOutputShape(tensor.shape);
+    // Keep exact integer add/subtract/multiply out of the double fallback.
+    final s = scalar;
+    if (tensor.dtype.isInteger &&
+        (this is AddOp || this is SubOp || this is MulOp) &&
+        (s != null
+            ? s.isFinite &&
+                  s == s.truncateToDouble() &&
+                  s >= -9223372036854775808.0 &&
+                  s < 9223372036854775808.0
+            : other!.dtype.isInteger)) {
+      final values = tensor.storage.data as List<int>;
+      final operand = other == null
+          ? null
+          : (snapshotOther ? other!.clone() : ensureContiguous(other!))
+                    .storage
+                    .data
+                as List<int>;
+      for (var i = 0; i < tensor.numel; i++) {
+        final b = operand == null ? s!.toInt() : operand[i];
+        final value = this is AddOp
+            ? values[i] + b
+            : this is SubOp
+            ? values[i] - b
+            : values[i] * b;
+        values[i] = tensor.dtype == DType.uint8
+            ? value.clamp(0, 255)
+            : tensor.dtype == DType.uint16
+            ? value.clamp(0, 65535)
+            : value;
+      }
+      return;
+    }
     if (scalar != null) {
       _applyScalar(tensor, scalar!);
     } else {
@@ -402,19 +434,26 @@ class PowOp extends TransformOp with InPlaceTransform, RequiresContiguous {
       case DType.float32:
         final list = data as Float32List;
         for (int i = 0; i < numel; i++) {
-          list[i] = math.pow(list[i], exp).toDouble();
+          list[i] = _power(list[i], exp);
         }
       case DType.float64:
         final list = data as Float64List;
         for (int i = 0; i < numel; i++) {
-          list[i] = math.pow(list[i], exp).toDouble();
+          list[i] = _power(list[i], exp);
         }
       default:
         for (int i = 0; i < numel; i++) {
           final value = tensor.storage.getAsDouble(i);
-          tensor.storage.setFromDouble(i, math.pow(value, exp).toDouble());
+          tensor.storage.setFromDouble(i, _power(value, exp));
         }
     }
+  }
+
+  double _power(double value, double exp) {
+    // PyTorch uses sqrt/rsqrt for these exponents, including -infinity -> NaN.
+    if (exp == 0.5) return math.sqrt(value);
+    if (exp == -0.5) return 1.0 / math.sqrt(value);
+    return math.pow(value, exp).toDouble();
   }
 
   @override

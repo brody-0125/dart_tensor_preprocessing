@@ -71,6 +71,11 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   Fixed mismatched-shape acceptance and overlapping in-place tensor operands.
   Local network-inclusive suite: 3,354 passed. Integer/mixed arithmetic dtype
   contracts remain open; float goldens do not prove integer parity.
+  Arithmetic CI runs 35097708542 and 35097716567 passed all gates.
+  Added 96 exact signed-integer, mixed-float and non-finite cases (1,899 total).
+  Fixed integer add/sub/mul double rounding and Pow sqrt/rsqrt non-finite semantics.
+  Local network-inclusive suite: 3,450 passed. Unsigned, fractional integer,
+  integer division/power and remaining numeric contracts still require audit.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported
