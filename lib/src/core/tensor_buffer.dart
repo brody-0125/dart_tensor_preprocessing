@@ -250,6 +250,9 @@ class TensorBuffer {
   }
 
   void _copyToContiguous(TypedData dest) {
+    // Copy within the same dtype without routing integers through double.
+    final source = storage.data as List<num>;
+    final target = dest as List<num>;
     final indices = List<int>.filled(rank, 0);
     for (int i = 0; i < numel; i++) {
       int srcOffset = storageOffset;
@@ -257,39 +260,13 @@ class TensorBuffer {
         srcOffset += indices[d] * strides[d];
       }
 
-      final value = storage.getAsDouble(srcOffset);
-      _setTypedDataValue(dest, i, value);
+      target[i] = source[srcOffset];
 
       for (int d = rank - 1; d >= 0; d--) {
         indices[d]++;
         if (indices[d] < shape[d]) break;
         indices[d] = 0;
       }
-    }
-  }
-
-  void _setTypedDataValue(TypedData data, int index, double value) {
-    switch (data) {
-      case final Float32List list:
-        list[index] = value;
-      case final Float64List list:
-        list[index] = value;
-      case final Int8List list:
-        list[index] = value.toInt();
-      case final Int16List list:
-        list[index] = value.toInt();
-      case final Int32List list:
-        list[index] = value.toInt();
-      case final Int64List list:
-        list[index] = value.toInt();
-      case final Uint8List list:
-        list[index] = value.toInt().clamp(0, 255);
-      case final Uint16List list:
-        list[index] = value.toInt().clamp(0, 65535);
-      case final Uint32List list:
-        list[index] = value.toInt();
-      case final Uint64List list:
-        list[index] = value.toInt();
     }
   }
 

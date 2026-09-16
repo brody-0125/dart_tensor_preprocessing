@@ -18,6 +18,8 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
 - [x] Fix nearest, bicubic, area, shortest-edge sizing, center-crop padding/rounding.
 - [x] Add antialias float32/64 and verify align_corners combinations.
 - [x] Extend offset tests to gather/topk/stack/concat/split/masks/isolate transport.
+- [x] Reproduce and fix int64/uint64 clone and strided contiguous-copy rounding
+  above 2^53; exact-integer tests verify offset bounds and independent storage.
 - [x] Establish Linux canonical goldens; Windows/Linux differences stay within existing tolerances.
 - [x] CI success at cc85cd5: Linux Dart 3.9.0/stable, Windows/macOS stable, format,
   analyze, dry-run, network, and exact Linux oracle regeneration (run 35088804903).
@@ -41,8 +43,8 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
 - [ ] Audit random factories' float64 allocation and Box-Muller math (existing
   source still allocates Float32List and contains custom transcendental approximations).
 - [ ] Audit storage copy paths for int64 values beyond double's exact range;
-  `_copyToContiguous` currently converts through double. Fix supported cases,
-  do not hide precision loss with floating-point comparisons.
+  `_copyToContiguous` is fixed and tested; audit remaining movement/conversion
+  operations. Do not hide precision loss with floating-point comparisons.
 - [ ] Finish any bugs found by expanded parity tests and preserve invalid-input checks.
 - [ ] Review antialias precomputation/performance at ordinary image sizes; no speed claims without measurement.
 - [ ] Finalize compatibility table, migration guide, README snippets/examples,
