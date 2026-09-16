@@ -10,9 +10,17 @@ source of truth for the named case prefixes below.
 - Binary arithmetic requires identical tensor shapes (no broadcasting).
   It retains the input dtype; mixed float32/64 goldens explicitly compute in
   double then cast back, rather than claiming PyTorch promotion equivalence.
-  Add/sub/mul with integer operands preserve integer precision; signed int32/64
-  are independently verified above 2^53. Unsigned/fractional-integer/division
-  contracts remain under audit. Overlapping in-place operands are snapshotted.
+  Integral operands use native signed-64-bit arithmetic (including wrapping),
+  with truncating integer division. Nonnegative integer powers use the same
+  integer domain. Uint8/uint16 outputs clamp; other integer buffers wrap.
+  Fractional scalars or floating tensor operands use double arithmetic then
+  truncate integer outputs, so that path cannot retain every int64 value.
+  Uint64 high bits follow native Dart's signed representation, not arbitrary
+  unsigned arithmetic. All eight integer destination types have explicit recipe
+  goldens; signed int64 precision is also checked above 2^53. Integer zero
+  divisors are rejected before mutation. Other invalid floating-to-integer
+  conversions follow Dart conversion errors. In-place calls are not generally
+  transactional on such errors. Overlapping tensor operands are snapshotted.
 
 - Rank-zero and empty tensors are unsupported. Squeeze retains `[1]` for a
   single element; both squeeze and unsqueeze normalize negative axes.
@@ -70,7 +78,7 @@ coverage beyond those cases remains subject to the release checklist.
 |---|---|---|
 | `AbsOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `abs` |
 | `AcosOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `acos` |
-| `AddOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
+| `AddOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | binary-*/integer-* goldens: floating, integer, mixed/fractional recipes, non-finite values, offsets/strides and in-place boundaries; explicit dtype contract above |
 | `AdjustBrightnessOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
 | `AdjustContrastOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
 | `AdjustHueOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
@@ -87,7 +95,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `ColorJitterOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
 | `ContiguousOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `CosOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `cos` |
-| `DivOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
+| `DivOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | binary-*/integer-* goldens: floating, integer, mixed/fractional recipes, non-finite values, offsets/strides and in-place boundaries; explicit dtype contract above |
 | `ELUOp` | [lib/src/ops/activation/elu_op.dart](lib/src/ops/activation/elu_op.dart) | `elu` |
 | `ExpOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `exp` |
 | `FlattenOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
@@ -110,13 +118,13 @@ coverage beyond those cases remains subject to the release checklist.
 | `LpNormalizeOp` | [lib/src/ops/lp_normalize_op.dart](lib/src/ops/lp_normalize_op.dart) | `lp / lp-special` |
 | `MaskedFillOp` | [lib/src/ops/masked_fill_op.dart](lib/src/ops/masked_fill_op.dart) | `masked-fill` |
 | `MishOp` | [lib/src/ops/activation/mish_op.dart](lib/src/ops/activation/mish_op.dart) | `mish` |
-| `MulOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
+| `MulOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | binary-*/integer-* goldens: floating, integer, mixed/fractional recipes, non-finite values, offsets/strides and in-place boundaries; explicit dtype contract above |
 | `NegOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `neg` |
 | `NormalizeOp` | [lib/src/ops/normalize_op.dart](lib/src/ops/normalize_op.dart) | `normalize / preset` |
 | `PadOp` | [lib/src/ops/pad_op.dart](lib/src/ops/pad_op.dart) | **Pending independent oracle / contract audit** |
 | `PermuteOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `PositionalEncodingOp` | [lib/src/ops/positional_encoding_op.dart](lib/src/ops/positional_encoding_op.dart) | **Pending independent oracle / contract audit** |
-| `PowOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
+| `PowOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | binary-*/integer-* goldens: floating, integer, mixed/fractional recipes, non-finite values, offsets/strides and in-place boundaries; explicit dtype contract above |
 | `RMSNormOp` | [lib/src/ops/rms_norm_op.dart](lib/src/ops/rms_norm_op.dart) | `rms_norm` |
 | `RandomCropOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
 | `RandomErasingOp` | [lib/src/ops/random_erasing_op.dart](lib/src/ops/random_erasing_op.dart) | **Pending independent oracle / contract audit** |
@@ -141,7 +149,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `SoftmaxOp` | [lib/src/ops/activation/softmax_op.dart](lib/src/ops/activation/softmax_op.dart) | `softmax` |
 | `SqrtOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `sqrt` |
 | `SqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | `squeeze-*`: float32/64/int32/int64, offsets/strides, negative axes, single-element [1] contract |
-| `SubOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
+| `SubOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | binary-*/integer-* goldens: floating, integer, mixed/fractional recipes, non-finite values, offsets/strides and in-place boundaries; explicit dtype contract above |
 | `TanOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `tan` |
 | `TanhOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `tanh` |
 | `TileOp` | [lib/src/ops/tile_op.dart](lib/src/ops/tile_op.dart) | `index-*tile` |

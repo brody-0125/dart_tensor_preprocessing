@@ -441,6 +441,32 @@ def generate():
         for exponent in (0.5, -0.5):
             view_cases(f"binary-special-pow-{dtype}-{exponent}", x,
                        lambda z, exponent=exponent: torch.pow(z, exponent), {"op": "binary_pow", "scalar": exponent})
+    for dtype in (torch.int32, torch.int64):
+        x = torch.tensor([-11, -3, -1, 0, 1, 3, 11], dtype=dtype)
+        if dtype == torch.int64:
+            x += 9007199254740993
+        view_cases(f"integer-div-{dtype}", x, lambda z: torch.div(z, 2, rounding_mode="trunc"), {"op": "binary_div", "scalar": 2})
+        for exponent in (0, 1, 2, 3):
+            view_cases(f"integer-pow-{dtype}-{exponent}", x, lambda z, exponent=exponent: torch.pow(z, exponent), {"op": "binary_pow", "scalar": exponent})
+    for dtype in (torch.int8, torch.int16, torch.uint8, torch.uint16, torch.uint32, torch.uint64):
+        x = torch.tensor([0, 1, 3, 11, 127, 255], dtype=torch.int64).to(dtype)
+        for name, fn in (("add", lambda z: z + 2), ("sub", lambda z: z - 2), ("mul", lambda z: z * 2), ("div", lambda z: torch.div(z, 2, rounding_mode="trunc")), ("pow", lambda z: z ** 2)):
+            y = fn(x.to(torch.int64))
+            if dtype in (torch.uint8, torch.uint16):
+                y = y.clamp(0, 255 if dtype == torch.uint8 else 65535)
+            if dtype == torch.uint64 and name == "sub":
+                continue  # Native Dart exposes high-bit uint64 values as signed.
+            add(f"integer-dtype-{name}-{dtype}", "binary_" + name, x, y.to(dtype), {"scalar": 2})
+    for dtype in (torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8, torch.uint16, torch.uint32, torch.uint64):
+        x = torch.tensor([2, 3, 5, 7, 11, 20], dtype=dtype)
+        for name, fn in (("add", torch.add), ("sub", torch.sub), ("mul", torch.mul), ("div", torch.div), ("pow", torch.pow)):
+            y = fn(x.double(), 1.5).trunc()
+            if dtype in (torch.uint8, torch.uint16):
+                y = y.clamp(0, 255 if dtype == torch.uint8 else 65535)
+            add(f"integer-fractional-{name}-{dtype}", "binary_" + name, x, y.to(dtype), {"scalar": 1.5})
+            if name != "pow":
+                other = torch.full((6,), 1.5, dtype=torch.float64)
+                add(f"integer-mixed-{name}-{dtype}", "binary_" + name, x, y.to(dtype), {"other": tensor(other)})
     return cases
 
 

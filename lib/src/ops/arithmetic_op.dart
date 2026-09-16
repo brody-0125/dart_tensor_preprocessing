@@ -56,10 +56,10 @@ abstract class ArithmeticOp extends TransformOp
 
   void _apply(TensorBuffer tensor, {bool snapshotOther = false}) {
     computeOutputShape(tensor.shape);
-    // Keep exact integer add/subtract/multiply out of the double fallback.
+    // Keep exact integer arithmetic out of the double fallback.
     final s = scalar;
     if (tensor.dtype.isInteger &&
-        (this is AddOp || this is SubOp || this is MulOp) &&
+        (this is AddOp || this is SubOp || this is MulOp || this is DivOp) &&
         (s != null
             ? s.isFinite &&
                   s == s.truncateToDouble() &&
@@ -73,13 +73,22 @@ abstract class ArithmeticOp extends TransformOp
                     .storage
                     .data
                 as List<int>;
+      if (this is DivOp && (operand == null ? s == 0 : operand.contains(0))) {
+        throw InvalidParameterException(
+          'divisor',
+          0,
+          'integer division by zero',
+        );
+      }
       for (var i = 0; i < tensor.numel; i++) {
         final b = operand == null ? s!.toInt() : operand[i];
         final value = this is AddOp
             ? values[i] + b
             : this is SubOp
             ? values[i] - b
-            : values[i] * b;
+            : this is MulOp
+            ? values[i] * b
+            : values[i] ~/ b;
         values[i] = tensor.dtype == DType.uint8
             ? value.clamp(0, 255)
             : tensor.dtype == DType.uint16
@@ -428,6 +437,22 @@ class PowOp extends TransformOp with InPlaceTransform, RequiresContiguous {
     final numel = tensor.numel;
     final exp = exponent;
     final data = tensor.storage.data;
+    if (tensor.dtype.isInteger &&
+        exp.isFinite &&
+        exp >= 0 &&
+        exp < 9223372036854775808.0 &&
+        exp == exp.truncateToDouble()) {
+      final values = data as List<int>;
+      for (var i = 0; i < numel; i++) {
+        final value = math.pow(values[i], exp.toInt()) as int;
+        values[i] = tensor.dtype == DType.uint8
+            ? value.clamp(0, 255)
+            : tensor.dtype == DType.uint16
+            ? value.clamp(0, 65535)
+            : value;
+      }
+      return;
+    }
 
     // Dtype-specialized loops for better performance
     switch (tensor.dtype) {

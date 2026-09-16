@@ -4,6 +4,27 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('integer zero divisors are rejected before in-place mutation', () {
+    final x = TensorBuffer(
+      storage: TensorStorage(Int64List.fromList([9, 7, 5]), DType.int64),
+      shape: [3],
+    );
+    final other = TensorBuffer(
+      storage: TensorStorage(Int64List.fromList([3, 0, 1]), DType.int64),
+      shape: [3],
+    );
+    expect(
+      () => DivOp.tensor(other).applyInPlace(x),
+      throwsA(isA<InvalidParameterException>()),
+    );
+    expect(x.storage.data, [9, 7, 5]);
+    expect(
+      () => DivOp(scalar: 0).applyInPlace(x),
+      throwsA(isA<InvalidParameterException>()),
+    );
+    expect(x.storage.data, [9, 7, 5]);
+  });
+
   test('binary tensor shapes must match, not just their element counts', () {
     final x = TensorBuffer.ones([2, 3]);
     final other = TensorBuffer.ones([3, 2]);

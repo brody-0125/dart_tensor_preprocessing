@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Integer division and nonnegative integer powers no longer lose precision
+  through double conversion. Integer division truncates toward zero and rejects
+  zero divisors before mutation. Fractional operand behavior remains explicit
+  double arithmetic followed by integer truncation and destination conversion.
+
 - Preserve exact integer add/subtract/multiply for integer tensor operands and
   integral signed-64-bit scalar operands, avoiding double conversion above 2^53.
 - Pow exponents 0.5/-0.5 use sqrt/reciprocal-sqrt semantics, including NaN for

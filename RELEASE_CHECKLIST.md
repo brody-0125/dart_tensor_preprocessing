@@ -76,6 +76,11 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   Fixed integer add/sub/mul double rounding and Pow sqrt/rsqrt non-finite semantics.
   Local network-inclusive suite: 3,450 passed. Unsigned, fractional integer,
   integer division/power and remaining numeric contracts still require audit.
+  CI runs 35098131246 and 35098136497 passed all gates.
+  Added 131 division/power/all-integer-dtype/fractional/mixed-operand cases
+  (2,030 total). Fixed exact integer division/power and prevalidated zero
+  divisors. Documented native integer wrapping and double-fallback limitations.
+  Local network-inclusive suite: 3,582 passed; static analysis clean.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported
