@@ -155,11 +155,13 @@ void main() {
         expect(op.computeOutputShape([2, 3, 100, 100]), [2, 3, 224, 224]);
       });
 
-      test('computeOutputShape for 2D input returns modified shape', () {
-        // computeOutputShape doesn't validate rank, it just computes
+      test('computeOutputShape rejects unsupported rank', () {
         final op = ResizeNormalizeFusedOp.imagenet(height: 224, width: 224);
         // For 2D, it falls through to 4D branch logic
-        expect(op.computeOutputShape([4, 4]), [4, 4, 224, 224]);
+        expect(
+          () => op.computeOutputShape([4, 4]),
+          throwsA(isA<ShapeMismatchException>()),
+        );
       });
 
       test('rejects 2D input', () {

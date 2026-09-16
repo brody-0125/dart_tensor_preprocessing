@@ -110,22 +110,7 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     final shape = contiguous.shape;
     final rank = shape.length;
 
-    if (rank != 3 && rank != 4) {
-      throw ShapeMismatchException(
-        actual: shape,
-        message:
-            'ResizeNormalizeFusedOp requires 3D [C,H,W] or 4D [N,C,H,W] tensor',
-      );
-    }
-
-    final channels = rank == 3 ? shape[0] : shape[1];
-    if (channels != mean.length) {
-      throw ShapeMismatchException(
-        actual: shape,
-        message:
-            'Tensor has $channels channels, but mean/std has ${mean.length}',
-      );
-    }
+    _validateShape(shape);
 
     final outputShape = computeOutputShape(shape);
     final output = TensorBuffer.uninitialized(outputShape, dtype: input.dtype);
@@ -385,8 +370,28 @@ class ResizeNormalizeFusedOp extends TransformOp with RequiresContiguous {
     }
   }
 
+  void _validateShape(List<int> shape) {
+    if (shape.length != 3 && shape.length != 4) {
+      throw ShapeMismatchException(
+        actual: shape,
+        message:
+            'ResizeNormalizeFusedOp requires 3D [C,H,W] or 4D [N,C,H,W] tensor',
+      );
+    }
+
+    final channels = shape.length == 3 ? shape[0] : shape[1];
+    if (channels != mean.length) {
+      throw ShapeMismatchException(
+        actual: shape,
+        message:
+            'Tensor has $channels channels, but mean/std has ${mean.length}',
+      );
+    }
+  }
+
   @override
   List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
     if (inputShape.length == 3) {
       return [inputShape[0], height, width];
     }

@@ -703,6 +703,23 @@ def generate():
                            lambda z, variant=variant: erased(z, variant),
                            {'op': 'erase', 'variant': variant, 'seed': 41,
                             'rectangles': [[2, 1, 2, 2], [2, 0, 2, 2]] if variant == 'partial' else []})
+    def fused(z, size, align):
+        batch = z.ndim == 4
+        y = F.interpolate(z.double() if batch else z.double().unsqueeze(0), size=size,
+                          mode='bilinear', align_corners=align, antialias=False)
+        mean = torch.tensor([0.25, -0.5], dtype=torch.float64).reshape(1, 2, 1, 1)
+        std = torch.tensor([0.5, 2], dtype=torch.float64).reshape(1, 2, 1, 1)
+        y = ((y - mean) / std).to(z.dtype)
+        return y if batch else y.squeeze(0)
+    for dtype in (torch.float32, torch.float64):
+        for batch in (False, True):
+            shape = (2, 2, 3, 5) if batch else (2, 3, 5)
+            x = ((torch.arange(math.prod(shape)).reshape(shape) % 19 - 8) / 8).to(dtype)
+            for size in ((1, 1), (2, 3), (3, 5), (7, 9), (65, 3)):
+                for align in (False, True):
+                    view_cases(f'fused-{dtype}-{batch}-{size}-{align}', x,
+                               lambda z, size=size, align=align: fused(z, size, align),
+                               {'op': 'fused', 'size': size, 'align': align}, inplace=False)
     return cases
 
 

@@ -187,3 +187,8 @@ RandomErasing: 240 independent torch assignment cases (4,793 total) across all
 dtypes, views/batches and skip/full/partial/impossible regions. Added native
 uniform-stream and integer-fill tests; reject non-finite parameters and invalid
 inferred rank. Full network suite results recorded in the progress artifact.
+
+Fused resize/normalize float32/64: 120 independent torch double-interpolate and
+normalize cases (4,913 total), alignCorners, singleton/identity/up/down sizes,
+64-pixel blocking boundary, batches and offset/strided views. Shape inference
+now validates rank/channels. Integer and remaining parameter contracts stay open.

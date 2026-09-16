@@ -81,6 +81,13 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'fused' => ResizeNormalizeFusedOp(
+      height: p['size'][0] as int,
+      width: p['size'][1] as int,
+      mean: [0.25, -0.5],
+      std: [0.5, 2],
+      alignCorners: p['align'] as bool,
+    ),
     'erase' => RandomErasingOp(
       probability: p['variant'] == 'skip' ? 0 : 1,
       scaleRange: p['variant'] == 'full' ? (1, 1) : (0.2, 0.2),

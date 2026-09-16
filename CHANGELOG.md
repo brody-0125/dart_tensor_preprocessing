@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fused resize/normalize validates rank and channel count during shape inference.
+
 - RandomErasing rejects non-finite parameters and validates inferred rank;
   document package-specific sampling and uniform random fill.
 
