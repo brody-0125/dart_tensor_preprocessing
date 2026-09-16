@@ -30,6 +30,7 @@ dependencies:
 ## Quick Start
 
 ```dart
+import 'dart:typed_data';
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 
 // Create a tensor from image data (HWC format, Uint8)

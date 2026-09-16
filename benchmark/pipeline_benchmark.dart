@@ -21,6 +21,8 @@ Future<List<BenchmarkResult>> runPipelineBenchmarks() async {
   // Create test tensors in CHW format for individual ops
   final tensorCHW224 = _createRandomTensor([3, 224, 224]);
   final tensorCHW640 = _createRandomTensor([3, 640, 640]);
+  final tensorHWC224 = tensorCHW224.transpose([1, 2, 0]).contiguous();
+  final tensorHWC640 = tensorCHW640.transpose([1, 2, 0]).contiguous();
 
   // ResizeOp (works on CHW format)
   final resizeOp = ResizeOp(height: 224, width: 224);
@@ -75,8 +77,8 @@ Future<List<BenchmarkResult>> runPipelineBenchmarks() async {
   // Minimal pipeline with resize
   final minimalPipeline = PipelinePresets.minimal();
   result = await benchmark(
-    'Minimal Pipeline (CHW 224x224)',
-    () => minimalPipeline.run(tensorCHW224),
+    'Minimal Pipeline (HWC 224x224)',
+    () => minimalPipeline.run(tensorHWC224),
     iterations: 30,
   );
   results.add(result);
@@ -85,8 +87,8 @@ Future<List<BenchmarkResult>> runPipelineBenchmarks() async {
   // Object detection style pipeline
   final detectionPipeline = PipelinePresets.objectDetection();
   result = await benchmark(
-    'ObjectDetection Pipeline (CHW 640x640)',
-    () => detectionPipeline.run(tensorCHW640),
+    'ObjectDetection Pipeline (HWC 640x640)',
+    () => detectionPipeline.run(tensorHWC640),
     iterations: 20,
   );
   results.add(result);

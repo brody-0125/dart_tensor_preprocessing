@@ -17,9 +17,10 @@ import '../utils/contiguous_storage.dart';
 ///
 /// ```dart
 /// final pipeline = TensorPipeline([
+///   ToTensorOp(normalize: true),
 ///   ResizeOp(height: 224, width: 224),
 ///   NormalizeOp.imagenet(),
-///   PermuteOp.hwcToChw(),
+///   UnsqueezeOp.batch(),
 /// ]);
 ///
 /// final result = await pipeline.runAsync(inputTensor);
