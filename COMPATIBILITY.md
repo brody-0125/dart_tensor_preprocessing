@@ -7,6 +7,13 @@ source of truth for the named case prefixes below.
 
 ## Established contracts
 
+- GaussianBlur uses repeated edge-inclusive symmetric boundaries, not
+  torchvision's default edge-exclusive reflect padding. The independent recipe
+  uses torch index selection plus separable double convolutions, then converts
+  to the input dtype (integer outputs truncate). Kernel size 1 is an exact copy.
+  Finite positive sigma is required; tiny/huge finite sigma and images smaller
+  than the kernel are covered by `blur-*` goldens.
+
 - Color adjustment retains the package's existing recipes: additive brightness,
   per-channel-mean contrast, HSV saturation and wrapped hue, all clamped to [0,1].
   These are not torchvision's default brightness/contrast/saturation recipes.
@@ -136,7 +143,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `GELUOp` | [lib/src/ops/activation/gelu_op.dart](lib/src/ops/activation/gelu_op.dart) | `gelu / gelu-dense / gelu-special` |
 | `GLUOp` | [lib/src/ops/activation/glu_op.dart](lib/src/ops/activation/glu_op.dart) | `glu` |
 | `GatherOp` | [lib/src/ops/gather_op.dart](lib/src/ops/gather_op.dart) | `index-*gather` |
-| `GaussianBlurOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
+| `GaussianBlurOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | `blur-*`: float32/64/int64/uint8, CHW/NCHW, offset/strided, kernels 1/3/7, tiny/huge sigma, repeated symmetric boundaries; validation and exact integer identity |
 | `GroupNormOp` | [lib/src/ops/group_norm_op.dart](lib/src/ops/group_norm_op.dart) | `group_norm` |
 | `HardsigmoidOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `hardsigmoid` |
 | `HardswishOp` | [lib/src/ops/activation/swish_ops.dart](lib/src/ops/activation/swish_ops.dart) | `hardswish` |

@@ -608,6 +608,33 @@ def generate():
                 view_cases(f'random-crop-{dtype}-{batched}-{h}-{w}', x,
                            lambda z, h=h, w=w, top=top, left=left: z[..., top:top+h, left:left+w],
                            {'op': 'random_crop', 'height': h, 'width': w, 'seed': 41, 'top': top, 'left': left}, inplace=False)
+    def symmetric_blur(z, kernel_size, sigma):
+        radius = kernel_size // 2
+        axis = torch.arange(-radius, radius + 1, dtype=torch.float64)
+        weights = torch.exp(-0.5 * (axis / sigma).square())
+        weights /= weights.sum()
+        def indices(size):
+            i = torch.arange(-radius, size + radius) % (2 * size)
+            return torch.where(i < size, i, 2 * size - 1 - i)
+        y = z.double()
+        batch = y.ndim == 4
+        if not batch:
+            y = y.unsqueeze(0)
+        channels = y.shape[1]
+        y = y.index_select(-1, indices(y.shape[-1]))
+        y = F.conv2d(y, weights.reshape(1, 1, 1, -1).expand(channels, 1, 1, -1), groups=channels)
+        y = y.index_select(-2, indices(y.shape[-2]))
+        y = F.conv2d(y, weights.reshape(1, 1, -1, 1).expand(channels, 1, -1, 1), groups=channels)
+        return (y if batch else y.squeeze(0)).to(z.dtype)
+    for dtype in (torch.float32, torch.float64, torch.int64, torch.uint8):
+        for batched in (False, True):
+            for h, w in ((3, 5), (1, 2)):
+                shape = (2, 2, h, w) if batched else (2, h, w)
+                x = ((torch.arange(math.prod(shape)).reshape(shape) * 17 + 3) % 31).to(dtype)
+                for kernel, sigma in ((1, 1.0), (3, 0.8), (7, 2.0), (3, 1e-200), (3, 1e200)):
+                    view_cases(f'blur-{dtype}-{batched}-{h}-{w}-{kernel}-{sigma}', x,
+                               lambda z, kernel=kernel, sigma=sigma: symmetric_blur(z, kernel, sigma),
+                               {'op': 'blur', 'kernel': kernel, 'sigma': sigma}, inplace=False)
     return cases
 
 

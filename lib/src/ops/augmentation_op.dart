@@ -190,7 +190,7 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
         'Kernel size must be odd and >= 1',
       );
     }
-    if (this.sigma <= 0) {
+    if (!this.sigma.isFinite || this.sigma <= 0) {
       throw InvalidParameterException(
         'sigma',
         this.sigma.toString(),
@@ -221,6 +221,7 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
     _validateShape(contiguous.shape);
 
     // Pre-compute 1D Gaussian kernel
+    if (kernelSize == 1) return contiguous.clone();
     final kernel = _computeGaussianKernel();
 
     // Apply separable convolution
@@ -249,7 +250,8 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
     // Compute 1D Gaussian
     for (int i = 0; i < kernelSize; i++) {
       final x = (i - radius).toDouble();
-      kernel[i] = exp(-(x * x) / (2 * sigma * sigma));
+      final normalized = x / sigma;
+      kernel[i] = exp(-0.5 * normalized * normalized);
       sum += kernel[i];
     }
 
@@ -428,7 +430,10 @@ class GaussianBlurOp extends TransformOp with RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    _validateShape(inputShape);
+    return inputShape;
+  }
 }
 
 // ============================================================================

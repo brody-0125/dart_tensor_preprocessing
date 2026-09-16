@@ -1,7 +1,34 @@
+import 'dart:typed_data';
 import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test(
+    'blur validates sigma and shape and preserves exact identity kernels',
+    () {
+      for (final sigma in [double.nan, double.infinity, 0.0, -1.0]) {
+        expect(
+          () => GaussianBlurOp(sigma: sigma),
+          throwsA(isA<InvalidParameterException>()),
+        );
+      }
+      expect(
+        () => GaussianBlurOp().computeOutputShape([2, 3]),
+        throwsA(isA<ShapeMismatchException>()),
+      );
+      final x = TensorBuffer(
+        storage: TensorStorage(
+          Int64List.fromList([9007199254740993]),
+          DType.int64,
+        ),
+        shape: [1, 1, 1],
+      );
+      final y = GaussianBlurOp(kernelSize: 1)(x);
+      expect(y.storage.data, x.storage.data);
+      expect(identical(y.storage, x.storage), isFalse);
+    },
+  );
+
   test('random crop rejects invalid rank and oversized crops in inference', () {
     final op = RandomCropOp(height: 4, width: 5, seed: 41);
     expect(

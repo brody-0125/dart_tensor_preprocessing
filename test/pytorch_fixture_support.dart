@@ -81,6 +81,10 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'blur' => GaussianBlurOp(
+      kernelSize: p['kernel'] as int,
+      sigma: fixtureNumber(p['sigma']),
+    ),
     'random_crop' => RandomCropOp(
       height: p['height'] as int,
       width: p['width'] as int,

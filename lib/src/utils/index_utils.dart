@@ -14,12 +14,9 @@ library;
 /// - idx=5 → 4 (reflects at right boundary)
 /// - idx=6 → 3 (continues reflecting)
 int reflectIndex(int idx, int size) {
-  if (idx < 0) {
-    return -idx - 1;
-  } else if (idx >= size) {
-    return 2 * size - idx - 1;
-  }
-  return idx;
+  if (size <= 0) throw RangeError.value(size, 'size', 'must be positive');
+  final wrapped = idx % (2 * size);
+  return wrapped < size ? wrapped : 2 * size - wrapped - 1;
 }
 
 /// Clamps an index to the valid range [0, size-1].

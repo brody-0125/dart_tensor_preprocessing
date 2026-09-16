@@ -119,6 +119,10 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   CHW/NCHW and offset/strided views, using recorded native seed coordinates
   and independent torch slices. Fixed integer copy precision and inferred
   rank/size validation. Full local network suite: 4,612 passed; analysis clean.
+  GaussianBlur adds 240 cases (3,293 total): explicit symmetric-padding torch
+  recipe, kernels 1/3/7, tiny/huge sigma, small images, dtype/batch/view variants.
+  Fixed repeated reflection bounds, sigma underflow, exact identity copying and
+  parameter/shape validation. Full local network suite: 4,853 passed; analysis clean.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Symmetric reflection now repeats safely for kernels/padding larger than the
+  input. GaussianBlur avoids sigma-square underflow, rejects non-finite sigma,
+  validates inferred rank and preserves exact integer identity for kernel size 1.
+
 - RandomCrop preserves integer values without converting through double and
   rejects invalid rank/oversized crops consistently during shape inference.
 
