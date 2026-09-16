@@ -585,6 +585,17 @@ def generate():
                     return z
                 view_cases(f'jitter-seed41-{dtype}-{batched}', x, jitter,
                            {'op': 'jitter_fixed', 'seed': 41, 'schedule': schedule}, inplace=False)
+    for dtype in (torch.float32, torch.float64, torch.int64, torch.uint8):
+        for batched in (False, True):
+            shape = (2, 2, 3, 5) if batched else (2, 3, 5)
+            x = torch.arange(math.prod(shape)).reshape(shape).to(dtype)
+            if dtype == torch.int64:
+                x += 9007199254740993
+            for direction, axis in (('horizontal', -1), ('vertical', -2)):
+                for probability in (None, 0, 1):
+                    view_cases(f'flip-{direction}-{dtype}-{batched}-{probability}', x,
+                               lambda z, axis=axis, probability=probability: z if probability == 0 else z.flip(axis),
+                               {'op': 'flip', 'direction': direction, 'probability': probability}, inplace=False)
     return cases
 
 

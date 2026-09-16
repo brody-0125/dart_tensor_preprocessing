@@ -110,6 +110,11 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   torch image values. Preserve documented package recipes rather than claiming
   torchvision default equivalence. Fixed integer hue half-turn truncation,
   non-finite factors and shape inference. Full local network suite: 4,346 passed.
+  Color adjustment CI 35100922731/35100928393 passed all gates.
+  Flip variants add 144 cases (2,933 total): both axes, CHW/NCHW, float32/64,
+  uint8/exact int64, offset/strided and random probability 0/1. Fixed integer
+  copy precision, finite probability and inferred-rank validation. Full local
+  network suite: 4,491 passed; static analysis clean.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

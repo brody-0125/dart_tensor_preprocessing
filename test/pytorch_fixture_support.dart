@@ -81,6 +81,20 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'flip' =>
+      p['probability'] == null
+          ? (p['direction'] == 'horizontal'
+                ? HorizontalFlipOp()
+                : VerticalFlipOp())
+          : (p['direction'] == 'horizontal'
+                ? RandomHorizontalFlipOp(
+                    probability: fixtureNumber(p['probability']),
+                    seed: 41,
+                  )
+                : RandomVerticalFlipOp(
+                    probability: fixtureNumber(p['probability']),
+                    seed: 41,
+                  )),
     'jitter_fixed' => ColorJitterOp(
       brightness: 0.2,
       contrast: 0.3,

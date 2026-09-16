@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Horizontal/vertical flips preserve exact integer storage instead of converting
+  through double. Random flips reject non-finite probabilities, and every flip
+  validates rank consistently during execution and shape inference.
+
 - Hue half-turns use an exact complementary-channel formula, preventing
   normalized integer channels from truncating 1 to 0 due to HSV roundoff.
   Color adjustment/jitter reject non-finite factors and validate shape inference.

@@ -140,7 +140,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `GroupNormOp` | [lib/src/ops/group_norm_op.dart](lib/src/ops/group_norm_op.dart) | `group_norm` |
 | `HardsigmoidOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `hardsigmoid` |
 | `HardswishOp` | [lib/src/ops/activation/swish_ops.dart](lib/src/ops/activation/swish_ops.dart) | `hardswish` |
-| `HorizontalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
+| `HorizontalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | flip-* independent values: CHW/NCHW, float32/64/uint8/exact int64, offsets/strides, probabilities 0/1; native seed and invalid probability/rank tests (no PyTorch RNG parity claim) |
 | `HsvToRgbOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | color-* goldens: float32/64, integer promotion, normalized domain, batch/offset/strided inputs and invalid rank/channel contracts |
 | `IdentityOp` | [lib/src/ops/transform_op.dart](lib/src/ops/transform_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `InstanceNormOp` | [lib/src/ops/instance_norm_op.dart](lib/src/ops/instance_norm_op.dart) | `instance_norm` |
@@ -161,8 +161,8 @@ coverage beyond those cases remains subject to the release checklist.
 | `RMSNormOp` | [lib/src/ops/rms_norm_op.dart](lib/src/ops/rms_norm_op.dart) | `rms_norm` |
 | `RandomCropOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
 | `RandomErasingOp` | [lib/src/ops/random_erasing_op.dart](lib/src/ops/random_erasing_op.dart) | **Pending independent oracle / contract audit** |
-| `RandomHorizontalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
-| `RandomVerticalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
+| `RandomHorizontalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | flip-* independent values: CHW/NCHW, float32/64/uint8/exact int64, offsets/strides, probabilities 0/1; native seed and invalid probability/rank tests (no PyTorch RNG parity claim) |
+| `RandomVerticalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | flip-* independent values: CHW/NCHW, float32/64/uint8/exact int64, offsets/strides, probabilities 0/1; native seed and invalid probability/rank tests (no PyTorch RNG parity claim) |
 | `ReLUOp` | [lib/src/ops/activation/relu_ops.dart](lib/src/ops/activation/relu_ops.dart) | `relu` |
 | `RepeatOp` | [lib/src/ops/repeat_op.dart](lib/src/ops/repeat_op.dart) | `index-*repeat` |
 | `ReshapeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
@@ -191,7 +191,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `TopKOp` | [lib/src/ops/topk_op.dart](lib/src/ops/topk_op.dart) | `index-*core_topk / topk-special / topk-ties` |
 | `TypeCastOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | `cast-*`: all destination dtypes, float32/64 and exact int64 sources, offset/strided inputs; native identity/wrapping regressions |
 | `UnsqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | `unsqueeze-*`: float32/64/int32/int64, offsets/strides, negative axes, alias checks |
-| `VerticalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
+| `VerticalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | flip-* independent values: CHW/NCHW, float32/64/uint8/exact int64, offsets/strides, probabilities 0/1; native seed and invalid probability/rank tests (no PyTorch RNG parity claim) |
 | `WhereOp` | [lib/src/ops/where_op.dart](lib/src/ops/where_op.dart) | `index-*where` |
 
 ## Core, convenience APIs and execution infrastructure
