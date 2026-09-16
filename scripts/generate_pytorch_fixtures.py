@@ -368,6 +368,14 @@ def generate():
         x = torch.arange(6, dtype=dtype).reshape(1, 2, 1, 3)
         if dtype == torch.int64:
             x += 9007199254740993
+        for op, fn, params in (
+            ("select", lambda z: z.select(1, 1), {"axis": 1, "index": 1}),
+            ("unbind", lambda z: z.unbind(1)[1], {"axis": 1, "index": 1, "parts": 2}),
+            ("narrow", lambda z: z.narrow(3, 1, 2), {"axis": 3, "start": 1, "length": 2}),
+        ):
+            view_cases(f"view-{op}-{dtype}", x, fn, {"op": "core_" + op, **params}, inplace=False)
+        view_cases(f"view-select-vector-{dtype}", x.flatten(), lambda z: z.select(0, 1).reshape(1),
+                   {"op": "core_select", "axis": 0, "index": 1}, inplace=False)
         for axis in (None, 0, -2, 1):
             view_cases(f"squeeze-{dtype}-{axis}", x,
                        lambda z, axis=axis: z.squeeze() if axis is None else z.squeeze(axis),

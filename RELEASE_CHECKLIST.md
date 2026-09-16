@@ -54,7 +54,9 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   bounds, immutable metadata, negative axes, reshape and alias/copy tests.
   Single-element squeeze now retains [1]; all scalar/empty restrictions are
   documented as a migration change. Local network-inclusive suite: 3,138 passed.
-  Fixed-CPU CI verification of this final view increment is pending.
+  View increment CI runs 35095978514 and 35095984086 passed all gates.
+  Select/unbind/narrow add 48 cases (1,641 total); vector selection retains [1]
+  and shared exact integer storage. Local network-inclusive suite: 3,188 passed.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

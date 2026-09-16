@@ -190,6 +190,26 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
 TensorBuffer fixtureCoreOperation(Map<String, dynamic> c, TensorBuffer input) {
   final p = c['params'] as Map<String, dynamic>;
   switch (c['op']) {
+    case 'core_select':
+      final result = input.select(p['axis'] as int, p['index'] as int);
+      expect(identical(result.storage, input.storage), isTrue);
+      return result;
+    case 'core_unbind':
+      final parts = input.unbind(p['axis'] as int);
+      expect(parts.length, p['parts']);
+      expect(
+        parts.every((part) => identical(part.storage, input.storage)),
+        isTrue,
+      );
+      return parts[p['index'] as int];
+    case 'core_narrow':
+      final result = input.narrow(
+        p['axis'] as int,
+        p['start'] as int,
+        p['length'] as int,
+      );
+      expect(identical(result.storage, input.storage), isTrue);
+      return result;
     case 'core_squeeze':
     case 'core_unsqueeze':
       final op = c['op'] == 'core_squeeze'

@@ -4,6 +4,43 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('vector selection and unbind retain exact aliased single elements', () {
+    final raw = Int64List.fromList([
+      -7,
+      9007199254740993,
+      9007199254740995,
+      -9,
+    ]);
+    final x = TensorBuffer(
+      storage: TensorStorage(raw, DType.int64),
+      shape: [2],
+      storageOffset: 1,
+    );
+    final parts = x.unbind(0);
+    expect(parts.length, 2);
+    for (var i = 0; i < parts.length; i++) {
+      expect(parts[i].shape, [1]);
+      expect(identical(parts[i].storage, x.storage), isTrue);
+      expect(parts[i].clone().storage.data, [raw[i + 1]]);
+      expect(x.select(0, i).clone().storage.data, [raw[i + 1]]);
+    }
+    raw[2] = 11;
+    expect(parts[1].clone().storage.data, [11]);
+  });
+
+  test('narrow rejects empty negative and overflowing ranges', () {
+    final x = TensorBuffer.ones([3]);
+    for (final range in [
+      [0, 0],
+      [0, -1],
+      [2, 2],
+      [9223372036854775807, 2],
+    ]) {
+      expect(() => x.narrow(0, range[0], range[1]), throwsRangeError);
+    }
+    expect(x.narrow(0, 2, 1).toList(), [1]);
+  });
+
   test('shape and strides cannot invalidate cached contiguity', () {
     final shape = [2, 3];
     final strides = [3, 1];
