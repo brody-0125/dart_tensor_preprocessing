@@ -7,6 +7,12 @@ source of truth for the named case prefixes below.
 
 ## Established contracts
 
+- Rank-zero and empty tensors are unsupported. Squeeze retains `[1]` for a
+  single element; both squeeze and unsqueeze normalize negative axes.
+  Shape/stride metadata is immutable, strides nonnegative, and every reachable
+  storage index must be in bounds. Zero-stride read views are supported.
+  `view_contract_test.dart` verifies aliases, copies and invalid metadata.
+
 - `eye` supports every dtype. `linspace`/`arange` compute a double sequence,
   then truncate for integer destinations; this is deliberately different from
   PyTorch's integer-endpoint kernels. Endpoints/step must be finite and the
@@ -127,7 +133,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `SliceOp` | [lib/src/ops/slice_op.dart](lib/src/ops/slice_op.dart) | `index-*slice` |
 | `SoftmaxOp` | [lib/src/ops/activation/softmax_op.dart](lib/src/ops/activation/softmax_op.dart) | `softmax` |
 | `SqrtOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `sqrt` |
-| `SqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
+| `SqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | `squeeze-*`: float32/64/int32/int64, offsets/strides, negative axes, single-element [1] contract |
 | `SubOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
 | `TanOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `tan` |
 | `TanhOp` | [lib/src/ops/activation/sigmoid_ops.dart](lib/src/ops/activation/sigmoid_ops.dart) | `tanh` |
@@ -136,7 +142,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `ToTensorOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | **Pending independent oracle / contract audit** |
 | `TopKOp` | [lib/src/ops/topk_op.dart](lib/src/ops/topk_op.dart) | `index-*core_topk / topk-special / topk-ties` |
 | `TypeCastOp` | [lib/src/ops/type_cast_op.dart](lib/src/ops/type_cast_op.dart) | `cast-*`: all destination dtypes, float32/64 and exact int64 sources, offset/strided inputs; native identity/wrapping regressions |
-| `UnsqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
+| `UnsqueezeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | `unsqueeze-*`: float32/64/int32/int64, offsets/strides, negative axes, alias checks |
 | `VerticalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
 | `WhereOp` | [lib/src/ops/where_op.dart](lib/src/ops/where_op.dart) | `index-*where` |
 
@@ -144,9 +150,9 @@ coverage beyond those cases remains subject to the release checklist.
 
 | Public surface | Evidence / remaining gate |
 |---|---|
-| `TensorBuffer` constructor; shape/strides/storageOffset/memoryFormat; dtype/rank/numel/sizeInBytes/isContiguous/data/dataAsFloat32List | Offset and storage regression tests; constructor bounds, shape metadata and scalar/empty consistency audit pending |
-| `transpose`, `reshape`, `squeeze`, `unsqueeze`, `contiguous`, `clone`, element access, `toList`, `computeStrides` | Core clone/contiguous/transpose/reshape have float32/64/int32/int64 offset and strided goldens; squeeze/unsqueeze/scalar and alias-contract audit pending |
-| `zeros`, `ones`, `full`, `uninitialized`, `eye`, `linspace`, `arange`, `fromFloat32List`, `fromFloat64List`, `fromUint8List` | `factory-*` covers eye/linspace/arange for all ten dtypes; remaining factory contracts under audit |
+| `TensorBuffer` constructor; shape/strides/storageOffset/memoryFormat; dtype/rank/numel/sizeInBytes/isContiguous/data/dataAsFloat32List | Offset/storage regressions and `view_contract_test.dart`: bounds, immutable metadata, scalar/empty rejection, alias/copy boundaries; layout utility audit remains below |
+| `transpose`, `reshape`, `squeeze`, `unsqueeze`, `contiguous`, `clone`, element access, `toList`, `computeStrides` | Float32/64/int32/int64 offset/strided goldens for movement and squeeze/unsqueeze; invalid axes, shape/count checks and alias/copy regressions; numeric element access explicitly returns double |
+| `zeros`, `ones`, `full`, `uninitialized`, `eye`, `linspace`, `arange`, `fromFloat32List`, `fromFloat64List`, `fromUint8List` | `factory-*` covers all seven generated factories and all ten dtypes; typed-list constructors retain supplied storage, covered by native storage and view regressions |
 | `random`, `randn` | Deliberately different RNG; documented contract and mathematical regression suite above |
 | `sum`, `mean`, `min`, `max`, `sumAxis`, `meanAxis`, `minAxis`, `maxAxis`, `argmax`, `argmin`, `argmaxAxis`, `argminAxis` | Independent single/multi/global reductions, keepDims, ties, NaN, offset/strided, integer overflow/adjacent int64 cases; integer axis mean rejected; global value API is double, scalar tensor shape is [1] |
 | `stack`, `concat`, `split`, `chunk`, `tensorWhere`, top-k extension | Independent values and exact int64, offsets/strides, split/chunk part counts, top-k values/indices/NaN/ties; no broadcasting |

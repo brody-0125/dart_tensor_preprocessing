@@ -1,5 +1,11 @@
 # PyTorch oracle fixtures
 
+The manifest currently contains 1,593 offline cases. Factory/cast cases cover
+all ten destination dtypes, using explicit double-sequence truncation and
+legacy cast-rounding/clamping recipes where those differ from native torch
+integer kernels. Squeeze/unsqueeze include offsets, non-contiguous storage,
+negative axes and the package's single-element `[1]` convention.
+
 Generate on canonical Ubuntu 24.04 x86_64 with Python 3.12, qemu-user
 (Haswell-v4 CPU model), and the wheel hash lock:
 

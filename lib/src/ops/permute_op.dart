@@ -193,7 +193,7 @@ class SqueezeOp extends TransformOp {
 
   @override
   List<int> computeOutputShape(List<int> inputShape) {
-    final d = dim;
+    final d = dim == null ? null : (dim! < 0 ? inputShape.length + dim! : dim!);
     if (d != null) {
       if (d < 0 || d >= inputShape.length) {
         throw IndexOutOfBoundsException(
@@ -206,9 +206,14 @@ class SqueezeOp extends TransformOp {
       if (inputShape[d] != 1) {
         return inputShape;
       }
-      return [...inputShape.sublist(0, d), ...inputShape.sublist(d + 1)];
+      final output = [
+        ...inputShape.sublist(0, d),
+        ...inputShape.sublist(d + 1),
+      ];
+      return output.isEmpty ? [1] : output;
     } else {
-      return inputShape.where((dim) => dim != 1).toList();
+      final output = inputShape.where((dim) => dim != 1).toList();
+      return output.isEmpty ? [1] : output;
     }
   }
 }
@@ -222,6 +227,13 @@ class ReshapeOp extends TransformOp {
 
   /// Creates a reshape operation to [targetShape].
   ReshapeOp(this.targetShape) {
+    if (targetShape.isEmpty) {
+      throw InvalidParameterException(
+        'targetShape',
+        targetShape,
+        'rank-zero tensors are not supported',
+      );
+    }
     int negativeCount = 0;
     for (final dim in targetShape) {
       if (dim == -1) {
@@ -265,6 +277,12 @@ class ReshapeOp extends TransformOp {
     }
 
     if (negativeIdx == -1) {
+      if (product != numel) {
+        throw ShapeMismatchException(
+          actual: targetShape,
+          message: 'Reshape must preserve the element count',
+        );
+      }
       return targetShape;
     }
 

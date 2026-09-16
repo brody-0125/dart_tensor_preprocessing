@@ -1,0 +1,121 @@
+import 'dart:typed_data';
+
+import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
+import 'package:test/test.dart';
+
+void main() {
+  test('shape and strides cannot invalidate cached contiguity', () {
+    final shape = [2, 3];
+    final strides = [3, 1];
+    final x = TensorBuffer(
+      storage: TensorStorage(Float32List(6), DType.float32),
+      shape: shape,
+      strides: strides,
+    );
+    expect(x.isContiguous, isTrue);
+    shape[0] = 99;
+    strides[0] = 99;
+    expect(x.shape, [2, 3]);
+    expect(x.strides, [3, 1]);
+    for (final view in [
+      x,
+      x.transpose([1, 0]),
+      x.reshape([6]),
+      x.unsqueeze(0),
+      x.squeeze(),
+    ]) {
+      expect(() => view.shape[0] = 99, throwsUnsupportedError);
+      expect(() => view.strides[0] = 99, throwsUnsupportedError);
+    }
+  });
+
+  test('constructor rejects invalid storage spans and strides', () {
+    final storage = TensorStorage(Float32List(6), DType.float32);
+    for (final create in <TensorBuffer Function()>[
+      () => TensorBuffer(storage: storage, shape: []),
+      () => TensorBuffer(storage: storage, shape: [0]),
+      () => TensorBuffer(storage: storage, shape: [7]),
+      () => TensorBuffer(storage: storage, shape: [2, 3], strides: [1]),
+      () => TensorBuffer(storage: storage, shape: [2], strides: [-1]),
+      () => TensorBuffer(storage: storage, shape: [2], strides: [6]),
+      () => TensorBuffer(storage: storage, shape: [2], storageOffset: -1),
+      () => TensorBuffer(storage: storage, shape: [2], storageOffset: 5),
+      () => TensorBuffer(
+        storage: storage,
+        shape: [2],
+        strides: [9223372036854775807],
+      ),
+    ]) {
+      expect(create, throwsA(isA<InvalidParameterException>()));
+    }
+    final broadcast = TensorBuffer(
+      storage: storage,
+      shape: [3],
+      strides: [0],
+      storageOffset: 5,
+    );
+    expect(broadcast.toList(), [0, 0, 0]);
+  });
+
+  test('single-element squeeze remains usable by clone and reshape', () {
+    final x = TensorBuffer.full([1, 1], fillValue: 7);
+    final y = SqueezeOp()(x);
+    expect(y.shape, [1]);
+    expect(y.clone().reshape([1, 1]).toList(), [7]);
+    expect(identical(y.storage, x.storage), isTrue);
+  });
+
+  test(
+    'invalid axes and reshape contracts agree before and during execution',
+    () {
+      final x = TensorBuffer.ones([2, 3]);
+      for (final op in <TransformOp>[
+        SqueezeOp(-3),
+        SqueezeOp(2),
+        UnsqueezeOp(-4),
+        UnsqueezeOp(3),
+        ReshapeOp([5]),
+      ]) {
+        expect(() => op(x), throwsA(isA<TensorException>()));
+        expect(
+          () => op.computeOutputShape(x.shape),
+          throwsA(isA<TensorException>()),
+        );
+      }
+      for (final shape in <List<int>>[
+        [],
+        [-2, -3],
+        [0, 6],
+      ]) {
+        expect(
+          () => x.reshape(shape),
+          throwsA(isA<InvalidParameterException>()),
+        );
+      }
+      expect(() => ReshapeOp([]), throwsA(isA<InvalidParameterException>()));
+      expect(
+        () => x.transpose([1, 0]).reshape([6]),
+        throwsA(isA<NonContiguousException>()),
+      );
+    },
+  );
+
+  test('offset views share mutations while clones own storage', () {
+    final raw = Float64List.fromList([-1, 2, 3, 4, 5, -2]);
+    final x = TensorBuffer(
+      storage: TensorStorage(raw, DType.float64),
+      shape: [2, 2],
+      storageOffset: 1,
+    );
+    final y = x.transpose([1, 0]).unsqueeze(-1).squeeze(-1);
+    final copied = y.contiguous();
+    final cloned = x.clone();
+    expect(identical(x.contiguous(), x), isTrue);
+    raw[1] = 9;
+    expect(y[[0, 0]], 9);
+    expect(copied.toList(), [2, 4, 3, 5]);
+    expect(cloned.toList(), [2, 3, 4, 5]);
+    expect(raw.first, -1);
+    expect(raw.last, -2);
+  });
+}

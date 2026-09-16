@@ -333,6 +333,10 @@ def generate():
                   torch.int32, torch.int64, torch.uint8, torch.uint16,
                   torch.uint32, torch.uint64):
         dummy = torch.zeros(1, dtype=dtype)
+        for factory, value in (("zeros", 0), ("uninitialized", 0), ("ones", 1), ("full", 2.75)):
+            add(f"factory-{factory}-{dtype}", "core_factory", dummy,
+                torch.full((2, 3), value, dtype=torch.float64).to(dtype),
+                {"factory": factory, "shape": [2, 3], "value": value})
         add(f"factory-eye-{dtype}", "core_factory", dummy, torch.eye(3, 5, dtype=torch.int64).to(dtype),
             {"factory": "eye", "n": 3, "m": 5})
         for steps in (1, 2, 7):
@@ -360,6 +364,19 @@ def generate():
                 return y.to(dest)
             view_cases(f"cast-{source}-{dest}", x.abs() if dest == torch.uint64 else x, cast,
                        {"op": "core_cast", "dtype": str(dest).removeprefix("torch.")}, inplace=False)
+    for dtype in (torch.float32, torch.float64, torch.int32, torch.int64):
+        x = torch.arange(6, dtype=dtype).reshape(1, 2, 1, 3)
+        if dtype == torch.int64:
+            x += 9007199254740993
+        for axis in (None, 0, -2, 1):
+            view_cases(f"squeeze-{dtype}-{axis}", x,
+                       lambda z, axis=axis: z.squeeze() if axis is None else z.squeeze(axis),
+                       {"op": "core_squeeze", "axis": axis}, inplace=False)
+        for axis in (0, -1, -5):
+            view_cases(f"unsqueeze-{dtype}-{axis}", x, lambda z, axis=axis: z.unsqueeze(axis),
+                       {"op": "core_unsqueeze", "axis": axis}, inplace=False)
+        view_cases(f"squeeze-single-{dtype}", x.flatten()[:1].reshape(1, 1),
+                   lambda z: z.squeeze().reshape(1), {"op": "core_squeeze"}, inplace=False)
     return cases
 
 

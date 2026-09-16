@@ -49,7 +49,12 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   Added another 150 factory/cast cases (1,457 total): all destination dtypes,
   sequence truncation, legacy cast rounding/clamps and exact integer movement.
   Fixed dtype allocation in eye/linspace/arange and integer cast precision.
-  Remaining factories, squeeze/unsqueeze/scalar and alias contracts are pending.
+  Factory/cast CI runs 35095300717 and 35095305969 passed all gates.
+  Added 136 view/remaining-factory cases (1,593 total), plus native constructor
+  bounds, immutable metadata, negative axes, reshape and alias/copy tests.
+  Single-element squeeze now retains [1]; all scalar/empty restrictions are
+  documented as a migration change. Local network-inclusive suite: 3,138 passed.
+  Fixed-CPU CI verification of this final view increment is pending.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

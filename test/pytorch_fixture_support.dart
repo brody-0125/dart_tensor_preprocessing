@@ -190,10 +190,36 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
 TensorBuffer fixtureCoreOperation(Map<String, dynamic> c, TensorBuffer input) {
   final p = c['params'] as Map<String, dynamic>;
   switch (c['op']) {
+    case 'core_squeeze':
+    case 'core_unsqueeze':
+      final op = c['op'] == 'core_squeeze'
+          ? SqueezeOp(p['axis'] as int?)
+          : UnsqueezeOp(p['axis'] as int);
+      final result = op(input);
+      expect(result.shape, op.computeOutputShape(input.shape));
+      expect(identical(result.storage, input.storage), isTrue);
+      return result;
     case 'core_cast':
       return TypeCastOp(DType.values.byName(p['dtype'] as String))(input);
     case 'core_factory':
       return switch (p['factory']) {
+        'zeros' => TensorBuffer.zeros(
+          (p['shape'] as List).cast<int>(),
+          dtype: input.dtype,
+        ),
+        'ones' => TensorBuffer.ones(
+          (p['shape'] as List).cast<int>(),
+          dtype: input.dtype,
+        ),
+        'uninitialized' => TensorBuffer.uninitialized(
+          (p['shape'] as List).cast<int>(),
+          dtype: input.dtype,
+        ),
+        'full' => TensorBuffer.full(
+          (p['shape'] as List).cast<int>(),
+          fillValue: fixtureNumber(p['value']),
+          dtype: input.dtype,
+        ),
         'eye' => TensorBuffer.eye(
           p['n'] as int,
           m: p['m'] as int,

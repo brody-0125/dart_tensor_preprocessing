@@ -496,11 +496,11 @@ void main() {
       expect(tensor.strides[0], equals(3 * 224 * 224)); // 150528
     });
 
-    test('empty batch handling', () {
+    test('single-element squeeze retains rank one', () {
       // Batch 1 with all dimensions 1
       final tensor = TensorBuffer.zeros([1, 1, 1, 1]);
       final squeezed = tensor.squeeze();
-      expect(squeezed.shape, isEmpty);
+      expect(squeezed.shape, [1]);
     });
 
     test('very high dimensional tensor (6D)', () {

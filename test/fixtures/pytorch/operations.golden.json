@@ -132722,6 +132722,158 @@
     "rtol": 1e-05
   },
   {
+    "name": "factory-zeros-torch.float32",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-uninitialized-torch.float32",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-ones-torch.float32",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-full-torch.float32",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        2.75,
+        2.75,
+        2.75,
+        2.75,
+        2.75,
+        2.75
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
     "name": "factory-eye-torch.float32",
     "op": "core_factory",
     "params": {
@@ -132938,6 +133090,158 @@
     },
     "atol": 1e-06,
     "rtol": 1e-05
+  },
+  {
+    "name": "factory-zeros-torch.float64",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "factory-uninitialized-torch.float64",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "factory-ones-torch.float64",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "factory-full-torch.float64",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        2.75,
+        2.75,
+        2.75,
+        2.75,
+        2.75,
+        2.75
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
   },
   {
     "name": "factory-eye-torch.float64",
@@ -133158,6 +133462,158 @@
     "rtol": 1e-10
   },
   {
+    "name": "factory-zeros-torch.int8",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-uninitialized-torch.int8",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int8",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-ones-torch.int8",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int8",
+      "values": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-full-torch.int8",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int8",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
     "name": "factory-eye-torch.int8",
     "op": "core_factory",
     "params": {
@@ -133370,6 +133826,158 @@
         3,
         2,
         0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-zeros-torch.int16",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-uninitialized-torch.int16",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int16",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-ones-torch.int16",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int16",
+      "values": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-full-torch.int16",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int16",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
       ]
     },
     "atol": 1e-06,
@@ -133594,6 +134202,158 @@
     "rtol": 1e-05
   },
   {
+    "name": "factory-zeros-torch.int32",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-uninitialized-torch.int32",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-ones-torch.int32",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-full-torch.int32",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
     "name": "factory-eye-torch.int32",
     "op": "core_factory",
     "params": {
@@ -133806,6 +134566,158 @@
         3,
         2,
         0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-zeros-torch.int64",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-uninitialized-torch.int64",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-ones-torch.int64",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-full-torch.int64",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
       ]
     },
     "atol": 1e-06,
@@ -134030,6 +134942,158 @@
     "rtol": 1e-05
   },
   {
+    "name": "factory-zeros-torch.uint8",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-uninitialized-torch.uint8",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint8",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-ones-torch.uint8",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint8",
+      "values": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-full-torch.uint8",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint8",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint8",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
     "name": "factory-eye-torch.uint8",
     "op": "core_factory",
     "params": {
@@ -134242,6 +135306,158 @@
         3,
         2,
         0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-zeros-torch.uint16",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-uninitialized-torch.uint16",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint16",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-ones-torch.uint16",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint16",
+      "values": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-full-torch.uint16",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint16",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint16",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
       ]
     },
     "atol": 1e-06,
@@ -134466,6 +135682,158 @@
     "rtol": 1e-05
   },
   {
+    "name": "factory-zeros-torch.uint32",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-uninitialized-torch.uint32",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint32",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-ones-torch.uint32",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint32",
+      "values": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-full-torch.uint32",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint32",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
     "name": "factory-eye-torch.uint32",
     "op": "core_factory",
     "params": {
@@ -134678,6 +136046,158 @@
         3,
         2,
         0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-zeros-torch.uint64",
+    "op": "core_factory",
+    "params": {
+      "factory": "zeros",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-uninitialized-torch.uint64",
+    "op": "core_factory",
+    "params": {
+      "factory": "uninitialized",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 0
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint64",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-ones-torch.uint64",
+    "op": "core_factory",
+    "params": {
+      "factory": "ones",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 1
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint64",
+      "values": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "factory-full-torch.uint64",
+    "op": "core_factory",
+    "params": {
+      "factory": "full",
+      "shape": [
+        2,
+        3
+      ],
+      "value": 2.75
+    },
+    "input": {
+      "shape": [
+        1
+      ],
+      "dtype": "uint64",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint64",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
       ]
     },
     "atol": 1e-06,
@@ -140149,6 +141669,5870 @@
     "offset": 0,
     "strides": [
       2
+    ]
+  },
+  {
+    "name": "squeeze-torch.float32-None",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.float32-None-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.float32-None-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.float32-0",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.float32-0-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.float32-0-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.float32--2",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.float32--2-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.float32--2-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.float32-1",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.float32-1-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.float32-1-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.float32-0",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "unsqueeze-torch.float32-0-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.float32-0-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.float32--1",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "unsqueeze-torch.float32--1-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.float32--1-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.float32--5",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "unsqueeze-torch.float32--5-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.float32--5-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-single-torch.float32",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-single-torch.float32-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        4
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        4
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-single-torch.float32-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      1,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.float64-None",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "squeeze-torch.float64-None-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.float64-None-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.float64-0",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "squeeze-torch.float64-0-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.float64-0-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.float64--2",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "squeeze-torch.float64--2-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.float64--2-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.float64-1",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "squeeze-torch.float64-1-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.float64-1-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.float64-0",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "unsqueeze-torch.float64-0-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.float64-0-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.float64--1",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "unsqueeze-torch.float64--1-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.float64--1-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.float64--5",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "unsqueeze-torch.float64--5-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.float64--5-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-single-torch.float64",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "squeeze-single-torch.float64-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        4
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        4
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "squeeze-single-torch.float64-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      1,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.int32-None",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.int32-None-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.int32-None-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.int32-0",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.int32-0-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.int32-0-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.int32--2",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.int32--2-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.int32--2-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.int32-1",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.int32-1-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.int32-1-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.int32-0",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "unsqueeze-torch.int32-0-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.int32-0-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.int32--1",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "unsqueeze-torch.int32--1-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.int32--1-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.int32--5",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "unsqueeze-torch.int32--5-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        -333
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.int32--5-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-single-torch.int32",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-single-torch.int32-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        4
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        4
+      ],
+      "dtype": "int32",
+      "values": [
+        -777,
+        -555,
+        0,
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-single-torch.int32-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "int32",
+      "values": [
+        0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      1,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.int64-None",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.int64-None-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.int64-None-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": null
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.int64-0",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.int64-0-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.int64-0-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.int64--2",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.int64--2-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.int64--2-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": -2
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-torch.int64-1",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-torch.int64-1-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-torch.int64-1-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze",
+      "axis": 1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.int64-0",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "unsqueeze-torch.int64-0-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.int64-0-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": 0
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.int64--1",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "unsqueeze-torch.int64--1-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.int64--1-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -1
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        2,
+        1,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "unsqueeze-torch.int64--5",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "unsqueeze-torch.int64--5-offset",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        9
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "unsqueeze-torch.int64--5-strided",
+    "op": "core_unsqueeze",
+    "params": {
+      "op": "core_unsqueeze",
+      "axis": -5
+    },
+    "input": {
+      "shape": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1,
+        1,
+        2,
+        1,
+        3
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993",
+        "9007199254740994",
+        "9007199254740995",
+        "9007199254740996",
+        "9007199254740997",
+        "9007199254740998"
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      6,
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "squeeze-single-torch.int64",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "squeeze-single-torch.int64-offset",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        4
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        -333
+      ]
+    },
+    "offset": 2,
+    "inplace": false,
+    "expected_base": {
+      "shape": [
+        4
+      ],
+      "dtype": "int64",
+      "values": [
+        -777,
+        -555,
+        "9007199254740993",
+        -333
+      ]
+    }
+  },
+  {
+    "name": "squeeze-single-torch.int64-strided",
+    "op": "core_squeeze",
+    "params": {
+      "op": "core_squeeze"
+    },
+    "input": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993"
+      ]
+    },
+    "expected": {
+      "shape": [
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "int64",
+      "values": [
+        "9007199254740993"
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      1,
+      1
     ]
   }
 ]

@@ -53,21 +53,25 @@ class TensorBuffer {
   /// [memoryFormat].
   TensorBuffer({
     required this.storage,
-    required this.shape,
+    required List<int> shape,
     List<int>? strides,
     this.storageOffset = 0,
     this.memoryFormat = MemoryFormat.contiguous,
-  }) : strides = strides ?? computeStrides(shape, memoryFormat) {
+  }) : shape = List.unmodifiable(shape),
+       strides = List.unmodifiable(
+         strides ?? computeStrides(shape, memoryFormat),
+       ) {
     _validateShape();
   }
 
   TensorBuffer._view({
     required this.storage,
-    required this.shape,
-    required this.strides,
+    required List<int> shape,
+    required List<int> strides,
     required this.storageOffset,
     required this.memoryFormat,
-  });
+  }) : shape = List.unmodifiable(shape),
+       strides = List.unmodifiable(strides);
 
   /// The data type of elements in this tensor.
   DType get dtype => storage.dtype;
@@ -144,6 +148,7 @@ class TensorBuffer {
   /// Throws [ShapeMismatchException] if numel doesn't match.
   /// Throws [NonContiguousException] if this tensor is not contiguous.
   TensorBuffer reshape(List<int> newShape) {
+    _validateShapeStatic(newShape);
     final newNumel = newShape.fold(1, (a, b) => a * b);
     if (newNumel != numel) {
       throw ShapeMismatchException(
@@ -169,7 +174,20 @@ class TensorBuffer {
   /// Returns a view with all size-1 dimensions removed.
   ///
   /// If [dim] is specified, only that dimension is squeezed (if it has size 1).
+  /// Negative dimensions are normalized. A single element retains shape [1]
+  /// because rank-zero tensors are not supported.
   TensorBuffer squeeze([int? dim]) {
+    if (dim != null) {
+      dim = dim < 0 ? rank + dim : dim;
+      if (dim < 0 || dim >= rank) {
+        throw IndexOutOfBoundsException(
+          index: dim,
+          min: 0,
+          max: rank - 1,
+          dimension: 'dim',
+        );
+      }
+    }
     final newShape = <int>[];
     final newStrides = <int>[];
 
@@ -183,6 +201,10 @@ class TensorBuffer {
       newStrides.add(strides[i]);
     }
 
+    if (newShape.isEmpty) {
+      newShape.add(1);
+      newStrides.add(1);
+    }
     return TensorBuffer._view(
       storage: storage,
       shape: newShape,
@@ -196,6 +218,7 @@ class TensorBuffer {
   ///
   /// Throws [IndexOutOfBoundsException] if [dim] is out of range.
   TensorBuffer unsqueeze(int dim) {
+    dim = dim < 0 ? rank + dim + 1 : dim;
     if (dim < 0 || dim > rank) {
       throw IndexOutOfBoundsException(
         index: dim,
@@ -454,6 +477,7 @@ class TensorBuffer {
 
   /// Computes strides for a tensor with the given [shape] and [format].
   static List<int> computeStrides(List<int> shape, MemoryFormat format) {
+    _validateShapeStatic(shape);
     final rank = shape.length;
     final strides = List<int>.filled(rank, 0);
 
@@ -487,6 +511,31 @@ class TensorBuffer {
 
   void _validateShape() {
     _validateShapeStatic(shape);
+    if (strides.length != rank || strides.any((s) => s < 0)) {
+      throw InvalidParameterException(
+        'strides',
+        strides,
+        'one nonnegative stride per dimension is required',
+      );
+    }
+    if (storageOffset < 0 || storageOffset >= storage.length) {
+      throw InvalidParameterException(
+        'storageOffset',
+        storageOffset,
+        'offset must be inside storage',
+      );
+    }
+    var last = storageOffset;
+    for (var i = 0; i < rank; i++) {
+      final stride = strides[i];
+      if (stride != 0 && shape[i] - 1 > (storage.length - 1 - last) ~/ stride) {
+        throw InvalidParameterException('shape/strides', [
+          shape,
+          strides,
+        ], 'view extends beyond storage');
+      }
+      last += (shape[i] - 1) * stride;
+    }
   }
 
   /// Static helper to validate shape before tensor creation.

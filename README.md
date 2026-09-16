@@ -289,6 +289,18 @@ PyTorch dtype, input rank or option is supported.
 
 ### Migration toward 1.0.0
 
+Tensor shapes and strides are now immutable copies. Constructors reject views
+outside storage, negative strides and inconsistent stride counts. Zero strides
+remain valid for read-only broadcast views. Rank-zero and empty tensors remain
+unsupported: squeezing a single element now retains `[1]`, so clone and reshape
+continue to work. Squeeze/unsqueeze accept negative axes and reject invalid axes.
+
+`eye`, `linspace` and `arange` now allocate the requested dtype. Sequence
+factories use double arithmetic and truncate integer outputs toward zero;
+their parameters must be finite and produce a nonempty sequence. `TypeCastOp`
+retains its legacy half-away rounding/clamping rules, but integer-to-integer
+casts no longer lose precision by converting through double.
+
 Axis reductions no longer silently cast every output to float32: float32/64
 remain their input dtype, integer sum promotes to int64, and min/max retain the
 input dtype. Integer axis mean is rejected; cast to float first. Scalar-valued

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Copy and freeze shape/stride metadata, validate storage spans and nonnegative
+  strides, and reject invalid reshape dimensions. Squeeze/unsqueeze now agree
+  with computed shapes for negative axes; single-element squeeze retains [1]
+  instead of creating an unusable rank-zero view. See the migration notes.
+
 - Allocate eye/linspace/arange using the requested dtype; reject non-finite or
   empty sequences explicitly. Document double-sequence integer truncation.
 - Preserve exact integer sources in TypeCastOp, including values beyond 2^53;
