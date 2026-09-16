@@ -19,7 +19,10 @@ On PowerShell set `$env:RUN_PYTORCH_NETWORK_TESTS='1'` before the Dart command.
 `--network` regenerates only the offline operation/preset goldens.
 
 The oracle is CPU PyTorch 2.10.0 + torchvision 0.25.0 with one thread and `ATEN_CPU_CAPABILITY=default` to avoid runner-dependent
-AVX2/AVX512 kernel selection. The
+AVX2/AVX512 kernel selection. `MKL_CBWR=COMPATIBLE` and
+`MKL_ENABLE_INSTRUCTIONS=SSE4_2` also constrain MKL's independent unary VML
+path (see [ATen VML](https://github.com/pytorch/pytorch/blob/v2.10.0/aten/src/ATen/cpu/vml.h)
+and [Intel reproducibility](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2023-1/get-started-with-conditional-num-reproducibility.html)). The
 generator checks every pinned Python distribution version. Manifest hashes bind
 the generator, both dependency locks, and JSON payload; non-finite numbers use explicit
 strings. Tests compare shape, dtype, and every element, including non-finite
@@ -70,3 +73,6 @@ output. Dart tests on all platforms consume the same Linux goldens.
 The expanded math corpus was independently regenerated identically in Linux
 runs 35091267984 and 35091276630. The dense float64 GELU case differed from
 Windows at 52 values, by at most 4.64e-16; no tolerance was changed.
+
+A later same-commit run exposed one-ULP sqrt differences despite ATen DEFAULT.
+MKL dispatch is now pinned separately; its new canonical results are under review.

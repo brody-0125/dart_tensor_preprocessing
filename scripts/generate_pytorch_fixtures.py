@@ -13,6 +13,9 @@ from pathlib import Path
 
 # Select the same kernel family on AVX2/AVX512 GitHub-hosted runners.
 os.environ["ATEN_CPU_CAPABILITY"] = "default"
+# ATen's unary VML calls have their own MKL dispatch independent of ATen.
+os.environ["MKL_CBWR"] = "COMPATIBLE"
+os.environ["MKL_ENABLE_INSTRUCTIONS"] = "SSE4_2"
 
 import torch
 import torchvision
@@ -273,7 +276,7 @@ def main():
     raw = (json.dumps(cases, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode()
     (args.output / "operations.golden.json").write_bytes(raw)
     manifest = {"schema_version": 1,
-                "oracle": {"torch": "2.10.0+cpu", "torchvision": "0.25.0+cpu", "python": "3.12", "device": "cpu", "capability": "DEFAULT", "threads": 1},
+                "oracle": {"torch": "2.10.0+cpu", "torchvision": "0.25.0+cpu", "python": "3.12", "device": "cpu", "capability": "DEFAULT", "mkl_cbwr": "COMPATIBLE", "mkl_instructions": "SSE4_2", "threads": 1},
                 "generator_sha256": hashlib.sha256(Path(__file__).read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
                 "requirements_sha256": hashlib.sha256((ROOT / "scripts/requirements-fixtures.txt").read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
                 "requirements_linux_sha256": hashlib.sha256((ROOT / "scripts/requirements-fixtures-linux.txt").read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
