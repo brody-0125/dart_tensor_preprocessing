@@ -173,7 +173,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `ReLUOp` | [lib/src/ops/activation/relu_ops.dart](lib/src/ops/activation/relu_ops.dart) | `relu` |
 | `RepeatOp` | [lib/src/ops/repeat_op.dart](lib/src/ops/repeat_op.dart) | `index-*repeat` |
 | `ReshapeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
-| `ResizeNormalizeFusedOp` | [lib/src/ops/fused_ops.dart](lib/src/ops/fused_ops.dart) | `fused-*`: float32/64 double-interpolation then normalization recipe, batch/offset/strided, alignCorners, singleton output, block boundary. **Integer/remaining parameter contract audit pending.** |
+| `ResizeNormalizeFusedOp` | [lib/src/ops/fused_ops.dart](lib/src/ops/fused_ops.dart) | `fused-*`: float32/64 double-interpolation then normalization recipe, batch/offset/strided, alignCorners, singleton output, block boundary. `fused-integer-*` additionally covers eight integer dtypes with finite in-range positive inputs, truncation after double interpolation/normalization. **Out-of-range/non-finite conversion and remaining parameter audit pending.** |
 | `ResizeOp` | [lib/src/ops/resize_op.dart](lib/src/ops/resize_op.dart) | `resize / resize-aa` |
 | `ResizeShortestOp` | [lib/src/ops/resize_op.dart](lib/src/ops/resize_op.dart) | `shortest` |
 | `RgbToGrayscaleOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | color-* goldens: float32/64, integer promotion, normalized domain, batch/offset/strided inputs and invalid rank/channel contracts |

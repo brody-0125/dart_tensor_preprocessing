@@ -197,3 +197,8 @@ Normalization parameter audit: reproduced mutation of validated std to zero
 producing -Infinity instead of 2. Both NormalizeOp and ResizeNormalizeFusedOp
 now copy mean/std into unmodifiable lists; regression verifies caller and
 public-field mutations. Remaining fused integer audit remains open.
+
+Fused integer increment: 288 exact-comparison cases (5,201 total), all eight
+integer dtypes, positive in-range values, both alignCorners settings, batches
+and offset/strided views. Independent double torch interpolation followed by
+normalization and integer cast passes. Out-of-range/non-finite cases remain open.

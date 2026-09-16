@@ -720,6 +720,15 @@ def generate():
                     view_cases(f'fused-{dtype}-{batch}-{size}-{align}', x,
                                lambda z, size=size, align=align: fused(z, size, align),
                                {'op': 'fused', 'size': size, 'align': align}, inplace=False)
+    for dtype in (torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8, torch.uint16, torch.uint32, torch.uint64):
+        for batch in (False, True):
+            shape = (2, 2, 3, 5) if batch else (2, 3, 5)
+            x = (torch.arange(math.prod(shape)).reshape(shape) % 19 + 2).to(dtype)
+            for size in ((1, 1), (2, 3), (7, 9)):
+                for align in (False, True):
+                    view_cases(f'fused-integer-{dtype}-{batch}-{size}-{align}', x,
+                               lambda z, size=size, align=align: fused(z, size, align),
+                               {'op': 'fused', 'size': size, 'align': align}, inplace=False)
     return cases
 
 
