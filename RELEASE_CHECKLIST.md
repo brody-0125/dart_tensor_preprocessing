@@ -256,3 +256,8 @@ SIMD copy audit reproduced overwritten source values for overlapping views.
 Replaced the manual vector/scalar copy with native TypedList.setRange, removing
 about 40 lines and adding runtime length validation. Regression covers both
 overlap directions, aligned/unaligned offsets and a vector tail.
+
+SIMD binary length audit: add/subtract/multiply/divide previously relied on
+assertions disabled in release builds. Runtime validation now rejects mismatched
+inputs/output before writes; the regression checks all three mismatch positions
+and preserves output sentinels across all four kernels.

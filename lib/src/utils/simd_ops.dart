@@ -110,7 +110,9 @@ class SimdOps {
   ///
   /// **Complexity:** O(n) where n = a.length
   static void add(Float32List a, Float32List b, Float32List out) {
-    assert(a.length == b.length && b.length == out.length);
+    if (a.length != b.length || a.length != out.length) {
+      throw ArgumentError('Input and output lengths must match');
+    }
     final length = a.length;
     if (length == 0) return;
 
@@ -165,7 +167,9 @@ class SimdOps {
   ///
   /// **Complexity:** O(n) where n = a.length
   static void subtract(Float32List a, Float32List b, Float32List out) {
-    assert(a.length == b.length && b.length == out.length);
+    if (a.length != b.length || a.length != out.length) {
+      throw ArgumentError('Input and output lengths must match');
+    }
     final length = a.length;
     if (length == 0) return;
 
@@ -220,7 +224,9 @@ class SimdOps {
   ///
   /// **Complexity:** O(n) where n = a.length
   static void divide(Float32List a, Float32List b, Float32List out) {
-    assert(a.length == b.length && b.length == out.length);
+    if (a.length != b.length || a.length != out.length) {
+      throw ArgumentError('Input and output lengths must match');
+    }
     final length = a.length;
     if (length == 0) return;
 
@@ -275,7 +281,9 @@ class SimdOps {
   ///
   /// **Complexity:** O(n) where n = a.length
   static void multiply(Float32List a, Float32List b, Float32List out) {
-    assert(a.length == b.length && b.length == out.length);
+    if (a.length != b.length || a.length != out.length) {
+      throw ArgumentError('Input and output lengths must match');
+    }
     final length = a.length;
     if (length == 0) return;
 

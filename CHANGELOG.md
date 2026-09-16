@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- SIMD binary kernels validate input/output lengths in release builds before
+  modifying the output.
+
 - SimdOps.copy uses native typed-list copying to preserve overlapping views
   and rejects unequal lengths outside debug builds.
 
