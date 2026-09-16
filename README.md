@@ -289,6 +289,20 @@ PyTorch dtype, input rank or option is supported.
 
 ### Migration toward 1.0.0
 
+`NormalizeOp` and `ResizeNormalizeFusedOp` copy and freeze their mean/std lists.
+Recreate the operation to change statistics. Gaussian blur, random erasing and
+color adjustments now reject invalid non-finite parameters; shape inference
+performs the same rank/channel checks as execution. `PadMode.reflect` keeps
+edge-inclusive symmetric boundaries, including repeated reflection for large
+padding. Color and random augmentation contracts that intentionally differ
+from torchvision are listed in [COMPATIBILITY.md](COMPATIBILITY.md).
+
+Low-level mutation dispatch rejects non-contiguous destinations; copy to
+contiguous storage first. SIMD binary kernels validate equal lengths in release
+builds. BufferPool release transfers ownership: stop using the buffer and its
+aliases until it is acquired again.
+
+
 `LayoutConvertOp.toNhwc()` explicitly expects NCHW input; `toNchw()` expects
 NHWC input. Both always permute logical axes, independently of physical
 `memoryFormat`. Previously toNchw could silently skip conversion. Physical

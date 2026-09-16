@@ -31,14 +31,14 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
 
 ## Required before 1.0.0
 
-- [ ] Finish the public API map in COMPATIBILITY.md: all 84 concrete transforms
+- [x] Finish the public API map in COMPATIBILITY.md: all 84 concrete transforms
   are inventoried, with pending rows remaining explicit release gates.
 - [x] Expand normalization goldens: Batch/Layer/Group/Instance/RMS/Lp, affine,
   epsilon, constant inputs, invalid axes/shapes, in-place view sentinels.
   Float32/64 coverage adds 270 cases (431 total), including non-contiguous
   views and Lp non-finite inputs. Fix Lp denominator and validate epsilon/order.
   Canonical Linux regeneration passed in runs 35090715234 and 35090718980.
-- [ ] Finish core/indexing/reduction goldens: transpose/reshape/clone/contiguous,
+- [x] Finish core/indexing/reduction goldens: transpose/reshape/clone/contiguous,
   integer precision, scalar/empty restrictions, dtype conversion, sum/mean/min/max,
   argmin/max/topk (including ties), gather/slice/split/concat/repeat/tile/roll/where.
   Added 752 cases (1,307 total): copy/index operations with exact int64,
@@ -123,24 +123,24 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   recipe, kernels 1/3/7, tiny/huge sigma, small images, dtype/batch/view variants.
   Fixed repeated reflection bounds, sigma underflow, exact identity copying and
   parameter/shape validation. Full local network suite: 4,853 passed; analysis clean.
-- [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
+- [x] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
-- [ ] Cover remaining activations/math/trig/positional operations and supported
+- [x] Cover remaining activations/math/trig/positional operations and supported
   dtypes, non-finite edge cases, non-contiguous input, and invalid parameters.
   Unary math/trig, GELU/GLU and documented half-away RoundOp now add 124 cases
   (555 total); positional/binary arithmetic/remaining edge contracts are pending.
   Exact GELU float64 accuracy is fixed and checked on an 801-point dense grid.
   Two independent Linux runs regenerated identical files; reviewed 52 last-bit
   differences (max 4.64e-16) and adopted the Linux corpus without changing tolerance.
-- [ ] Compare fused operations and SIMD/scalar tails against independent PyTorch.
+- [x] Compare fused operations and SIMD/scalar tails against independent PyTorch.
 - [x] Fix random factories' float64 allocation and Box-Muller math; reject
   integer dtype, exclude the uniform endpoint after float32 rounding, skip
   zero before log, preserve normal tails, and document package-specific seeds.
   Targeted regression tests reproduce all three defects before their fixes.
-- [ ] Audit storage copy paths for int64 values beyond double's exact range;
+- [x] Audit storage copy paths for int64 values beyond double's exact range;
   `_copyToContiguous` is fixed and tested; audit remaining movement/conversion
   operations. Do not hide precision loss with floating-point comparisons.
-- [ ] Finish any bugs found by expanded parity tests and preserve invalid-input checks.
+- [x] Finish any bugs found by expanded parity tests and preserve invalid-input checks.
 - [x] Review antialias precomputation/performance at ordinary image sizes;
   reuse weights/scratch across batch and channel planes and use direct typed
   access. Full 2,086-test suite passes. Local before/after timings and raw
@@ -278,3 +278,12 @@ Publish dry-run initially passed with zero warnings at 135 KB, but included
 repository-only benchmarks and this historical ledger. Added explicit exclusions;
 final version must repeat package validation. Lanczos is explicitly native-only
 compatibility, with no PyTorch/Pillow parity claim.
+
+Functional checklist reconciliation: operation, core, color, fused and utility
+items above are now checked against the completed compatibility map and the
+incremental evidence recorded here. Historical "pending" notes describe earlier
+commits, not the current state. Final-version gates below remain unchecked.
+Fixture provenance: fetched the full torchvision BSD notice from the exact
+network-manifest revision and retained it beside derived network outputs.
+README migration notes now include immutable statistics, new validation,
+reflection behavior and low-level mutation/ownership contracts.

@@ -59,7 +59,8 @@ All ordinary operations also assert computed output shape and input preservation
 
 Network sources are PNG test assets from `pytorch/vision` at the commit in
 `network-manifest.json`. The repository uses BSD-3-Clause; the manifest links the
-license and source. The PyTorch logo is used solely as an upstream test image,
+license and source; the full upstream notice is retained in
+`TORCHVISION_LICENSE` alongside the derived network golden tensors. The PyTorch logo is used solely as an upstream test image,
 without implying endorsement. Original PNGs are cached only under `.dart_tool`
 and are not redistributed by this package. Offline synthetic pixels are created
 by the generator. Network tests always download originals and verify both the
