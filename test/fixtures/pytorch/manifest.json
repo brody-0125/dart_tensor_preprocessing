@@ -17,7 +17,7 @@
   "files": [
     {
       "path": "operations.golden.json",
-      "sha256": "41d0b165901f7fda7b20b2a8f0d7132af308cda335469d5737b73b6f75a77478",
+      "sha256": "d0eaac81d4e73c67ac5c3f8aeda98004e5bb53943987abe1e1e3f33711dbe118",
       "cases": 555
     }
   ]

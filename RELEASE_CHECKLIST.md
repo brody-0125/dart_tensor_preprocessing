@@ -85,4 +85,6 @@ No 1.0.0 version, tag, GitHub release, or pub.dev publication has been created y
 
 Canonical unary regeneration exposed hardware-dependent last bits even with
 ATen/MKL flags. The oracle job now uses Ubuntu 24.04 and QEMU Haswell-v4;
-its initial regeneration is awaiting review. Native Dart CI remains unchanged.
+independent runs 35092487771 and 35092491682 regenerated identical files.
+Reviewed and adopted six sqrt cases with one-ULP changes within unchanged
+tolerances; all other cases and network payloads stayed identical. Native Dart CI remains unchanged.
