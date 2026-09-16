@@ -74,7 +74,7 @@ jobs:
           RUN_PYTORCH_NETWORK_TESTS: '1'
 
   pytorch-oracle:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -83,7 +83,17 @@ jobs:
           cache: pip
           cache-dependency-path: scripts/requirements-fixtures-linux.txt
       - run: python -m pip install --require-hashes -r scripts/requirements-fixtures-linux.txt
-      - run: python scripts/generate_pytorch_fixtures.py --network
+      - name: Install fixed CPU runner
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y qemu-user
+          qemu-x86_64 --version
+      - name: Regenerate on the canonical CPU model
+        run: qemu-x86_64 -cpu Haswell-v4 "$(command -v python)" scripts/generate_pytorch_fixtures.py --network
+        env:
+          PYTORCH_ORACLE_CPU_MODEL: Haswell-v4
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
       - run: git diff --exit-code -- test/fixtures/pytorch
       - uses: actions/upload-artifact@v4
         if: failure()

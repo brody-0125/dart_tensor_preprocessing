@@ -276,7 +276,7 @@ def main():
     raw = (json.dumps(cases, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode()
     (args.output / "operations.golden.json").write_bytes(raw)
     manifest = {"schema_version": 1,
-                "oracle": {"torch": "2.10.0+cpu", "torchvision": "0.25.0+cpu", "python": "3.12", "device": "cpu", "capability": "DEFAULT", "mkl_cbwr": "COMPATIBLE", "mkl_instructions": "SSE4_2", "threads": 1},
+                "oracle": {"torch": "2.10.0+cpu", "torchvision": "0.25.0+cpu", "python": "3.12", "device": "cpu", "cpu_model": os.environ.get("PYTORCH_ORACLE_CPU_MODEL", "native-investigation"), "capability": "DEFAULT", "mkl_cbwr": "COMPATIBLE", "mkl_instructions": "SSE4_2", "threads": 1},
                 "generator_sha256": hashlib.sha256(Path(__file__).read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
                 "requirements_sha256": hashlib.sha256((ROOT / "scripts/requirements-fixtures.txt").read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
                 "requirements_linux_sha256": hashlib.sha256((ROOT / "scripts/requirements-fixtures-linux.txt").read_bytes().replace(b"\r\n", b"\n")).hexdigest(),

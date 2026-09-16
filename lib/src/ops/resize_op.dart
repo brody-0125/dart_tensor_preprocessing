@@ -176,6 +176,7 @@ class ResizeOp extends TransformOp with RequiresContiguous {
           'Antialias requires halfPixel or alignCorners',
         );
       }
+      return _resizeAntialias(contiguous);
     }
     return rank == 3 ? _resize3D(contiguous) : _resize4D(contiguous);
   }
@@ -257,12 +258,6 @@ class ResizeOp extends TransformOp with RequiresContiguous {
       final srcOffset = batchOffset + ch * srcChannelStride;
       final dstOffset = outputBatchOffset + ch * dstChannelStride;
 
-      if (antialias &&
-          (mode == InterpolationMode.bilinear ||
-              mode == InterpolationMode.bicubic)) {
-        _resizeAntialias(input, output, srcH, srcW, srcOffset, dstOffset);
-        continue;
-      }
       switch (mode) {
         case InterpolationMode.nearest:
           _resizeNearest(
@@ -344,41 +339,47 @@ class ResizeOp extends TransformOp with RequiresContiguous {
 
   // Separable, widened filters with renormalized boundary weights, matching
   // ATen's antialias CPU path (PyTorch v2.10.0 UpSampleKernel.cpp).
-  void _resizeAntialias(
-    TensorBuffer input,
-    TensorBuffer output,
-    int srcH,
-    int srcW,
-    int srcOffset,
-    int dstOffset,
-  ) {
+  TensorBuffer _resizeAntialias(TensorBuffer input) {
+    final srcH = input.shape[input.rank - 2];
+    final srcW = input.shape[input.rank - 1];
+    final output = TensorBuffer.uninitialized(
+      computeOutputShape(input.shape),
+      dtype: input.dtype,
+    );
+    // All batch/channel planes share weights and a fully overwritten scratch plane.
     final xs = _antialiasWeights(srcW, width, input.dtype);
     final ys = _antialiasWeights(srcH, height, input.dtype);
     final temp = input.dtype == DType.float32
         ? Float32List(srcH * width)
         : Float64List(srcH * width);
-    for (var y = 0; y < srcH; y++) {
-      for (var x = 0; x < width; x++) {
-        final (start, weights) = xs[x];
-        var sum = 0.0;
-        for (var j = 0; j < weights.length; j++) {
-          sum +=
-              weights[j] *
-              input.storage.getAsDouble(srcOffset + y * srcW + start + j);
+    final source = input.storage.data as List<double>;
+    final target = output.storage.data as List<double>;
+    final planes = input.numel ~/ (srcH * srcW);
+    for (var plane = 0; plane < planes; plane++) {
+      final srcOffset = plane * srcH * srcW;
+      final dstOffset = plane * height * width;
+      for (var y = 0; y < srcH; y++) {
+        for (var x = 0; x < width; x++) {
+          final (start, weights) = xs[x];
+          var sum = 0.0;
+          for (var j = 0; j < weights.length; j++) {
+            sum += weights[j] * source[srcOffset + y * srcW + start + j];
+          }
+          temp[y * width + x] = sum;
         }
-        temp[y * width + x] = sum;
+      }
+      for (var y = 0; y < height; y++) {
+        final (start, weights) = ys[y];
+        for (var x = 0; x < width; x++) {
+          var sum = 0.0;
+          for (var j = 0; j < weights.length; j++) {
+            sum += weights[j] * temp[(start + j) * width + x];
+          }
+          target[dstOffset + y * width + x] = sum;
+        }
       }
     }
-    for (var y = 0; y < height; y++) {
-      final (start, weights) = ys[y];
-      for (var x = 0; x < width; x++) {
-        var sum = 0.0;
-        for (var j = 0; j < weights.length; j++) {
-          sum += weights[j] * temp[(start + j) * width + x];
-        }
-        output.storage.setFromDouble(dstOffset + y * width + x, sum);
-      }
-    }
+    return output;
   }
 
   List<(int, List<double>)> _antialiasWeights(

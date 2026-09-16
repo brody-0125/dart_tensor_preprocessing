@@ -59,7 +59,10 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   `_copyToContiguous` is fixed and tested; audit remaining movement/conversion
   operations. Do not hide precision loss with floating-point comparisons.
 - [ ] Finish any bugs found by expanded parity tests and preserve invalid-input checks.
-- [ ] Review antialias precomputation/performance at ordinary image sizes; no speed claims without measurement.
+- [x] Review antialias precomputation/performance at ordinary image sizes;
+  reuse weights/scratch across batch and channel planes and use direct typed
+  access. Full 2,086-test suite passes. Local before/after timings and raw
+  samples are recorded in benchmark/ANTIALIAS_RESULTS.md; no universal speed claim.
 - [ ] Finalize compatibility table, migration guide, README snippets/examples,
   random/dtype/view contracts, and fixture dependency hashes/provenance.
 - [ ] Validate fixture licenses/attribution and package contents at final version.
@@ -79,3 +82,7 @@ generator, review Linux CI regeneration artifacts before updating canonical
 goldens. All source changes must be tested against those same goldens.
 
 No 1.0.0 version, tag, GitHub release, or pub.dev publication has been created yet.
+
+Canonical unary regeneration exposed hardware-dependent last bits even with
+ATen/MKL flags. The oracle job now uses Ubuntu 24.04 and QEMU Haswell-v4;
+its initial regeneration is awaiting review. Native Dart CI remains unchanged.

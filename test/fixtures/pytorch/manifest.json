@@ -5,12 +5,13 @@
     "torchvision": "0.25.0+cpu",
     "python": "3.12",
     "device": "cpu",
+    "cpu_model": "Haswell-v4",
     "capability": "DEFAULT",
     "mkl_cbwr": "COMPATIBLE",
     "mkl_instructions": "SSE4_2",
     "threads": 1
   },
-  "generator_sha256": "6be98559e9398ee2ad0a4fc1fd9239182410ac690820a8f07bf01cef5029a4d8",
+  "generator_sha256": "0704d3284c9cc4521ef17c4a540cc7c6278bdbf86e76bae4272e6d6efa1e3392",
   "requirements_sha256": "ed4d13f006d899b6c6682f517c657ee97eaefa5a1c6f9fe1a0cadd5b70534857",
   "requirements_linux_sha256": "bad3b0eaebdef46a522006b2a0abbf609ed52b5e1f81aad5f37f4559cdc6e6f2",
   "files": [

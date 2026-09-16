@@ -1,10 +1,11 @@
 # PyTorch oracle fixtures
 
-Generate on canonical Linux x86_64 with Python 3.12 and the wheel hash lock:
+Generate on canonical Ubuntu 24.04 x86_64 with Python 3.12, qemu-user
+(Haswell-v4 CPU model), and the wheel hash lock:
 
 ```sh
 python -m pip install --require-hashes -r scripts/requirements-fixtures-linux.txt
-python scripts/generate_pytorch_fixtures.py --network
+PYTORCH_ORACLE_CPU_MODEL=Haswell-v4 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 qemu-x86_64 -cpu Haswell-v4 "$(command -v python)" scripts/generate_pytorch_fixtures.py --network
 dart test test/pytorch_golden_test.dart
 RUN_PYTORCH_NETWORK_TESTS=1 dart test test/pytorch_network_test.dart
 ```
@@ -75,4 +76,7 @@ runs 35091267984 and 35091276630. The dense float64 GELU case differed from
 Windows at 52 values, by at most 4.64e-16; no tolerance was changed.
 
 A later same-commit run exposed one-ULP sqrt differences despite ATen DEFAULT.
-MKL dispatch is now pinned separately; its new canonical results are under review.
+MKL flags alone did not eliminate all CPU-dependent last bits. The canonical
+job therefore runs the pinned Python wheels through QEMU Haswell-v4; its
+initial canonical results are under review. Native --output investigations
+record cpu_model=native-investigation in their manifest.
