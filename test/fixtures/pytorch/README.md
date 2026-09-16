@@ -1,13 +1,18 @@
 # PyTorch oracle fixtures
 
-Generate with Python 3.12 and `scripts/requirements-fixtures.txt`:
+Generate on canonical Linux x86_64 with Python 3.12 and the wheel hash lock:
 
 ```sh
-python -m pip install -r scripts/requirements-fixtures.txt
+python -m pip install --require-hashes -r scripts/requirements-fixtures-linux.txt
 python scripts/generate_pytorch_fixtures.py --network
 dart test test/pytorch_golden_test.dart
 RUN_PYTORCH_NETWORK_TESTS=1 dart test test/pytorch_network_test.dart
 ```
+
+The Linux lock records exact wheel URLs and SHA-256 for all 13 dependencies.
+For local investigations on other platforms, install the same versions with
+`python -m pip install -r scripts/requirements-fixtures.txt`; those platforms
+are not the canonical byte-for-byte regeneration environment.
 
 On PowerShell set `$env:RUN_PYTORCH_NETWORK_TESTS='1'` before the Dart command.
 `--output DIRECTORY` regenerates into another directory for inspection. Omitting
@@ -16,7 +21,7 @@ On PowerShell set `$env:RUN_PYTORCH_NETWORK_TESTS='1'` before the Dart command.
 The oracle is CPU PyTorch 2.10.0 + torchvision 0.25.0 with one thread and `ATEN_CPU_CAPABILITY=default` to avoid runner-dependent
 AVX2/AVX512 kernel selection. The
 generator checks every pinned Python distribution version. Manifest hashes bind
-the generator, requirements, and JSON payload; non-finite numbers use explicit
+the generator, both dependency locks, and JSON payload; non-finite numbers use explicit
 strings. Tests compare shape, dtype, and every element, including non-finite
 classification. Float32 uses atol 1e-6 / rtol 1e-5, Float64 1e-12 / 1e-10.
 Integer values can use strings to preserve values above 2^53.
@@ -61,3 +66,7 @@ regeneration differs in a few last bits (all observed changes were within the
 same published tolerances); use a separate --output directory when investigating
 cross-platform behavior, rather than replacing canonical goldens with Windows
 output. Dart tests on all platforms consume the same Linux goldens.
+
+The expanded math corpus was independently regenerated identically in Linux
+runs 35091267984 and 35091276630. The dense float64 GELU case differed from
+Windows at 52 values, by at most 4.64e-16; no tolerance was changed.

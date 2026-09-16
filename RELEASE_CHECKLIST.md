@@ -8,6 +8,8 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
 ## Completed foundation
 
 - [x] Pin torch 2.10.0+cpu / torchvision 0.25.0+cpu and Python dependencies.
+- [x] Record exact Linux CPython 3.12 wheel URLs/SHA-256 for all 13 dependencies;
+  CI installs with --require-hashes and the golden integrity test binds both locks.
 - [x] Generate 161 offline operation/preset cases without invoking Dart.
 - [x] Verify shape, dtype, every numeric element, non-finite values, and hashes.
 - [x] Prove the comparator rejects wrong finite values and unexpected NaN.
@@ -46,6 +48,8 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   Unary math/trig, GELU/GLU and documented half-away RoundOp now add 124 cases
   (555 total); positional/binary arithmetic/remaining edge contracts are pending.
   Exact GELU float64 accuracy is fixed and checked on an 801-point dense grid.
+  Two independent Linux runs regenerated identical files; reviewed 52 last-bit
+  differences (max 4.64e-16) and adopted the Linux corpus without changing tolerance.
 - [ ] Compare fused operations and SIMD/scalar tails against independent PyTorch.
 - [x] Fix random factories' float64 allocation and Box-Muller math; reject
   integer dtype, exclude the uniform endpoint after float32 rounding, skip

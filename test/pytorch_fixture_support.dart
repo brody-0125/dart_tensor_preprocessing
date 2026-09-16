@@ -201,6 +201,20 @@ void registerPytorchFixtures(String directory) {
         jsonDecode(File('$directory/${entry['path']}').readAsStringSync())
             as List;
     test('fixture integrity: ${entry['path']}', () {
+      for (final source in {
+        'scripts/generate_pytorch_fixtures.py': 'generator_sha256',
+        'scripts/requirements-fixtures.txt': 'requirements_sha256',
+        'scripts/requirements-fixtures-linux.txt': 'requirements_linux_sha256',
+      }.entries) {
+        final normalized = File(
+          source.key,
+        ).readAsStringSync().replaceAll('\r\n', '\n');
+        expect(
+          sha256.convert(utf8.encode(normalized)).toString(),
+          manifest[source.value],
+          reason: source.key,
+        );
+      }
       expect(cases.length, entry['cases']);
       expect(
         sha256
