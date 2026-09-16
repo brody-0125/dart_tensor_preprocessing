@@ -214,7 +214,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `TensorViewExtension` (`sliceFirst`, `isViewable`, `toChannelsLast`, `toChannelsFirst`, `flatten`, `select`, `unbind`, `narrow`) | `view-select/unbind/narrow-*` cover values, exact integers, offset/strided storage and alias identity; vector select/unbind retain [1]. Layout/remaining utility audit pending |
 | `DType`, `MemoryFormat`, `TensorStorage`, typed views, buffer pool, dtype dispatcher, tensor indexing, `SimdOps` | Native storage/utility contracts, not separate PyTorch numerical operations; dtype/memory/SIMD-tail audit pending |
 | `TransformOp`, `InPlaceTransform`, `RequiresContiguous`, `OperationCapabilities`, error types/messages | Native composition/validation contracts; tests must cover invalid arguments and mutation boundaries |
-| `TensorPipeline` run/runAsync/call/shape validation/composition and `PipelinePresets` factories | All preset values tested in sync/forced isolate/fallback modes, HWC/NHWC and uint8/float32; remaining custom/fused paths pending |
+| `TensorPipeline` run/runAsync/call/shape validation/composition and `PipelinePresets` factories | All presets including custom variants use independent goldens in sync/forced isolate/fallback modes. Representative fused pipelines reuse float32/64/int64 goldens for CHW/NCHW offset/strided inputs in all three execution modes. Native pipeline tests cover composition, callable syntax and shape inference. |
 
 No row marked pending may be treated as passed solely because another row or
 CI is green. Finish the pending audit before changing the package to 1.0.0.

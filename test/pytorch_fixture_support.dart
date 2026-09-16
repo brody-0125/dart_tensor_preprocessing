@@ -625,6 +625,26 @@ void registerPytorchFixtures(String directory) {
           op.computeOutputShape(input.shape),
           (c['expected'] as Map)['shape'],
         );
+        // Reuse independent goldens for representative pipeline transport paths.
+        if (c['op'] == 'fused' &&
+            c.containsKey('base') &&
+            (c['params'] as Map)['size'].toString() == '[2, 3]' &&
+            (c['params'] as Map)['align'] == false &&
+            [DType.float32, DType.float64, DType.int64].contains(input.dtype)) {
+          final pipeline = TensorPipeline([IdentityOp(), op, ContiguousOp()]);
+          for (final output in [
+            pipeline(input),
+            await pipeline.runAsync(input, isolateThreshold: 0),
+            await pipeline.runAsync(input, isolateThreshold: 1000000),
+          ]) {
+            expectFixture(
+              output,
+              c['expected'] as Map<String, dynamic>,
+              atol: atol,
+              rtol: rtol,
+            );
+          }
+        }
         final TensorBuffer result;
         if (c['inplace'] == true) {
           (op as InPlaceTransform).applyInPlace(input);

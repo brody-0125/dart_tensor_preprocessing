@@ -239,3 +239,9 @@ without modifying input. All 38 fused tests passed. COMPATIBILITY documents
 the double arithmetic precision limit and distinct native conversion recipe.
 Compact-fixture CI 35105035766/35105027891 and buffer-pool CI
 35105227072/35105221466 passed every gate, including exact Linux regeneration.
+
+Pipeline transport audit: reused 12 existing independent fused goldens for
+float32/64/int64, CHW/NCHW and offset/strided views through callable sync, forced
+isolate and synchronous fallback, with Identity/fused/Contiguous composition.
+No fixture payload was added. Custom presets already run the same three modes
+against independent goldens. Full network suite: 6,774 passed; analysis clean.
