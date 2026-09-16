@@ -467,6 +467,24 @@ def generate():
             if name != "pow":
                 other = torch.full((6,), 1.5, dtype=torch.float64)
                 add(f"integer-mixed-{name}-{dtype}", "binary_" + name, x, y.to(dtype), {"other": tensor(other)})
+    for dtype in (torch.float32, torch.float64):
+        for special in (False, True):
+            x = torch.tensor([-7, -2, -0.0, 0.0, 0.25, 3, 11], dtype=dtype)
+            if special:
+                x = torch.tensor([float('nan'), -float('inf'), -0.0, 0, float('inf'), float('nan'), 1], dtype=dtype)
+            for name, fn, params in (
+                ('clip', lambda z: z.clamp(-1, 2), {'min': -1, 'max': 2}),
+                ('scale', lambda z: (z - 0.5) / 2.5, {'scale': 2.5, 'offset': 0.5}),
+                ('atan2_scalar', lambda z: torch.atan2(z, z.new_tensor(-0.5)), {'scalar': -0.5}),
+            ):
+                view_cases(f'numeric-{name}-{dtype}-{special}', x, fn, {'op': name, **params})
+    for dtype in (torch.float32, torch.float64):
+        x = torch.tensor([100000000, 100000008, 99999992, 100000016, 99999984], dtype=dtype)
+        view_cases(f'scale-cancellation-{dtype}', x, lambda z: (z - 100000000) / 3,
+                   {'op': 'scale', 'scale': 3, 'offset': 100000000})
+        other = torch.tensor([-1, 0, 1, -float('inf'), float('inf'), 0, float('nan')], dtype=dtype)
+        x = torch.tensor([-2, -0.0, 0, -float('inf'), float('inf'), 3, 1], dtype=dtype)
+        view_cases(f'atan2-tensor-{dtype}', x, lambda z: torch.atan2(z, other), {'op': 'atan2_tensor', 'other': tensor(other)})
     return cases
 
 

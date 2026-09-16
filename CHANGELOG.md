@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Float32 ScaleOp subtracts offset before scaling, preventing severe cancellation
+  from its previous expanded formula. Atan2 validates full shapes and snapshots
+  overlapping in-place operands. Clip rejects NaN bounds explicitly.
+
 - Integer division and nonnegative integer powers no longer lose precision
   through double conversion. Integer division truncates toward zero and rejects
   zero divisors before mutation. Fractional operand behavior remains explicit

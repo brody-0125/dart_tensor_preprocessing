@@ -4,6 +4,36 @@ import 'package:dart_tensor_preprocessing/dart_tensor_preprocessing.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('atan2 validates shape and snapshots overlapping input', () {
+    final raw = Float64List.fromList([1, 1, 1, 1]);
+    final storage = TensorStorage(raw, DType.float64);
+    final x = TensorBuffer(storage: storage, shape: [3], storageOffset: 1);
+    Atan2Op.tensor(TensorBuffer(storage: storage, shape: [3])).applyInPlace(x);
+    for (final v in raw.skip(1)) {
+      expect(v, closeTo(0.7853981633974483, 1e-15));
+    }
+    final op = Atan2Op.tensor(TensorBuffer.ones([3, 2]));
+    expect(
+      () => op(TensorBuffer.ones([2, 3])),
+      throwsA(isA<ShapeMismatchException>()),
+    );
+    expect(
+      () => op.computeOutputShape([2, 3]),
+      throwsA(isA<ShapeMismatchException>()),
+    );
+  });
+
+  test('clip rejects NaN bounds', () {
+    expect(
+      () => ClipOp(min: double.nan, max: 1),
+      throwsA(isA<InvalidParameterException>()),
+    );
+    expect(
+      () => ClipOp(min: 0, max: double.nan),
+      throwsA(isA<InvalidParameterException>()),
+    );
+  });
+
   test('integer zero divisors are rejected before in-place mutation', () {
     final x = TensorBuffer(
       storage: TensorStorage(Int64List.fromList([9, 7, 5]), DType.int64),

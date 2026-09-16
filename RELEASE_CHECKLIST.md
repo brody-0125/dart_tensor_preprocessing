@@ -81,6 +81,11 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   (2,030 total). Fixed exact integer division/power and prevalidated zero
   divisors. Documented native integer wrapping and double-fallback limitations.
   Local network-inclusive suite: 3,582 passed; static analysis clean.
+  Integer arithmetic CI runs 35098495443 and 35098501058 passed all gates.
+  Scale/Clip/Atan2 add 48 float32/64 cases (2,078 total), including NaN/Inf,
+  cancellation, scalar/tensor, offsets and strided input. Fixed severe Scale
+  cancellation, Atan2 shape/overlap handling and Clip NaN bounds. Integer
+  contracts for these three operations remain pending. Local full suite: 3,632 passed.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

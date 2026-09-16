@@ -290,17 +290,15 @@ class ScaleOp extends TransformOp with InPlaceTransform, RequiresContiguous {
   void _scale(TensorBuffer tensor) {
     final s = scale;
     final o = offset;
-    // (value - offset) / scale = value * invScale + bias
-    // where invScale = 1/scale and bias = -offset/scale
+    // Subtract before dividing to avoid cancellation from separately rounded bias.
     final invScale = 1.0 / s;
-    final bias = -o / s;
 
     DTypeDispatcher.dispatchVoid(
       tensor,
       onFloat32: (list, numel) {
         // Use SIMD acceleration for Float32
+        SimdOps.subtractScalar(list, o);
         SimdOps.multiplyScalar(list, invScale);
-        SimdOps.addScalar(list, bias);
       },
       onFloat64: (list, numel) {
         for (int i = 0; i < numel; i++) {

@@ -179623,5 +179623,3039 @@
     },
     "atol": 1e-06,
     "rtol": 1e-05
+  },
+  {
+    "name": "numeric-clip-torch.float32-False",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.0,
+        -1.0,
+        -0.0,
+        0.0,
+        0.25,
+        2.0,
+        2.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "numeric-clip-torch.float32-False-offset",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.0,
+        -1.0,
+        -0.0,
+        0.0,
+        0.25,
+        2.0,
+        2.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        0.0,
+        0.25,
+        2.0,
+        2.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-clip-torch.float32-False-strided",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.0,
+        -1.0,
+        -0.0,
+        0.0,
+        0.25,
+        2.0,
+        2.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        0.0,
+        -2.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        0.0,
+        3.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-scale-torch.float32-False",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -3.0,
+        -1.0,
+        -0.20000000298023224,
+        -0.20000000298023224,
+        -0.10000000149011612,
+        1.0,
+        4.199999809265137
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "numeric-scale-torch.float32-False-offset",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -3.0,
+        -1.0,
+        -0.20000000298023224,
+        -0.20000000298023224,
+        -0.10000000149011612,
+        1.0,
+        4.199999809265137
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -3.0,
+        -1.0,
+        -0.20000000298023224,
+        -0.20000000298023224,
+        -0.10000000149011612,
+        1.0,
+        4.199999809265137,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-scale-torch.float32-False-strided",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -3.0,
+        -1.0,
+        -0.20000000298023224,
+        -0.20000000298023224,
+        -0.10000000149011612,
+        1.0,
+        4.199999809265137
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        0.0,
+        -2.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        0.0,
+        3.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float32-False",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.6421037912368774,
+        -1.8157750368118286,
+        -3.1415927410125732,
+        3.1415927410125732,
+        2.677945137023926,
+        1.7359449863433838,
+        1.6162196397781372
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float32-False-offset",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.6421037912368774,
+        -1.8157750368118286,
+        -3.1415927410125732,
+        3.1415927410125732,
+        2.677945137023926,
+        1.7359449863433838,
+        1.6162196397781372
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -1.6421037912368774,
+        -1.8157750368118286,
+        -3.1415927410125732,
+        3.1415927410125732,
+        2.677945137023926,
+        1.7359449863433838,
+        1.6162196397781372,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float32-False-strided",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -1.6421037912368774,
+        -1.8157750368118286,
+        -3.1415927410125732,
+        3.1415927410125732,
+        2.677945137023926,
+        1.7359449863433838,
+        1.6162196397781372
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -7.0,
+        0.0,
+        -2.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        0.0,
+        3.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-clip-torch.float32-True",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        -1.0,
+        -0.0,
+        0.0,
+        2.0,
+        "NaN",
+        1.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "numeric-clip-torch.float32-True-offset",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        -1.0,
+        -0.0,
+        0.0,
+        2.0,
+        "NaN",
+        1.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        -1.0,
+        -0.0,
+        0.0,
+        2.0,
+        "NaN",
+        1.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-clip-torch.float32-True-strided",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        -1.0,
+        -0.0,
+        0.0,
+        2.0,
+        "NaN",
+        1.0
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        0.0,
+        "-Infinity",
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        "Infinity",
+        0.0,
+        "NaN",
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-scale-torch.float32-True",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.20000000298023224,
+        -0.20000000298023224,
+        "Infinity",
+        "NaN",
+        0.20000000298023224
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "numeric-scale-torch.float32-True-offset",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.20000000298023224,
+        -0.20000000298023224,
+        "Infinity",
+        "NaN",
+        0.20000000298023224
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        "-Infinity",
+        -0.20000000298023224,
+        -0.20000000298023224,
+        "Infinity",
+        "NaN",
+        0.20000000298023224,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-scale-torch.float32-True-strided",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.20000000298023224,
+        -0.20000000298023224,
+        "Infinity",
+        "NaN",
+        0.20000000298023224
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        0.0,
+        "-Infinity",
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        "Infinity",
+        0.0,
+        "NaN",
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float32-True",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        -1.5707963705062866,
+        -3.1415927410125732,
+        3.1415927410125732,
+        1.5707963705062866,
+        "NaN",
+        2.0344438552856445
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float32-True-offset",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        -1.5707963705062866,
+        -3.1415927410125732,
+        3.1415927410125732,
+        1.5707963705062866,
+        "NaN",
+        2.0344438552856445
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        -1.5707963705062866,
+        -3.1415927410125732,
+        3.1415927410125732,
+        1.5707963705062866,
+        "NaN",
+        2.0344438552856445,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float32-True-strided",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        -1.5707963705062866,
+        -3.1415927410125732,
+        3.1415927410125732,
+        1.5707963705062866,
+        "NaN",
+        2.0344438552856445
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        "NaN",
+        0.0,
+        "-Infinity",
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        "Infinity",
+        0.0,
+        "NaN",
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-clip-torch.float64-False",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.0,
+        -1.0,
+        -0.0,
+        0.0,
+        0.25,
+        2.0,
+        2.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "numeric-clip-torch.float64-False-offset",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.0,
+        -1.0,
+        -0.0,
+        0.0,
+        0.25,
+        2.0,
+        2.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        0.0,
+        0.25,
+        2.0,
+        2.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-clip-torch.float64-False-strided",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.0,
+        -1.0,
+        -0.0,
+        0.0,
+        0.25,
+        2.0,
+        2.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        0.0,
+        -2.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        0.0,
+        3.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-scale-torch.float64-False",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -3.0,
+        -1.0,
+        -0.2,
+        -0.2,
+        -0.1,
+        1.0,
+        4.2
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "numeric-scale-torch.float64-False-offset",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -3.0,
+        -1.0,
+        -0.2,
+        -0.2,
+        -0.1,
+        1.0,
+        4.2
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -3.0,
+        -1.0,
+        -0.2,
+        -0.2,
+        -0.1,
+        1.0,
+        4.2,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-scale-torch.float64-False-strided",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -3.0,
+        -1.0,
+        -0.2,
+        -0.2,
+        -0.1,
+        1.0,
+        4.2
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        0.0,
+        -2.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        0.0,
+        3.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float64-False",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.642103791580187,
+        -1.8157749899217608,
+        -3.141592653589793,
+        3.141592653589793,
+        2.677945044588987,
+        1.7359450042095235,
+        1.6162196062164735
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float64-False-offset",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.642103791580187,
+        -1.8157749899217608,
+        -3.141592653589793,
+        3.141592653589793,
+        2.677945044588987,
+        1.7359450042095235,
+        1.6162196062164735
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -1.642103791580187,
+        -1.8157749899217608,
+        -3.141592653589793,
+        3.141592653589793,
+        2.677945044588987,
+        1.7359450042095235,
+        1.6162196062164735,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float64-False-strided",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        -2.0,
+        -0.0,
+        0.0,
+        0.25,
+        3.0,
+        11.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -1.642103791580187,
+        -1.8157749899217608,
+        -3.141592653589793,
+        3.141592653589793,
+        2.677945044588987,
+        1.7359450042095235,
+        1.6162196062164735
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -7.0,
+        0.0,
+        -2.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        0.0,
+        3.0,
+        0.0,
+        11.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-clip-torch.float64-True",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        -1.0,
+        -0.0,
+        0.0,
+        2.0,
+        "NaN",
+        1.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "numeric-clip-torch.float64-True-offset",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        -1.0,
+        -0.0,
+        0.0,
+        2.0,
+        "NaN",
+        1.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        -1.0,
+        -0.0,
+        0.0,
+        2.0,
+        "NaN",
+        1.0,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-clip-torch.float64-True-strided",
+    "op": "clip",
+    "params": {
+      "op": "clip",
+      "min": -1,
+      "max": 2
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        -1.0,
+        -0.0,
+        0.0,
+        2.0,
+        "NaN",
+        1.0
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        0.0,
+        "-Infinity",
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        "Infinity",
+        0.0,
+        "NaN",
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-scale-torch.float64-True",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.2,
+        -0.2,
+        "Infinity",
+        "NaN",
+        0.2
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "numeric-scale-torch.float64-True-offset",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.2,
+        -0.2,
+        "Infinity",
+        "NaN",
+        0.2
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        "-Infinity",
+        -0.2,
+        -0.2,
+        "Infinity",
+        "NaN",
+        0.2,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-scale-torch.float64-True-strided",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 2.5,
+      "offset": 0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.2,
+        -0.2,
+        "Infinity",
+        "NaN",
+        0.2
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        0.0,
+        "-Infinity",
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        "Infinity",
+        0.0,
+        "NaN",
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float64-True",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        -1.5707963267948966,
+        -3.141592653589793,
+        3.141592653589793,
+        1.5707963267948966,
+        "NaN",
+        2.0344439357957027
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float64-True-offset",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        -1.5707963267948966,
+        -3.141592653589793,
+        3.141592653589793,
+        1.5707963267948966,
+        "NaN",
+        2.0344439357957027
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        "NaN",
+        -1.5707963267948966,
+        -3.141592653589793,
+        3.141592653589793,
+        1.5707963267948966,
+        "NaN",
+        2.0344439357957027,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "numeric-atan2_scalar-torch.float64-True-strided",
+    "op": "atan2_scalar",
+    "params": {
+      "op": "atan2_scalar",
+      "scalar": -0.5
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        "-Infinity",
+        -0.0,
+        0.0,
+        "Infinity",
+        "NaN",
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        -1.5707963267948966,
+        -3.141592653589793,
+        3.141592653589793,
+        1.5707963267948966,
+        "NaN",
+        2.0344439357957027
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        "NaN",
+        0.0,
+        "-Infinity",
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        "Infinity",
+        0.0,
+        "NaN",
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "scale-cancellation-torch.float32",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 3,
+      "offset": 100000000
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "float32",
+      "values": [
+        100000000.0,
+        100000008.0,
+        99999992.0,
+        100000016.0,
+        99999984.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        2.6666667461395264,
+        -2.6666667461395264,
+        5.333333492279053,
+        -5.333333492279053
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "scale-cancellation-torch.float32-offset",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 3,
+      "offset": 100000000
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "float32",
+      "values": [
+        100000000.0,
+        100000008.0,
+        99999992.0,
+        100000016.0,
+        99999984.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        2.6666667461395264,
+        -2.6666667461395264,
+        5.333333492279053,
+        -5.333333492279053
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        8
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        100000000.0,
+        100000008.0,
+        99999992.0,
+        100000016.0,
+        99999984.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        8
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        2.6666667461395264,
+        -2.6666667461395264,
+        5.333333492279053,
+        -5.333333492279053,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "scale-cancellation-torch.float32-strided",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 3,
+      "offset": 100000000
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "float32",
+      "values": [
+        100000000.0,
+        100000008.0,
+        99999992.0,
+        100000016.0,
+        99999984.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "float32",
+      "values": [
+        0.0,
+        2.6666667461395264,
+        -2.6666667461395264,
+        5.333333492279053,
+        -5.333333492279053
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        5,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        100000000.0,
+        0.0,
+        100000008.0,
+        0.0,
+        99999992.0,
+        0.0,
+        100000016.0,
+        0.0,
+        99999984.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "atan2-tensor-torch.float32",
+    "op": "atan2_tensor",
+    "params": {
+      "op": "atan2_tensor",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          -1.0,
+          0.0,
+          1.0,
+          "-Infinity",
+          "Infinity",
+          0.0,
+          "NaN"
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -2.0,
+        -0.0,
+        0.0,
+        "-Infinity",
+        "Infinity",
+        3.0,
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -2.0344438552856445,
+        -0.0,
+        0.0,
+        -2.356194496154785,
+        0.7853981852531433,
+        1.5707963705062866,
+        "NaN"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05
+  },
+  {
+    "name": "atan2-tensor-torch.float32-offset",
+    "op": "atan2_tensor",
+    "params": {
+      "op": "atan2_tensor",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          -1.0,
+          0.0,
+          1.0,
+          "-Infinity",
+          "Infinity",
+          0.0,
+          "NaN"
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -2.0,
+        -0.0,
+        0.0,
+        "-Infinity",
+        "Infinity",
+        3.0,
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -2.0344438552856445,
+        -0.0,
+        0.0,
+        -2.356194496154785,
+        0.7853981852531433,
+        1.5707963705062866,
+        "NaN"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -2.0,
+        -0.0,
+        0.0,
+        "-Infinity",
+        "Infinity",
+        3.0,
+        1.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float32",
+      "values": [
+        -777.0,
+        -555.0,
+        -2.0344438552856445,
+        -0.0,
+        0.0,
+        -2.356194496154785,
+        0.7853981852531433,
+        1.5707963705062866,
+        "NaN",
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "atan2-tensor-torch.float32-strided",
+    "op": "atan2_tensor",
+    "params": {
+      "op": "atan2_tensor",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float32",
+        "values": [
+          -1.0,
+          0.0,
+          1.0,
+          "-Infinity",
+          "Infinity",
+          0.0,
+          "NaN"
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -2.0,
+        -0.0,
+        0.0,
+        "-Infinity",
+        "Infinity",
+        3.0,
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float32",
+      "values": [
+        -2.0344438552856445,
+        -0.0,
+        0.0,
+        -2.356194496154785,
+        0.7853981852531433,
+        1.5707963705062866,
+        "NaN"
+      ]
+    },
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float32",
+      "values": [
+        -2.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        "-Infinity",
+        0.0,
+        "Infinity",
+        0.0,
+        3.0,
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "scale-cancellation-torch.float64",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 3,
+      "offset": 100000000
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "values": [
+        100000000.0,
+        100000008.0,
+        99999992.0,
+        100000016.0,
+        99999984.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        2.6666666666666665,
+        -2.6666666666666665,
+        5.333333333333333,
+        -5.333333333333333
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "scale-cancellation-torch.float64-offset",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 3,
+      "offset": 100000000
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "values": [
+        100000000.0,
+        100000008.0,
+        99999992.0,
+        100000016.0,
+        99999984.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        2.6666666666666665,
+        -2.6666666666666665,
+        5.333333333333333,
+        -5.333333333333333
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        8
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        100000000.0,
+        100000008.0,
+        99999992.0,
+        100000016.0,
+        99999984.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        8
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        0.0,
+        2.6666666666666665,
+        -2.6666666666666665,
+        5.333333333333333,
+        -5.333333333333333,
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "scale-cancellation-torch.float64-strided",
+    "op": "scale",
+    "params": {
+      "op": "scale",
+      "scale": 3,
+      "offset": 100000000
+    },
+    "input": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "values": [
+        100000000.0,
+        100000008.0,
+        99999992.0,
+        100000016.0,
+        99999984.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "values": [
+        0.0,
+        2.6666666666666665,
+        -2.6666666666666665,
+        5.333333333333333,
+        -5.333333333333333
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        5,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        100000000.0,
+        0.0,
+        100000008.0,
+        0.0,
+        99999992.0,
+        0.0,
+        100000016.0,
+        0.0,
+        99999984.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
+  },
+  {
+    "name": "atan2-tensor-torch.float64",
+    "op": "atan2_tensor",
+    "params": {
+      "op": "atan2_tensor",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          -1.0,
+          0.0,
+          1.0,
+          "-Infinity",
+          "Infinity",
+          0.0,
+          "NaN"
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -2.0,
+        -0.0,
+        0.0,
+        "-Infinity",
+        "Infinity",
+        3.0,
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -2.0344439357957027,
+        -0.0,
+        0.0,
+        -2.356194490192345,
+        0.7853981633974483,
+        1.5707963267948966,
+        "NaN"
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10
+  },
+  {
+    "name": "atan2-tensor-torch.float64-offset",
+    "op": "atan2_tensor",
+    "params": {
+      "op": "atan2_tensor",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          -1.0,
+          0.0,
+          1.0,
+          "-Infinity",
+          "Infinity",
+          0.0,
+          "NaN"
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -2.0,
+        -0.0,
+        0.0,
+        "-Infinity",
+        "Infinity",
+        3.0,
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -2.0344439357957027,
+        -0.0,
+        0.0,
+        -2.356194490192345,
+        0.7853981633974483,
+        1.5707963267948966,
+        "NaN"
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -2.0,
+        -0.0,
+        0.0,
+        "-Infinity",
+        "Infinity",
+        3.0,
+        1.0,
+        -333.0
+      ]
+    },
+    "offset": 2,
+    "inplace": true,
+    "expected_base": {
+      "shape": [
+        10
+      ],
+      "dtype": "float64",
+      "values": [
+        -777.0,
+        -555.0,
+        -2.0344439357957027,
+        -0.0,
+        0.0,
+        -2.356194490192345,
+        0.7853981633974483,
+        1.5707963267948966,
+        "NaN",
+        -333.0
+      ]
+    }
+  },
+  {
+    "name": "atan2-tensor-torch.float64-strided",
+    "op": "atan2_tensor",
+    "params": {
+      "op": "atan2_tensor",
+      "other": {
+        "shape": [
+          7
+        ],
+        "dtype": "float64",
+        "values": [
+          -1.0,
+          0.0,
+          1.0,
+          "-Infinity",
+          "Infinity",
+          0.0,
+          "NaN"
+        ]
+      }
+    },
+    "input": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -2.0,
+        -0.0,
+        0.0,
+        "-Infinity",
+        "Infinity",
+        3.0,
+        1.0
+      ]
+    },
+    "expected": {
+      "shape": [
+        7
+      ],
+      "dtype": "float64",
+      "values": [
+        -2.0344439357957027,
+        -0.0,
+        0.0,
+        -2.356194490192345,
+        0.7853981633974483,
+        1.5707963267948966,
+        "NaN"
+      ]
+    },
+    "atol": 1e-12,
+    "rtol": 1e-10,
+    "base": {
+      "shape": [
+        7,
+        2
+      ],
+      "dtype": "float64",
+      "values": [
+        -2.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        "-Infinity",
+        0.0,
+        "Infinity",
+        0.0,
+        3.0,
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "offset": 0,
+    "strides": [
+      2
+    ]
   }
 ]

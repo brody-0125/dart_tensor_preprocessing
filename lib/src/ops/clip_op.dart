@@ -19,7 +19,7 @@ class ClipOp extends TransformOp with InPlaceTransform, RequiresContiguous {
 
   /// Creates a clip operation with the given [min] and [max] bounds.
   ClipOp({required this.min, required this.max}) {
-    if (min >= max) {
+    if (min.isNaN || max.isNaN || min >= max) {
       throw InvalidParameterException(
         'min/max',
         'min=$min, max=$max',

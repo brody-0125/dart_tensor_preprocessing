@@ -81,6 +81,16 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
   List<double>? numbers(String key) =>
       (p[key] as List?)?.map(fixtureNumber).toList();
   return switch (c['op']) {
+    'clip' => ClipOp(
+      min: fixtureNumber(p['min']),
+      max: fixtureNumber(p['max']),
+    ),
+    'scale' => ScaleOp(
+      scale: fixtureNumber(p['scale']),
+      offset: fixtureNumber(p['offset']),
+    ),
+    'atan2_scalar' => Atan2Op(scalar: fixtureNumber(p['scalar'])),
+    'atan2_tensor' => Atan2Op.tensor(fixtureTensor(p['other'])),
     'binary_add' =>
       p.containsKey('other')
           ? AddOp.tensor(fixtureTensor(p['other']))

@@ -1,6 +1,6 @@
 # PyTorch oracle fixtures
 
-The manifest currently contains 2,030 offline cases. Factory/cast cases cover
+The manifest currently contains 2,078 offline cases. Factory/cast cases cover
 all ten destination dtypes, using explicit double-sequence truncation and
 legacy cast-rounding/clamping recipes where those differ from native torch
 integer kernels. Squeeze/unsqueeze include offsets, non-contiguous storage,

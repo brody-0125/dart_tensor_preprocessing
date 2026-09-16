@@ -233,14 +233,17 @@ class Atan2Op extends TransformOp with InPlaceTransform, RequiresContiguous {
       throw NonContiguousException('$runtimeType.applyInPlace');
     }
     input = ensureContiguous(input);
-    _apply(input);
+    _apply(input, snapshotOther: true);
   }
 
-  void _apply(TensorBuffer tensor) {
+  void _apply(TensorBuffer tensor, {bool snapshotOther = false}) {
+    computeOutputShape(tensor.shape);
     if (scalar != null) {
       _applyScalar(tensor, scalar!);
     } else {
-      final otherContiguous = ensureContiguous(other!);
+      final otherContiguous = snapshotOther
+          ? other!.clone()
+          : ensureContiguous(other!);
       if (tensor.numel != otherContiguous.numel) {
         throw ShapeMismatchException(
           actual: otherContiguous.shape,
@@ -297,5 +300,19 @@ class Atan2Op extends TransformOp with InPlaceTransform, RequiresContiguous {
   }
 
   @override
-  List<int> computeOutputShape(List<int> inputShape) => inputShape;
+  List<int> computeOutputShape(List<int> inputShape) {
+    final operand = other;
+    if (operand == null) return inputShape;
+    var matches = operand.rank == inputShape.length;
+    for (var i = 0; matches && i < inputShape.length; i++) {
+      matches = operand.shape[i] == inputShape[i];
+    }
+    if (!matches) {
+      throw ShapeMismatchException(
+        actual: operand.shape,
+        message: 'Atan2 operands must have identical shapes',
+      );
+    }
+    return inputShape;
+  }
 }
