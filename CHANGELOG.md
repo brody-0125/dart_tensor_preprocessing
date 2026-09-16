@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- PermuteOp shape inference rejects duplicate/out-of-range axes, consistent
+  with execution. PermuteOp/ReshapeOp copy their parameter lists so external
+  mutation cannot invalidate a previously validated operation.
+
 - LayoutConvertOp now always performs its documented directional NCHW/NHWC
   permutation, agreeing with shape inference and round-trip conversion.
   Physical channels-last strides no longer cause conversion to be skipped.

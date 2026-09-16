@@ -5,6 +5,35 @@ import 'package:test/test.dart';
 
 void main() {
   test(
+    'shape operations retain immutable parameters and validate inference',
+    () {
+      final axes = [1, 0];
+      final shape = [3, 2];
+      final permute = PermuteOp(axes);
+      final reshape = ReshapeOp(shape);
+      axes[0] = 0;
+      shape[0] = 0;
+      expect(permute.computeOutputShape([2, 3]), [3, 2]);
+      expect(reshape.computeOutputShape([2, 3]), [3, 2]);
+      for (final invalid in [
+        [0, 0],
+        [-1, 0],
+        [2, 0],
+      ]) {
+        final op = PermuteOp(invalid);
+        expect(
+          () => op.computeOutputShape([2, 3]),
+          throwsA(isA<TensorException>()),
+        );
+        expect(
+          () => op(TensorBuffer.ones([2, 3])),
+          throwsA(isA<TensorException>()),
+        );
+      }
+    },
+  );
+
+  test(
     'logical conversion is independent of physical channels-last strides',
     () {
       final raw = Float64List.fromList(List.generate(24, (i) => i.toDouble()));

@@ -190,6 +190,28 @@ TransformOp fixtureOperation(Map<String, dynamic> c) {
 TensorBuffer fixtureCoreOperation(Map<String, dynamic> c, TensorBuffer input) {
   final p = c['params'] as Map<String, dynamic>;
   switch (c['op']) {
+    case 'core_identity':
+    case 'core_contiguous_op':
+    case 'core_permute_op':
+    case 'core_reshape_op':
+    case 'core_flatten_op':
+      final op = switch (c['op']) {
+        'core_identity' => IdentityOp(),
+        'core_contiguous_op' => ContiguousOp(),
+        'core_permute_op' => PermuteOp((p['axes'] as List).cast<int>()),
+        'core_reshape_op' => ReshapeOp((p['shape'] as List).cast<int>()),
+        _ => FlattenOp(startDim: p['start'] as int, endDim: p['end'] as int),
+      };
+      final needsContiguous =
+          c['op'] == 'core_reshape_op' || c['op'] == 'core_flatten_op';
+      if (needsContiguous && !input.isContiguous) {
+        expect(() => op(input), throwsA(isA<NonContiguousException>()));
+      }
+      final prepared = needsContiguous ? input.contiguous() : input;
+      final result = op(prepared);
+      expect(result.shape, op.computeOutputShape(input.shape));
+      if (c['op'] == 'core_identity') expect(identical(result, input), isTrue);
+      return result;
     case 'core_layout':
       final force = p['contiguous'] as bool;
       final op = p['target'] == 'nhwc'

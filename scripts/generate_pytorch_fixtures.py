@@ -394,6 +394,18 @@ def generate():
                 view_cases(f"layout-{dtype}-{target}-{contiguous}", x,
                            lambda z, axes=axes: z.permute(axes),
                            {"op": "core_layout", "target": target, "contiguous": contiguous}, inplace=False)
+    for dtype in (torch.float32, torch.float64, torch.int32, torch.int64):
+        x = torch.arange(24, dtype=dtype).reshape(2, 3, 4)
+        if dtype == torch.int64:
+            x += 9007199254740993
+        for op, fn, params in (
+            ("identity", lambda z: z, {}),
+            ("contiguous_op", lambda z: z.contiguous(), {}),
+            ("permute_op", lambda z: z.permute(2, 0, 1), {"axes": [2, 0, 1]}),
+            ("reshape_op", lambda z: z.reshape(4, 6), {"shape": [4, -1]}),
+            ("flatten_op", lambda z: z.flatten(1, 2), {"start": 1, "end": -1}),
+        ):
+            view_cases(f"shape-{op}-{dtype}", x, fn, {"op": "core_" + op, **params}, inplace=False)
     return cases
 
 

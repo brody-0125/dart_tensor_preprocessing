@@ -11,7 +11,7 @@ class PermuteOp extends TransformOp {
   final List<int> dims;
 
   /// Creates a permute operation with the given dimension order.
-  PermuteOp(this.dims) {
+  PermuteOp(List<int> dims) : dims = List.unmodifiable(dims) {
     if (dims.isEmpty) {
       throw InvalidParameterException(
         'dims',
@@ -59,6 +59,20 @@ class PermuteOp extends TransformOp {
       );
     }
 
+    final seen = <int>{};
+    for (final d in dims) {
+      if (d < 0 || d >= inputShape.length) {
+        throw IndexOutOfBoundsException(
+          index: d,
+          min: 0,
+          max: inputShape.length - 1,
+          dimension: 'axis',
+        );
+      }
+      if (!seen.add(d)) {
+        throw InvalidParameterException('dims', dims, 'Duplicate axis: $d');
+      }
+    }
     return [for (final d in dims) inputShape[d]];
   }
 }
@@ -228,7 +242,8 @@ class ReshapeOp extends TransformOp {
   final List<int> targetShape;
 
   /// Creates a reshape operation to [targetShape].
-  ReshapeOp(this.targetShape) {
+  ReshapeOp(List<int> targetShape)
+    : targetShape = List.unmodifiable(targetShape) {
     if (targetShape.isEmpty) {
       throw InvalidParameterException(
         'targetShape',

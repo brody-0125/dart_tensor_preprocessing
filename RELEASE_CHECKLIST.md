@@ -61,6 +61,11 @@ bug fixes, complete supported-API audit, CI, documentation, and verified pub.dev
   Layout conversion adds 48 cases (1,689 total): both logical directions,
   view/copy modes and physical channels-last regression. Fixed skipped NCHW
   conversion and sliceFirst stride reinterpretation. Local full suite: 3,237 passed.
+  Layout CI runs 35097013269 and 35097017677 passed all gates.
+  Identity/Contiguous/Permute/Reshape/Flatten add 60 cases (1,749 total), with
+  explicit contiguous preparation and rejection checks for strided reshape.
+  Fixed invalid permutation shape inference and mutable operation parameters.
+  Local network-inclusive suite: 3,298 passed; static analysis clean.
 - [ ] Expand color/augmentation: RGB/HSV/grayscale, brightness/contrast/saturation/
   hue, blur, fixed crop/flip/erase/jitter parameters. Do not equate RNG seeds across languages.
 - [ ] Cover remaining activations/math/trig/positional operations and supported

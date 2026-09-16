@@ -78,12 +78,12 @@ coverage beyond those cases remains subject to the release checklist.
 | `CenterCropOp` | [lib/src/ops/crop_op.dart](lib/src/ops/crop_op.dart) | `center-crop` |
 | `ClipOp` | [lib/src/ops/clip_op.dart](lib/src/ops/clip_op.dart) | **Pending independent oracle / contract audit** |
 | `ColorJitterOp` | [lib/src/ops/color_jitter_op.dart](lib/src/ops/color_jitter_op.dart) | **Pending independent oracle / contract audit** |
-| `ContiguousOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
+| `ContiguousOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `CosOp` | [lib/src/ops/trig_op.dart](lib/src/ops/trig_op.dart) | `cos` |
 | `DivOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
 | `ELUOp` | [lib/src/ops/activation/elu_op.dart](lib/src/ops/activation/elu_op.dart) | `elu` |
 | `ExpOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `exp` |
-| `FlattenOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
+| `FlattenOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `FloorOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `floor` |
 | `GELUOp` | [lib/src/ops/activation/gelu_op.dart](lib/src/ops/activation/gelu_op.dart) | `gelu / gelu-dense / gelu-special` |
 | `GLUOp` | [lib/src/ops/activation/glu_op.dart](lib/src/ops/activation/glu_op.dart) | `glu` |
@@ -94,7 +94,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `HardswishOp` | [lib/src/ops/activation/swish_ops.dart](lib/src/ops/activation/swish_ops.dart) | `hardswish` |
 | `HorizontalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
 | `HsvToRgbOp` | [lib/src/ops/color_space_op.dart](lib/src/ops/color_space_op.dart) | **Pending independent oracle / contract audit** |
-| `IdentityOp` | [lib/src/ops/transform_op.dart](lib/src/ops/transform_op.dart) | **Pending independent oracle / contract audit** |
+| `IdentityOp` | [lib/src/ops/transform_op.dart](lib/src/ops/transform_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `InstanceNormOp` | [lib/src/ops/instance_norm_op.dart](lib/src/ops/instance_norm_op.dart) | `instance_norm` |
 | `LayerNormOp` | [lib/src/ops/layer_norm_op.dart](lib/src/ops/layer_norm_op.dart) | `layer_norm` |
 | `LayoutConvertOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | `layout-*`: float32/64/int32/int64, offset/strided input, both directions and forceContiguous settings, independent values and round trips; physical channels-last regression |
@@ -107,7 +107,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `NegOp` | [lib/src/ops/math_op.dart](lib/src/ops/math_op.dart) | `neg` |
 | `NormalizeOp` | [lib/src/ops/normalize_op.dart](lib/src/ops/normalize_op.dart) | `normalize / preset` |
 | `PadOp` | [lib/src/ops/pad_op.dart](lib/src/ops/pad_op.dart) | **Pending independent oracle / contract audit** |
-| `PermuteOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
+| `PermuteOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `PositionalEncodingOp` | [lib/src/ops/positional_encoding_op.dart](lib/src/ops/positional_encoding_op.dart) | **Pending independent oracle / contract audit** |
 | `PowOp` | [lib/src/ops/arithmetic_op.dart](lib/src/ops/arithmetic_op.dart) | **Pending independent oracle / contract audit** |
 | `RMSNormOp` | [lib/src/ops/rms_norm_op.dart](lib/src/ops/rms_norm_op.dart) | `rms_norm` |
@@ -117,7 +117,7 @@ coverage beyond those cases remains subject to the release checklist.
 | `RandomVerticalFlipOp` | [lib/src/ops/augmentation_op.dart](lib/src/ops/augmentation_op.dart) | **Pending independent oracle / contract audit** |
 | `ReLUOp` | [lib/src/ops/activation/relu_ops.dart](lib/src/ops/activation/relu_ops.dart) | `relu` |
 | `RepeatOp` | [lib/src/ops/repeat_op.dart](lib/src/ops/repeat_op.dart) | `index-*repeat` |
-| `ReshapeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | **Pending independent oracle / contract audit** |
+| `ReshapeOp` | [lib/src/ops/permute_op.dart](lib/src/ops/permute_op.dart) | Independent shape-* float32/64/int32/int64 values, offset/strided cases and shape inference; contiguous preparation is explicit for reshape/flatten and rejection is tested |
 | `ResizeNormalizeFusedOp` | [lib/src/ops/fused_ops.dart](lib/src/ops/fused_ops.dart) | **Pending independent oracle / contract audit** |
 | `ResizeOp` | [lib/src/ops/resize_op.dart](lib/src/ops/resize_op.dart) | `resize / resize-aa` |
 | `ResizeShortestOp` | [lib/src/ops/resize_op.dart](lib/src/ops/resize_op.dart) | `shortest` |
